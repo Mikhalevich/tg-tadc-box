@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/outboxmsg"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 )
 
 func (p *Postgres) OutboxUpdateStatus(
@@ -49,7 +50,7 @@ func (p *Postgres) OutboxUpdateStatus(
 	}
 
 	if affected == 0 {
-		return ErrNoRowsUpdated
+		return perror.NoRowsUpdated()
 	}
 
 	return nil

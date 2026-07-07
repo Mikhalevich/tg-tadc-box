@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 )
 
 func (p *Postgres) OutboxIncrementRetryCount(
@@ -46,7 +48,7 @@ func (p *Postgres) OutboxIncrementRetryCount(
 	}
 
 	if affected == 0 {
-		return ErrNoRowsUpdated
+		return perror.NoRowsUpdated()
 	}
 
 	return nil

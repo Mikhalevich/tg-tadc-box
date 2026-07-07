@@ -5,7 +5,6 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/shotimage"
 )
 
 type Sender interface {
@@ -29,27 +28,27 @@ type ButtonRepository interface {
 	SetButtonRows(ctx context.Context, rows ...button.ButtonRow) error
 }
 
-type ShotImageProvider interface {
-	Image(ctx context.Context, shot shotimage.ShotImage) ([]byte, error)
+type ImageProvider interface {
+	Image(ctx context.Context) ([]byte, error)
 }
 
 type MessageProcessor struct {
-	sender            Sender
-	escaper           MarkdownEscaper
-	buttonRepository  ButtonRepository
-	shotImageProvider ShotImageProvider
+	sender           Sender
+	escaper          MarkdownEscaper
+	buttonRepository ButtonRepository
+	imageProvider    ImageProvider
 }
 
 func New(
 	sender Sender,
 	escaper MarkdownEscaper,
 	buttonRepository ButtonRepository,
-	shotImageProvider ShotImageProvider,
+	imageProvider ImageProvider,
 ) *MessageProcessor {
 	return &MessageProcessor{
-		sender:            sender,
-		escaper:           escaper,
-		buttonRepository:  buttonRepository,
-		shotImageProvider: shotImageProvider,
+		sender:           sender,
+		escaper:          escaper,
+		buttonRepository: buttonRepository,
+		imageProvider:    imageProvider,
 	}
 }

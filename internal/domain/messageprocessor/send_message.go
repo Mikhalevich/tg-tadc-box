@@ -6,7 +6,6 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/shotimage"
 	"github.com/Mikhalevich/tg-tadc-box/internal/infra/logger"
 )
 
@@ -46,12 +45,7 @@ func (m *MessageProcessor) processShotImage(
 	msg msginfo.Message,
 	inlineButtons []button.InlineKeyboardButtonRow,
 ) error {
-	shot, err := shotimage.GOBDecode(msg.Payload)
-	if err != nil {
-		return fmt.Errorf("get shot image: %w", err)
-	}
-
-	image, err := m.shotImageProvider.Image(ctx, shot)
+	image, err := m.imageProvider.Image(ctx)
 	if err != nil {
 		logger.FromContext(ctx).
 			WithError(err).

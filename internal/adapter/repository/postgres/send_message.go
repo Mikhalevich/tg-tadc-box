@@ -8,6 +8,7 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/model"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 )
 
 func (p *Postgres) SendMessage(
@@ -60,7 +61,7 @@ func (p *Postgres) insertOutboxMessage(ctx context.Context, msg model.OutboxMess
 	}
 
 	if rows == 0 {
-		return ErrNoRowsUpdated
+		return perror.NoRowsUpdated()
 	}
 
 	return nil
