@@ -1,7 +1,7 @@
 log_level: "info"
 tracing:
   endpoint: "jaeger:4318"
-  service_name: "penalty-game-bot"
+  service_name: "box-bot"
 bot:
   token: "bot_token"
   webhook_token: "webhook_token or empty if running in polling mode"
