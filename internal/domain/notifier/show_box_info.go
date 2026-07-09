@@ -14,7 +14,8 @@ func (n *Notifier) ShowBoxInfo(
 	domBox box.Box,
 	availableAfter time.Duration,
 ) error {
-	msg := fmt.Sprintf("Box will be available after *%s*", n.escaper.EscapeMarkdown(availableAfter.String()))
+	msg := fmt.Sprintf("Box will be available after *%s*",
+		n.escaper.EscapeMarkdown(availableAfter.Truncate(time.Second).String()))
 
 	if err := n.sender.SendMessage(
 		ctx,

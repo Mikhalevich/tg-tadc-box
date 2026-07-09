@@ -30,7 +30,7 @@ func (p *Postgres) GetBoxesByStatus(
 				box
 			WHERE
 				chat_id = ? AND
-				status = IN (?)
+				status IN (?)
 		`
 
 		trx = p.transactor.ExtContext(ctx)

@@ -34,6 +34,7 @@ func New(
 ) *ScheduleBox {
 	return &ScheduleBox{
 		repo:         repo,
+		notifier:     notifier,
 		timeProvider: timeProvider,
 	}
 }
