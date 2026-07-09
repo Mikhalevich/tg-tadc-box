@@ -15,11 +15,13 @@ func Start(
 	botCfg config.Bot,
 	buttonProvider tghandler.ButtonProvider,
 	boxScheduler tghandler.BoxScheduler,
+	errorNotifier tghandler.ErrorNotifier,
 ) error {
 	var (
 		botHandler = tghandler.New(
 			buttonProvider,
 			boxScheduler,
+			errorNotifier,
 		)
 	)
 

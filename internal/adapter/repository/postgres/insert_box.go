@@ -6,6 +6,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/model"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 )
 
@@ -34,14 +35,22 @@ func (p *Postgres) InsertBox(
 				id
 		`
 
+		trx = p.transactor.ExtContext(ctx)
+
 		boxID int
 	)
 
+	query, args, err := sqlx.Named(query, model.ToDBBox(domBox))
+	if err != nil {
+		return 0, fmt.Errorf("sqlx named: %w", err)
+	}
+
 	if err := sqlx.GetContext(
 		ctx,
-		p.transactor.ExtContext(ctx),
+		trx,
 		&boxID,
-		query,
+		trx.Rebind(query),
+		args...,
 	); err != nil {
 		return 0, fmt.Errorf("get context: %w", err)
 	}

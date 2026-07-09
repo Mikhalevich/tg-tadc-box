@@ -18,19 +18,26 @@ type BoxScheduler interface {
 	Schedule(ctx context.Context, chatID msginfo.ChatID) error
 }
 
+type ErrorNotifier interface {
+	ParseError(ctx context.Context, chatID msginfo.ChatID, err error) error
+}
+
 type TGHandler struct {
 	cbHanlers      map[button.Operation]cbHandler
 	buttonProvider ButtonProvider
 	boxScheduler   BoxScheduler
+	errorNotifier  ErrorNotifier
 }
 
 func New(
 	buttonProvider ButtonProvider,
 	boxScheduler BoxScheduler,
+	errorNotifier ErrorNotifier,
 ) *TGHandler {
 	tgh := &TGHandler{
 		buttonProvider: buttonProvider,
 		boxScheduler:   boxScheduler,
+		errorNotifier:  errorNotifier,
 	}
 
 	tgh.registerCBHandlers()

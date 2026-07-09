@@ -45,6 +45,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		cfg.Bot,
 		msgProcessor,
 		boxScheduler,
+		notificationProvider,
 	); err != nil {
 		return fmt.Errorf("app start: %w", err)
 	}
