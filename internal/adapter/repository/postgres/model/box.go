@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
@@ -8,13 +9,13 @@ import (
 )
 
 type Box struct {
-	ID          int       `db:"id"`
-	ChatID      int64     `db:"chat_id"`
-	Status      string    `db:"status"`
-	Type        string    `db:"type"`
-	CreatedAt   time.Time `db:"created_at"`
-	AvailableAt time.Time `db:"available_at"`
-	CompletedAt time.Time `db:"completed_at"`
+	ID          int          `db:"id"`
+	ChatID      int64        `db:"chat_id"`
+	Status      string       `db:"status"`
+	Type        string       `db:"type"`
+	CreatedAt   time.Time    `db:"created_at"`
+	AvailableAt time.Time    `db:"available_at"`
+	CompletedAt sql.NullTime `db:"completed_at"`
 }
 
 func (b Box) ToDomBox() box.Box {
@@ -25,7 +26,7 @@ func (b Box) ToDomBox() box.Box {
 		Type:        box.Type(b.Type),
 		CreatedAt:   b.CreatedAt,
 		AvailableAt: b.AvailableAt,
-		CompletedAt: b.CompletedAt,
+		CompletedAt: b.CompletedAt.Time,
 	}
 }
 
@@ -50,6 +51,13 @@ func ToDBBox(domBox box.Box) Box {
 		Type:        domBox.Type.String(),
 		CreatedAt:   domBox.CreatedAt,
 		AvailableAt: domBox.AvailableAt,
-		CompletedAt: domBox.CompletedAt,
+		CompletedAt: toNullTime(domBox.CompletedAt),
+	}
+}
+
+func toNullTime(t time.Time) sql.NullTime {
+	return sql.NullTime{
+		Time:  t,
+		Valid: !t.IsZero(),
 	}
 }
