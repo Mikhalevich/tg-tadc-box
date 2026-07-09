@@ -25,7 +25,9 @@ func (s *ScheduleBox) Schedule(
 	now := s.timeProvider.Now()
 
 	if len(boxes) > 0 {
-		s.notifier.ShowBoxInfo(boxes[0], boxes[0].AvailableAt.Sub(now))
+		if err := s.notifier.ShowBoxInfo(ctx, boxes[0], boxes[0].AvailableAt.Sub(now)); err != nil {
+			return fmt.Errorf("show existing box info: %w", err)
+		}
 
 		return nil
 	}
@@ -39,7 +41,9 @@ func (s *ScheduleBox) Schedule(
 
 	newBox.ID = boxID
 
-	s.notifier.ShowBoxInfo(newBox, newBox.AvailableAt.Sub(now))
+	if err := s.notifier.ShowBoxInfo(ctx, newBox, newBox.AvailableAt.Sub(now)); err != nil {
+		return fmt.Errorf("show new box info: %w", err)
+	}
 
 	return nil
 }

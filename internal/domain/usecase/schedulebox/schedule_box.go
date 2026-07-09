@@ -14,7 +14,7 @@ type Repository interface {
 }
 
 type Notifier interface {
-	ShowBoxInfo(b box.Box, availableAfter time.Duration)
+	ShowBoxInfo(ctx context.Context, b box.Box, availableAfter time.Duration) error
 }
 
 type TimeProvider interface {

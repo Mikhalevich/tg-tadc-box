@@ -35,7 +35,9 @@ func (o *OpenBox) Open(
 	now := o.timeProvider.Now()
 
 	if readyBox.AvailableAt.After(now) {
-		o.notifier.ShowBoxInfo(readyBox, readyBox.AvailableAt.Sub(now))
+		if err := o.notifier.ShowBoxInfo(ctx, readyBox, readyBox.AvailableAt.Sub(now)); err != nil {
+			return fmt.Errorf("show box info: %w", err)
+		}
 
 		return nil
 	}
