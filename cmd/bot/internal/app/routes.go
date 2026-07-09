@@ -10,6 +10,8 @@ func makeRoutes(tbot *tgbot.TGBot, handler *tghandler.TGHandler) {
 
 	tbot.AddTextCommand("start", handler.Start)
 
+	tbot.AddMenuCommand("open", "open box", handler.Open)
+
 	tbot.AddDefaultHandler(handler.DefaultHandler)
 	tbot.AddDefaultCallbackQueryHander(handler.DefaultCallbackQuery)
 }

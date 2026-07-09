@@ -14,10 +14,12 @@ func Start(
 	ctx context.Context,
 	botCfg config.Bot,
 	buttonProvider tghandler.ButtonProvider,
+	boxScheduler tghandler.BoxScheduler,
 ) error {
 	var (
 		botHandler = tghandler.New(
 			buttonProvider,
+			boxScheduler,
 		)
 	)
 
