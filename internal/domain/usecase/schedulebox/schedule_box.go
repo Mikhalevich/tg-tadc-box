@@ -1,6 +1,7 @@
 package schedulebox
 
 import (
+	"context"
 	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
@@ -8,8 +9,8 @@ import (
 )
 
 type Repository interface {
-	GetActiveBoxes(chatID msginfo.ChatID) ([]box.Box, error)
-	InsertBox(b box.Box) (int, error)
+	GetBoxesByStatus(ctx context.Context, chatID msginfo.ChatID, statuses ...box.Status) ([]box.Box, error)
+	InsertBox(ctx context.Context, b box.Box) (int, error)
 }
 
 type Notifier interface {

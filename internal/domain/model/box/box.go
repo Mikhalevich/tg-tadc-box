@@ -16,11 +16,19 @@ const (
 	StatusCanceled   Status = "canceled"
 )
 
+func (s Status) String() string {
+	return string(s)
+}
+
 type Type string
 
 const (
 	TypeNormal Type = "normal"
 )
+
+func (t Type) String() string {
+	return string(t)
+}
 
 type Box struct {
 	ID          int

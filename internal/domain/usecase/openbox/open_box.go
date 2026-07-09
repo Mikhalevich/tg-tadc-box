@@ -1,14 +1,15 @@
 package openbox
 
 import (
+	"context"
 	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 )
 
 type Repository interface {
-	GetBoxByID(id int) (box.Box, error)
-	UpdateBox(b box.Box) error
+	GetBoxByID(ctx context.Context, id int) (box.Box, error)
+	UpdateBox(ctx context.Context, b box.Box) error
 }
 
 type Notifier interface {

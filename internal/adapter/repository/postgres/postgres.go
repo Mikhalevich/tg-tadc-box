@@ -4,6 +4,14 @@ import (
 	"context"
 
 	"github.com/jmoiron/sqlx"
+
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/schedulebox"
+)
+
+var (
+	_ openbox.Repository     = (*Postgres)(nil)
+	_ schedulebox.Repository = (*Postgres)(nil)
 )
 
 type Driver interface {

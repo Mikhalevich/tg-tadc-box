@@ -1,6 +1,7 @@
 package schedulebox
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -12,8 +13,11 @@ const (
 	boxWaitPeriod = 3 * time.Hour
 )
 
-func (s *ScheduleBox) Schedule(chatID msginfo.ChatID) error {
-	boxes, err := s.repo.GetActiveBoxes(chatID)
+func (s *ScheduleBox) Schedule(
+	ctx context.Context,
+	chatID msginfo.ChatID,
+) error {
+	boxes, err := s.repo.GetBoxesByStatus(ctx, chatID, box.StatusInProgress)
 	if err != nil {
 		return fmt.Errorf("get active boxes: %w", err)
 	}
@@ -28,7 +32,7 @@ func (s *ScheduleBox) Schedule(chatID msginfo.ChatID) error {
 
 	newBox := createNormalBox(chatID, now)
 
-	boxID, err := s.repo.InsertBox(newBox)
+	boxID, err := s.repo.InsertBox(ctx, newBox)
 	if err != nil {
 		return fmt.Errorf("insert box: %w", err)
 	}

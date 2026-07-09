@@ -1,6 +1,7 @@
 package openbox
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
@@ -8,8 +9,12 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 )
 
-func (o *OpenBox) Open(id int, chatID msginfo.ChatID) error {
-	readyBox, err := o.repo.GetBoxByID(id)
+func (o *OpenBox) Open(
+	ctx context.Context,
+	id int,
+	chatID msginfo.ChatID,
+) error {
+	readyBox, err := o.repo.GetBoxByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("get box by id: %w", err)
 	}
@@ -38,7 +43,7 @@ func (o *OpenBox) Open(id int, chatID msginfo.ChatID) error {
 	readyBox.Status = box.StatusOpened
 	readyBox.CompletedAt = now
 
-	if err := o.repo.UpdateBox(readyBox); err != nil {
+	if err := o.repo.UpdateBox(ctx, readyBox); err != nil {
 		return fmt.Errorf("update box: %w", err)
 	}
 
