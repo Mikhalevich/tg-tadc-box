@@ -75,38 +75,10 @@ func TooManyRequests(msg string, waitDuration time.Duration) Error {
 	}
 }
 
-func InvalidPlayer() Error {
-	return New(TypeInvalidPlayer, "invalid player")
-}
-
-func InvalidState(msg string) Error {
-	return New(TypeInvalidState, msg)
-}
-
-func InvalidGameState() Error {
-	return New(TypeInvalidGameState, "invalid game state")
-}
-
-func InvalidRound() Error {
-	return New(TypeInvalidRound, "invalid round")
-}
-
-func RoundNotCompleted() Error {
-	return New(TypeRoundNotCompleted, "round not completed")
-}
-
-func AlreadyInGame() Error {
-	return New(TypeAlreadyInGame, "already in game")
-}
-
-func NotInGame() Error {
-	return New(TypeNotInGame, "not in game")
-}
-
-func InSearchGameState() Error {
-	return New(TypeInSearchGameState, "searching for game")
-}
-
 func NoRowsUpdated() Error {
 	return New(TypeNoRowsUpdated, "no rows updated")
+}
+
+func InvalidStatus(msg string) Error {
+	return New(TypeInvalidStatus, msg)
 }

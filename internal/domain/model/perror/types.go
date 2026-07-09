@@ -9,13 +9,6 @@ const (
 	TypeNotExists
 	TypeInvalidParam
 	TypeTooManyRequests
-	TypeInvalidPlayer
-	TypeInvalidState
-	TypeInvalidGameState
-	TypeInvalidRound
-	TypeRoundNotCompleted
-	TypeAlreadyInGame
-	TypeNotInGame
-	TypeInSearchGameState
 	TypeNoRowsUpdated
+	TypeInvalidStatus
 )
