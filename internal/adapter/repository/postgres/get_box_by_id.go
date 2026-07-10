@@ -26,6 +26,7 @@ func (p *Postgres) GetBoxByID(
 				type,
 				created_at,
 				available_at,
+				ready_notification_at,
 				completed_at
 			FROM
 				box

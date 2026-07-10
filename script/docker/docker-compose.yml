@@ -13,6 +13,20 @@ services:
       - ./../../config/config-bot.yaml:/app/config/config-bot.yaml
     networks:
       - bot-net
+    
+  poller:
+    build:
+      context: ../../
+      dockerfile: script/docker/poller.Dockerfile
+    depends_on:
+      jaeger:
+        condition: service_started
+      sql-migrate:
+        condition: service_completed_successfully
+    volumes:
+      - ./../../config/config-poller.yaml:/app/config/config-poller.yaml
+    networks:
+      - bot-net
 
   jaeger:
     image: jaegertracing/all-in-one:1.57
