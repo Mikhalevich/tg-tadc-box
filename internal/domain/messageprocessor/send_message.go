@@ -18,7 +18,7 @@ func (m *MessageProcessor) SendMessage(
 		return fmt.Errorf("set button rows: %w", err)
 	}
 
-	if msg.Type == msginfo.MessageTypeShotImage {
+	if msg.Type == msginfo.MessageTypeImageProvider {
 		if err := m.processShotImage(ctx, msg, inlineButtons); err != nil {
 			return fmt.Errorf("process shot image: %w", err)
 		}

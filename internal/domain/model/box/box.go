@@ -43,3 +43,7 @@ type Box struct {
 func (b Box) IsStatus(statuses ...Status) bool {
 	return slices.Contains(statuses, b.Status)
 }
+
+func (b Box) AvailableAfter(now time.Time) time.Duration {
+	return b.AvailableAt.Sub(now)
+}

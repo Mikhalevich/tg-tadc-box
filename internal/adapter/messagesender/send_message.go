@@ -51,7 +51,7 @@ func (m *messageSender) SendMessage(
 			return fmt.Errorf("send photo: %w", err)
 		}
 
-	case msginfo.MessageTypeShotImage:
+	case msginfo.MessageTypeImageProvider:
 		return fmt.Errorf("invalid message type: %v", msg.Type)
 
 	default:
