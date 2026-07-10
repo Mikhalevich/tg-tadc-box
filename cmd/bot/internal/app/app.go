@@ -14,7 +14,7 @@ func Start(
 	ctx context.Context,
 	botCfg config.Bot,
 	buttonProvider tghandler.ButtonProvider,
-	boxScheduler tghandler.BoxScheduler,
+	boxScheduler tghandler.BoxProcessor,
 	errorNotifier tghandler.ErrorNotifier,
 ) error {
 	var (

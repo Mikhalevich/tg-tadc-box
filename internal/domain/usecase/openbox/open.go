@@ -3,51 +3,60 @@ package openbox
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
+)
+
+const (
+	boxWaitPeriod = 10 * time.Second
 )
 
 func (o *OpenBox) Open(
 	ctx context.Context,
-	id int,
 	chatID msginfo.ChatID,
 ) error {
-	readyBox, err := o.repo.GetBoxByID(ctx, id)
+	boxes, err := o.repo.GetBoxesByStatus(ctx, chatID, box.StatusInProgress)
 	if err != nil {
-		return fmt.Errorf("get box by id: %w", err)
-	}
-
-	switch readyBox.Status {
-	case box.StatusPending:
-		return perror.InvalidStatus("your box is in pending status")
-
-	case box.StatusOpened:
-		return perror.InvalidStatus("box already opened")
-
-	case box.StatusCanceled:
-		return perror.InvalidStatus("box already canceled")
-
-	case box.StatusInProgress:
+		return fmt.Errorf("get active boxes: %w", err)
 	}
 
 	now := o.timeProvider.Now()
 
-	if readyBox.AvailableAt.After(now) {
-		if err := o.notifier.ShowBoxInfo(ctx, readyBox, readyBox.AvailableAt.Sub(now)); err != nil {
-			return fmt.Errorf("show box info: %w", err)
+	if len(boxes) > 0 {
+		if err := o.notifier.ShowBoxInfo(ctx, boxes[0], boxes[0].AvailableAfter(now)); err != nil {
+			return fmt.Errorf("show existing box info: %w", err)
 		}
 
 		return nil
 	}
 
-	readyBox.Status = box.StatusOpened
-	readyBox.CompletedAt = now
+	newBox := createNormalBox(chatID, now)
 
-	if err := o.repo.UpdateBox(ctx, readyBox); err != nil {
-		return fmt.Errorf("update box: %w", err)
+	boxID, err := o.repo.InsertBox(ctx, newBox)
+	if err != nil {
+		return fmt.Errorf("insert box: %w", err)
+	}
+
+	newBox.ID = boxID
+
+	if err := o.notifier.ShowBoxInfo(ctx, newBox, newBox.AvailableAfter(now)); err != nil {
+		return fmt.Errorf("show new box info: %w", err)
 	}
 
 	return nil
+}
+
+func createNormalBox(
+	chatID msginfo.ChatID,
+	createdAt time.Time,
+) box.Box {
+	return box.Box{
+		ChatID:      chatID,
+		Status:      box.StatusInProgress,
+		Type:        box.TypeNormal,
+		CreatedAt:   createdAt,
+		AvailableAt: createdAt.Add(boxWaitPeriod),
+	}
 }

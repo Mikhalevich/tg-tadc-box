@@ -13,7 +13,7 @@ func (t *TGHandler) Open(
 	msg tgbot.BotMessage,
 	sender tgbot.MessageSender,
 ) error {
-	if err := t.boxScheduler.Schedule(ctx, msginfo.ChatIDFromInt64(msg.ChatID)); err != nil {
+	if err := t.boxProcessor.Open(ctx, msginfo.ChatIDFromInt64(msg.ChatID)); err != nil {
 		return fmt.Errorf("schedule box: %w", err)
 	}
 

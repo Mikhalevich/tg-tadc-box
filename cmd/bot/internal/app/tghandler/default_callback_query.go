@@ -5,7 +5,9 @@ import (
 	"fmt"
 
 	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/app/tgbot"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 )
 
@@ -36,6 +38,19 @@ func (t *TGHandler) DefaultCallbackQuery(ctx context.Context, msg tgbot.BotMessa
 
 	if btn.IsDeleteAfterProcess {
 		sender.DeleteMessage(ctx, msg.ChatID, msg.MessageID)
+	}
+
+	return nil
+}
+
+func (t *TGHandler) cbOpenBox(ctx context.Context, msg tgbot.BotMessage, btn *button.Button) error {
+	payload, err := button.GetPayload[box.OpenBoxButtonPayload](*btn)
+	if err != nil {
+		return fmt.Errorf("get open box payload: %w", err)
+	}
+
+	if err := t.boxProcessor.OpenByID(ctx, msginfo.ChatIDFromInt64(msg.ChatID), payload.ID); err != nil {
+		return fmt.Errorf("open box by id: %w", err)
 	}
 
 	return nil
