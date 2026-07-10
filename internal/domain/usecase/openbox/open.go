@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	boxWaitPeriod = 3 * time.Hour
+	boxWaitPeriod = 10 * time.Second
 )
 
 func (o *OpenBox) Open(

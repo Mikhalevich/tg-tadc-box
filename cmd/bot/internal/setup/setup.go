@@ -17,7 +17,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/timeprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/schedulebox"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
 )
 
 func StartBot(ctx context.Context, cfg config.Config) error {
@@ -37,7 +37,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		msgProcessor         = messageprocessor.New(msgSender, msgSender, pgDB, nil)
 		notificationProvider = notifier.New(msgProcessor, msgProcessor)
 		timeProvider         = timeprovider.New()
-		boxScheduler         = schedulebox.New(pgDB, notificationProvider, timeProvider)
+		boxScheduler         = openbox.New(pgDB, notificationProvider, timeProvider)
 	)
 
 	if err := app.Start(

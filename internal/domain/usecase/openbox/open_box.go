@@ -17,6 +17,7 @@ type Repository interface {
 
 type Notifier interface {
 	ShowBoxInfo(ctx context.Context, b box.Box, availableAfter time.Duration) error
+	ShowReward(ctx context.Context, chatID msginfo.ChatID) error
 }
 
 type TimeProvider interface {

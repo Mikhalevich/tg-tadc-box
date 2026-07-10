@@ -14,8 +14,9 @@ type ButtonProvider interface {
 
 type cbHandler func(ctx context.Context, msg tgbot.BotMessage, btn *button.Button) error
 
-type BoxScheduler interface {
-	Schedule(ctx context.Context, chatID msginfo.ChatID) error
+type BoxProcessor interface {
+	Open(ctx context.Context, chatID msginfo.ChatID) error
+	OpenByID(ctx context.Context, chatID msginfo.ChatID, id int) error
 }
 
 type ErrorNotifier interface {
@@ -25,18 +26,18 @@ type ErrorNotifier interface {
 type TGHandler struct {
 	cbHanlers      map[button.Operation]cbHandler
 	buttonProvider ButtonProvider
-	boxScheduler   BoxScheduler
+	boxProcessor   BoxProcessor
 	errorNotifier  ErrorNotifier
 }
 
 func New(
 	buttonProvider ButtonProvider,
-	boxScheduler BoxScheduler,
+	boxProcessor BoxProcessor,
 	errorNotifier ErrorNotifier,
 ) *TGHandler {
 	tgh := &TGHandler{
 		buttonProvider: buttonProvider,
-		boxScheduler:   boxScheduler,
+		boxProcessor:   boxProcessor,
 		errorNotifier:  errorNotifier,
 	}
 
@@ -46,5 +47,7 @@ func New(
 }
 
 func (t *TGHandler) registerCBHandlers() {
-	t.cbHanlers = map[button.Operation]cbHandler{}
+	t.cbHanlers = map[button.Operation]cbHandler{
+		button.OperationOpenBox: t.cbOpenBox,
+	}
 }

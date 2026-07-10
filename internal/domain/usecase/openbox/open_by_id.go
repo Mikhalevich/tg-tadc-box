@@ -11,8 +11,8 @@ import (
 
 func (o *OpenBox) OpenByID(
 	ctx context.Context,
-	id int,
 	chatID msginfo.ChatID,
+	id int,
 ) error {
 	readyBox, err := o.repo.GetBoxByID(ctx, id)
 	if err != nil {
@@ -47,6 +47,10 @@ func (o *OpenBox) OpenByID(
 
 	if err := o.repo.UpdateBox(ctx, readyBox); err != nil {
 		return fmt.Errorf("update box: %w", err)
+	}
+
+	if err := o.notifier.ShowReward(ctx, chatID); err != nil {
+		return fmt.Errorf("show reward: %w", err)
 	}
 
 	return nil
