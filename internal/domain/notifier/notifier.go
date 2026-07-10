@@ -4,6 +4,11 @@ import (
 	"context"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
+)
+
+var (
+	_ openbox.Notifier = (*Notifier)(nil)
 )
 
 type Sender interface {
