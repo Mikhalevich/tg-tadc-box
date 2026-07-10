@@ -19,10 +19,12 @@ CREATE TABLE box(
     type box_type NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     available_at TIMESTAMPTZ NOT NULL,
+    ready_notification_at TIMESTAMPTZ,
     completed_at TIMESTAMPTZ
 );
 
-CREATE INDEX box_active_boxes ON box(chat_id, status, available_at) WHERE status IN ('pending', 'in_progress');
+CREATE INDEX box_active_boxes ON box(chat_id, status) WHERE status IN ('pending', 'in_progress');
+CREATE INDEX box_ready_to_open_notification ON box(status, available_at) WHERE status IN ('pending', 'in_progress') AND ready_notification_at IS NULL;
 
 -- +migrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

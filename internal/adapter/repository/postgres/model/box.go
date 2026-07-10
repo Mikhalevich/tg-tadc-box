@@ -9,24 +9,26 @@ import (
 )
 
 type Box struct {
-	ID          int          `db:"id"`
-	ChatID      int64        `db:"chat_id"`
-	Status      string       `db:"status"`
-	Type        string       `db:"type"`
-	CreatedAt   time.Time    `db:"created_at"`
-	AvailableAt time.Time    `db:"available_at"`
-	CompletedAt sql.NullTime `db:"completed_at"`
+	ID                  int          `db:"id"`
+	ChatID              int64        `db:"chat_id"`
+	Status              string       `db:"status"`
+	Type                string       `db:"type"`
+	CreatedAt           time.Time    `db:"created_at"`
+	AvailableAt         time.Time    `db:"available_at"`
+	ReadyNotificationAt sql.NullTime `db:"ready_notification_at"`
+	CompletedAt         sql.NullTime `db:"completed_at"`
 }
 
 func (b Box) ToDomBox() box.Box {
 	return box.Box{
-		ID:          b.ID,
-		ChatID:      msginfo.ChatIDFromInt64(b.ChatID),
-		Status:      box.Status(b.Status),
-		Type:        box.Type(b.Type),
-		CreatedAt:   b.CreatedAt,
-		AvailableAt: b.AvailableAt,
-		CompletedAt: b.CompletedAt.Time,
+		ID:                  b.ID,
+		ChatID:              msginfo.ChatIDFromInt64(b.ChatID),
+		Status:              box.Status(b.Status),
+		Type:                box.Type(b.Type),
+		CreatedAt:           b.CreatedAt,
+		AvailableAt:         b.AvailableAt,
+		ReadyNotificationAt: b.ReadyNotificationAt.Time,
+		CompletedAt:         b.CompletedAt.Time,
 	}
 }
 
@@ -45,13 +47,14 @@ func ToDomBoxes(dbBoxes []Box) []box.Box {
 
 func ToDBBox(domBox box.Box) Box {
 	return Box{
-		ID:          domBox.ID,
-		ChatID:      domBox.ChatID.Int64(),
-		Status:      domBox.Status.String(),
-		Type:        domBox.Type.String(),
-		CreatedAt:   domBox.CreatedAt,
-		AvailableAt: domBox.AvailableAt,
-		CompletedAt: toNullTime(domBox.CompletedAt),
+		ID:                  domBox.ID,
+		ChatID:              domBox.ChatID.Int64(),
+		Status:              domBox.Status.String(),
+		Type:                domBox.Type.String(),
+		CreatedAt:           domBox.CreatedAt,
+		AvailableAt:         domBox.AvailableAt,
+		ReadyNotificationAt: toNullTime(domBox.ReadyNotificationAt),
+		CompletedAt:         toNullTime(domBox.CompletedAt),
 	}
 }
 

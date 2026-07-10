@@ -1,0 +1,12 @@
+log_level: "info"
+tracing:
+  endpoint: "jaeger:4318"
+  service_name: "box-bot"
+bot:
+  token: "bot_token"
+postgres:
+  connection: "host=postgres port=5432 user=bot password=bot dbname=bot sslmode=disable"
+box_ready_notification_worker:
+  count: 1
+  interval: 5s
+  batch_size: 10

@@ -29,4 +29,5 @@ go.work.sum
 /tools
 
 /config/config-bot.yaml
+/config/config-poller.yaml
 /config/dbconfig.yml

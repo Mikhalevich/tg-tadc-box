@@ -33,13 +33,14 @@ func (t Type) String() string {
 }
 
 type Box struct {
-	ID          int
-	ChatID      msginfo.ChatID
-	Status      Status
-	Type        Type
-	CreatedAt   time.Time
-	AvailableAt time.Time
-	CompletedAt time.Time
+	ID                  int
+	ChatID              msginfo.ChatID
+	Status              Status
+	Type                Type
+	CreatedAt           time.Time
+	AvailableAt         time.Time
+	ReadyNotificationAt time.Time
+	CompletedAt         time.Time
 }
 
 func (b Box) IsStatus(statuses ...Status) bool {

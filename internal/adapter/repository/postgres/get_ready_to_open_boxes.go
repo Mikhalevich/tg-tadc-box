@@ -3,18 +3,18 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/model"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (p *Postgres) GetBoxesByStatus(
+func (p *Postgres) GetReadyToOpenBoxes(
 	ctx context.Context,
-	chatID msginfo.ChatID,
-	statuses ...box.Status,
+	now time.Time,
+	limit int,
 ) ([]box.Box, error) {
 	var (
 		query = `
@@ -30,29 +30,28 @@ func (p *Postgres) GetBoxesByStatus(
 			FROM
 				box
 			WHERE
-				chat_id = ? AND
-				status IN (?)
+				status = $1 AND
+				available_at <= $2 AND
+				ready_notification_at IS NULL
+			LIMIT
+				$3
+			FOR UPDATE SKIP LOCKED
 		`
 
-		trx = p.transactor.ExtContext(ctx)
-
-		boxes []model.Box
+		dbBoxes []model.Box
 	)
-
-	query, args, err := sqlx.In(query, chatID, statuses)
-	if err != nil {
-		return nil, fmt.Errorf("sqlx in: %w", err)
-	}
 
 	if err := sqlx.SelectContext(
 		ctx,
-		trx,
-		&boxes,
-		trx.Rebind(query),
-		args...,
+		p.transactor.ExtContext(ctx),
+		&dbBoxes,
+		query,
+		box.StatusInProgress,
+		now,
+		limit,
 	); err != nil {
-		return nil, fmt.Errorf("get context: %w", err)
+		return nil, fmt.Errorf("select context: %w", err)
 	}
 
-	return model.ToDomBoxes(boxes), nil
+	return model.ToDomBoxes(dbBoxes), nil
 }
