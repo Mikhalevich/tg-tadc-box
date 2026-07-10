@@ -6,6 +6,7 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
 type Repository interface {
@@ -15,9 +16,13 @@ type Repository interface {
 	UpdateBox(ctx context.Context, b box.Box) error
 }
 
+type RewardGenerator interface {
+	Generate() (reward.Reward, error)
+}
+
 type Notifier interface {
 	ShowBoxInfo(ctx context.Context, b box.Box, availableAfter time.Duration) error
-	ShowReward(ctx context.Context, chatID msginfo.ChatID) error
+	ShowReward(ctx context.Context, chatID msginfo.ChatID, receivedReward reward.Reward) error
 }
 
 type TimeProvider interface {
@@ -25,19 +30,22 @@ type TimeProvider interface {
 }
 
 type OpenBox struct {
-	repo         Repository
-	notifier     Notifier
-	timeProvider TimeProvider
+	repo            Repository
+	rewardGenerator RewardGenerator
+	notifier        Notifier
+	timeProvider    TimeProvider
 }
 
 func New(
 	repo Repository,
+	rewardGenertor RewardGenerator,
 	notifier Notifier,
 	timeProvider TimeProvider,
 ) *OpenBox {
 	return &OpenBox{
-		repo:         repo,
-		notifier:     notifier,
-		timeProvider: timeProvider,
+		repo:            repo,
+		rewardGenerator: rewardGenertor,
+		notifier:        notifier,
+		timeProvider:    timeProvider,
 	}
 }

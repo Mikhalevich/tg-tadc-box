@@ -16,7 +16,9 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/transaction"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/timeprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
 )
 
@@ -37,14 +39,30 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		msgProcessor         = messageprocessor.New(msgSender, msgSender, pgDB, nil)
 		notificationProvider = notifier.New(msgProcessor, msgProcessor)
 		timeProvider         = timeprovider.New()
-		boxScheduler         = openbox.New(pgDB, notificationProvider, timeProvider)
+		//nolint:mnd
+		rewardIDs = map[reward.RewardType][]reward.ID{
+			reward.RewardTypeCommon: {
+				reward.IDFromInt(1),
+			},
+			reward.RewardTypeRare: {
+				reward.IDFromInt(2),
+			},
+			reward.RewardTypeEpic: {
+				reward.IDFromInt(3),
+			},
+			reward.RewardTypeLegendary: {
+				reward.IDFromInt(4),
+			},
+		}
+		rewardGenerator = rewardgenerator.New(rewardIDs)
+		boxProcessor    = openbox.New(pgDB, rewardGenerator, notificationProvider, timeProvider)
 	)
 
 	if err := app.Start(
 		ctx,
 		cfg.Bot,
 		msgProcessor,
-		boxScheduler,
+		boxProcessor,
 		notificationProvider,
 	); err != nil {
 		return fmt.Errorf("app start: %w", err)
