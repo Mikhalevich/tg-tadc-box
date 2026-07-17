@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	legendaryPercent = 2
+	legendaryPercent = 5
 	epicPercent      = 10
 	rarePercent      = 30
 )

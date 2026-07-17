@@ -10,13 +10,13 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/app"
 	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/config"
+	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/messagesender"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/driver"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/transaction"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/timeprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
@@ -35,27 +35,21 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 	defer dbCleanup()
 
 	var (
-		msgSender            = messagesender.New(botAPI)
-		msgProcessor         = messageprocessor.New(msgSender, msgSender, pgDB, nil)
-		notificationProvider = notifier.New(msgProcessor, msgProcessor)
-		timeProvider         = timeprovider.New()
-		//nolint:mnd
-		rewardIDs = map[reward.RewardType][]reward.ID{
-			reward.RewardTypeCommon: {
-				reward.IDFromInt(1),
-			},
-			reward.RewardTypeRare: {
-				reward.IDFromInt(2),
-			},
-			reward.RewardTypeEpic: {
-				reward.IDFromInt(3),
-			},
-			reward.RewardTypeLegendary: {
-				reward.IDFromInt(4),
-			},
-		}
-		rewardGenerator = rewardgenerator.New(rewardIDs)
-		boxProcessor    = openbox.New(pgDB, rewardGenerator, notificationProvider, timeProvider)
+		msgSender           = messagesender.New(botAPI)
+		msgProcessor        = messageprocessor.New(msgSender, msgSender, pgDB, nil)
+		imageProvider       = imageprovider.New()
+		notificationService = notifier.New(msgProcessor, msgProcessor, imageProvider)
+		timeProvider        = timeprovider.New()
+	)
+
+	rewards, err := imageProvider.GetRewards()
+	if err != nil {
+		return fmt.Errorf("get rewards: %w", err)
+	}
+
+	var (
+		rewardGenerator = rewardgenerator.New(rewards)
+		boxProcessor    = openbox.New(pgDB, rewardGenerator, notificationService, timeProvider)
 	)
 
 	if err := app.Start(
@@ -63,7 +57,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		cfg.Bot,
 		msgProcessor,
 		boxProcessor,
-		notificationProvider,
+		notificationService,
 	); err != nil {
 		return fmt.Errorf("app start: %w", err)
 	}

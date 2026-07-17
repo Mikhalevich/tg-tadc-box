@@ -61,12 +61,17 @@ func (n *Notifier) sendBoxIsAvailable(
 		return fmt.Errorf("open box button: %w", err)
 	}
 
+	payload, err := n.imageProvider.Chest(ctx)
+	if err != nil {
+		return fmt.Errorf("receive chest paylod: %w", err)
+	}
+
 	if err := n.sender.SendMessage(
 		ctx,
 		msginfo.Message{
-			ChatID: domBox.ChatID,
-			Text:   "Open box",
-			Type:   msginfo.MessageTypePlain,
+			ChatID:  domBox.ChatID,
+			Type:    msginfo.MessageTypePNG,
+			Payload: payload,
 			Buttons: []button.ButtonRow{
 				{
 					openBoxBtn,
