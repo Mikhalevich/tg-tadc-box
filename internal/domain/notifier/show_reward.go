@@ -13,13 +13,17 @@ func (n *Notifier) ShowReward(
 	chatID msginfo.ChatID,
 	receivedReward reward.Reward,
 ) error {
-	msg := fmt.Sprintf("Reward: %d - %s", receivedReward.ID.Int(), receivedReward.Type.String())
+	payload, err := n.imageProvider.Reward(ctx, receivedReward)
+	if err != nil {
+		return fmt.Errorf("receive image paylod: %w", err)
+	}
+
 	if err := n.sender.SendMessage(
 		ctx,
 		msginfo.Message{
-			ChatID: chatID,
-			Text:   msg,
-			Type:   msginfo.MessageTypePlain,
+			ChatID:  chatID,
+			Type:    msginfo.MessageTypePNG,
+			Payload: payload,
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)

@@ -10,6 +10,7 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/cmd/poller/internal/app"
 	"github.com/Mikhalevich/tg-tadc-box/cmd/poller/internal/config"
+	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/messagesender"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/driver"
@@ -36,7 +37,8 @@ func StartWorker(ctx context.Context, cfg config.Config) error {
 	var (
 		messageSender       = messagesender.New(botAPI)
 		messageProcessor    = messageprocessor.New(messageSender, messageSender, pgDB, nil)
-		notificationService = notifier.New(messageProcessor, messageProcessor)
+		imageProvider       = imageprovider.New()
+		notificationService = notifier.New(messageProcessor, messageProcessor, imageProvider)
 		timeProvider        = timeprovider.New()
 		readyBoxService     = readybox.New(pgDB, pgDB.Transactor(), notificationService, timeProvider)
 	)
