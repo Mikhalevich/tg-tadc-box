@@ -17,7 +17,7 @@ type Repository interface {
 }
 
 type RewardGenerator interface {
-	Generate() (reward.Reward, error)
+	Generate(ctx context.Context) (reward.Reward, error)
 }
 
 type Notifier interface {

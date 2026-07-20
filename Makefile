@@ -12,7 +12,7 @@ LINTER_NAME := golangci-lint
 LINTER_VERSION := v2.12.2
 
 .PHONY: all build test compose-up compose-down load-test-data vendor install-linter \
-lint fmt tools-update generate
+lint fmt tools-update generate load-assets
 
 all: build
 
@@ -51,3 +51,9 @@ tools-update:
 
 generate:
 	$(ENV_PATH) go generate ./...
+
+load-assets:
+	docker run -it --rm --network host \
+		-v ./script/db/dataset/assets.sql:/script/assets.sql \
+		alpine/psql:17.7 \
+		"postgresql://bot:bot@localhost:5432/bot" -f /script/assets.sql

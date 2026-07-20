@@ -1,6 +1,7 @@
 package rewardgenerator
 
 import (
+	"context"
 	"fmt"
 	"math/rand/v2"
 
@@ -13,30 +14,38 @@ const (
 	rarePercent      = 30
 )
 
+type RewardsGetter interface {
+	GetRewardsByType(
+		ctx context.Context,
+		rewardType reward.RewardType,
+	) ([]reward.Reward, error)
+}
+
 type RewardGenerator struct {
-	rewardIDs map[reward.RewardType][]reward.ID
+	rewardsGetter RewardsGetter
 }
 
 func New(
-	ids map[reward.RewardType][]reward.ID,
+	rewardsGetter RewardsGetter,
 ) RewardGenerator {
 	return RewardGenerator{
-		rewardIDs: ids,
+		rewardsGetter: rewardsGetter,
 	}
 }
 
-func (r RewardGenerator) Generate() (reward.Reward, error) {
-	rewardType := generateRewardType()
+func (r RewardGenerator) Generate(ctx context.Context) (reward.Reward, error) {
+	rewardType := pickRewardType()
 
-	rewardID, err := r.generateRewardID(rewardType)
+	rewards, err := r.rewardsGetter.GetRewardsByType(ctx, rewardType)
 	if err != nil {
-		return reward.Reward{}, fmt.Errorf("generate reward id: %w", err)
+		return reward.Reward{}, fmt.Errorf("get all rewards: %w", err)
 	}
 
-	return reward.Reward{
-		ID:   rewardID,
-		Type: rewardType,
-	}, nil
+	if len(rewards) == 0 {
+		return reward.Reward{}, fmt.Errorf("no rewards by type %q", rewardType.String())
+	}
+
+	return pickReward(rewards), nil
 }
 
 func percent() int {
@@ -44,7 +53,7 @@ func percent() int {
 	return rand.IntN(100) + 1
 }
 
-func generateRewardType() reward.RewardType {
+func pickRewardType() reward.RewardType {
 	roll := percent()
 
 	switch {
@@ -61,12 +70,9 @@ func generateRewardType() reward.RewardType {
 	return reward.RewardTypeCommon
 }
 
-func (r RewardGenerator) generateRewardID(rewardType reward.RewardType) (reward.ID, error) {
-	ids, ok := r.rewardIDs[rewardType]
-	if !ok {
-		return 0, fmt.Errorf("invalid reward type: %s", rewardType)
-	}
-
+func pickReward(
+	rewards []reward.Reward,
+) reward.Reward {
 	//nolint:gosec
-	return ids[rand.IntN(len(ids))], nil
+	return rewards[rand.IntN(len(rewards))]
 }

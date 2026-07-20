@@ -1,5 +1,9 @@
 package reward
 
+import (
+	"time"
+)
+
 type RewardType string
 
 const (
@@ -24,6 +28,8 @@ func (id ID) Int() int {
 }
 
 type Reward struct {
-	ID   ID
-	Type RewardType
+	ID        ID
+	Type      RewardType
+	URI       string
+	CreatedAt time.Time
 }
