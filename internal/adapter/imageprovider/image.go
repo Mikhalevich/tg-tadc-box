@@ -8,20 +8,14 @@ import (
 )
 
 const (
-	imageTemplate = "assets/%s/%d.jpg"
-	chestPath     = "assets/chest/1.jpg"
-
-	commonFolder    = "common"
-	rareFolder      = "rare"
-	epicFolder      = "epic"
-	legendaryFolder = "legendary"
+	chestPath = "assets/chest/1.jpg"
 )
 
 func (i *ImageProvider) Reward(
 	ctx context.Context,
 	rew reward.Reward,
 ) ([]byte, error) {
-	payload, err := assetsFS.ReadFile(imageAbsPath(rew))
+	payload, err := assetsFS.ReadFile(rew.URI)
 	if err != nil {
 		return nil, fmt.Errorf("read file: %w", err)
 	}
@@ -36,31 +30,4 @@ func (i *ImageProvider) Chest(ctx context.Context) ([]byte, error) {
 	}
 
 	return payload, nil
-}
-
-func imageAbsPath(rew reward.Reward) string {
-	var (
-		rewardFolder = folderByRewardType(rew.Type)
-		rewardImage  = fmt.Sprintf(imageTemplate, rewardFolder, rew.ID.Int())
-	)
-
-	return rewardImage
-}
-
-func folderByRewardType(rewardType reward.RewardType) string {
-	switch rewardType {
-	case reward.RewardTypeCommon:
-		return commonFolder
-
-	case reward.RewardTypeRare:
-		return rareFolder
-
-	case reward.RewardTypeEpic:
-		return epicFolder
-
-	case reward.RewardTypeLegendary:
-		return legendaryFolder
-	}
-
-	return ""
 }

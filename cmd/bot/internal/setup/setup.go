@@ -40,16 +40,8 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		imageProvider       = imageprovider.New()
 		notificationService = notifier.New(msgProcessor, msgProcessor, imageProvider)
 		timeProvider        = timeprovider.New()
-	)
-
-	rewards, err := imageProvider.GetRewards()
-	if err != nil {
-		return fmt.Errorf("get rewards: %w", err)
-	}
-
-	var (
-		rewardGenerator = rewardgenerator.New(rewards)
-		boxProcessor    = openbox.New(pgDB, rewardGenerator, notificationService, timeProvider)
+		rewardGenerator     = rewardgenerator.New(pgDB)
+		boxProcessor        = openbox.New(pgDB, rewardGenerator, notificationService, timeProvider)
 	)
 
 	if err := app.Start(
