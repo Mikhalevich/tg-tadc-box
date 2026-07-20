@@ -15,6 +15,8 @@ CREATE TABLE reward(
     created_at TIMESTAMPTZ NOT NULL
 );
 
+CREATE UNIQUE INDEX reward_uri_idx ON reward(uri);
+
 -- +migrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
 
