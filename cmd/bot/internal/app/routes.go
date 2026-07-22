@@ -11,6 +11,7 @@ func makeRoutes(tbot *tgbot.TGBot, handler *tghandler.TGHandler) {
 	tbot.AddTextCommand("start", handler.Start)
 
 	tbot.AddMenuCommand("open", "open box", handler.Open)
+	tbot.AddMenuCommand("my_cards", "view my cards", handler.MyCards)
 
 	tbot.AddDefaultHandler(handler.DefaultHandler)
 	tbot.AddDefaultCallbackQueryHander(handler.DefaultCallbackQuery)

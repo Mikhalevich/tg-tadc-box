@@ -19,6 +19,10 @@ type BoxProcessor interface {
 	OpenByID(ctx context.Context, chatID msginfo.ChatID, id int) error
 }
 
+type CardViewer interface {
+	First(ctx context.Context, chatID msginfo.ChatID) error
+}
+
 type ErrorNotifier interface {
 	ParseError(ctx context.Context, chatID msginfo.ChatID, err error) error
 }
@@ -27,17 +31,20 @@ type TGHandler struct {
 	cbHanlers      map[button.Operation]cbHandler
 	buttonProvider ButtonProvider
 	boxProcessor   BoxProcessor
+	cardViewer     CardViewer
 	errorNotifier  ErrorNotifier
 }
 
 func New(
 	buttonProvider ButtonProvider,
 	boxProcessor BoxProcessor,
+	cardViewer CardViewer,
 	errorNotifier ErrorNotifier,
 ) *TGHandler {
 	tgh := &TGHandler{
 		buttonProvider: buttonProvider,
 		boxProcessor:   boxProcessor,
+		cardViewer:     cardViewer,
 		errorNotifier:  errorNotifier,
 	}
 

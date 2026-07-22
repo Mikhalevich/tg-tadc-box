@@ -17,7 +17,7 @@ func (o *OpenBox) OpenByID(
 	chatID msginfo.ChatID,
 	id int,
 ) error {
-	if err := o.transacor.Transaction(ctx, func(ctx context.Context) error {
+	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
 		readyBox, err := o.repo.GetBoxByID(ctx, id)
 		if err != nil {
 			return fmt.Errorf("get box by id: %w", err)

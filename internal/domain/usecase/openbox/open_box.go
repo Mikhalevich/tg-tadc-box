@@ -44,7 +44,7 @@ type TimeProvider interface {
 
 type OpenBox struct {
 	repo            Repository
-	transacor       Transactor
+	transactor      Transactor
 	rewardGenerator RewardGenerator
 	notifier        Notifier
 	timeProvider    TimeProvider
@@ -59,7 +59,7 @@ func New(
 ) *OpenBox {
 	return &OpenBox{
 		repo:            repo,
-		transacor:       transactor,
+		transactor:      transactor,
 		rewardGenerator: rewardGenertor,
 		notifier:        notifier,
 		timeProvider:    timeProvider,
