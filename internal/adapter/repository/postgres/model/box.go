@@ -21,7 +21,7 @@ type Box struct {
 
 func (b Box) ToDomBox() box.Box {
 	return box.Box{
-		ID:                  b.ID,
+		ID:                  box.IDFromInt(b.ID),
 		ChatID:              msginfo.ChatIDFromInt64(b.ChatID),
 		Status:              box.Status(b.Status),
 		Type:                box.Type(b.Type),
@@ -47,7 +47,7 @@ func ToDomBoxes(dbBoxes []Box) []box.Box {
 
 func ToDBBox(domBox box.Box) Box {
 	return Box{
-		ID:                  domBox.ID,
+		ID:                  domBox.ID.Int(),
 		ChatID:              domBox.ChatID.Int64(),
 		Status:              domBox.Status.String(),
 		Type:                domBox.Type.String(),
