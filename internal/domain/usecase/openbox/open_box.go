@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
@@ -18,6 +19,14 @@ type Repository interface {
 		ctx context.Context,
 		rwd reward.ReceivedReward,
 	) error
+	InsertCard(
+		ctx context.Context,
+		receivedCard card.Card,
+	) (int, error)
+}
+
+type Transactor interface {
+	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
 }
 
 type RewardGenerator interface {
@@ -35,6 +44,7 @@ type TimeProvider interface {
 
 type OpenBox struct {
 	repo            Repository
+	transacor       Transactor
 	rewardGenerator RewardGenerator
 	notifier        Notifier
 	timeProvider    TimeProvider
@@ -42,12 +52,14 @@ type OpenBox struct {
 
 func New(
 	repo Repository,
+	transactor Transactor,
 	rewardGenertor RewardGenerator,
 	notifier Notifier,
 	timeProvider TimeProvider,
 ) *OpenBox {
 	return &OpenBox{
 		repo:            repo,
+		transacor:       transactor,
 		rewardGenerator: rewardGenertor,
 		notifier:        notifier,
 		timeProvider:    timeProvider,

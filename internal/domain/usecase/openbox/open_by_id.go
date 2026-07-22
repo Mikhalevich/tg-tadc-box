@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
@@ -16,32 +17,38 @@ func (o *OpenBox) OpenByID(
 	chatID msginfo.ChatID,
 	id int,
 ) error {
-	readyBox, err := o.repo.GetBoxByID(ctx, id)
-	if err != nil {
-		return fmt.Errorf("get box by id: %w", err)
-	}
+	if err := o.transacor.Transaction(ctx, func(ctx context.Context) error {
+		readyBox, err := o.repo.GetBoxByID(ctx, id)
+		if err != nil {
+			return fmt.Errorf("get box by id: %w", err)
+		}
 
-	if err := isInProgress(readyBox.Status); err != nil {
-		return fmt.Errorf("can be opened: %w", err)
-	}
+		if err := isInProgress(readyBox.Status); err != nil {
+			return fmt.Errorf("can be opened: %w", err)
+		}
 
-	now := o.timeProvider.Now()
+		now := o.timeProvider.Now()
 
-	if readyBox.AvailableAt.After(now) {
-		if err := o.notifier.ShowBoxInfo(ctx, readyBox, readyBox.AvailableAt.Sub(now)); err != nil {
-			return fmt.Errorf("show box info: %w", err)
+		if readyBox.AvailableAt.After(now) {
+			if err := o.notifier.ShowBoxInfo(ctx, readyBox, readyBox.AvailableAt.Sub(now)); err != nil {
+				return fmt.Errorf("show box info: %w", err)
+			}
+
+			return nil
+		}
+
+		receivedReward, err := o.openBox(ctx, chatID, readyBox, now)
+		if err != nil {
+			return fmt.Errorf("open box: %w", err)
+		}
+
+		if err := o.notifier.ShowReward(ctx, chatID, receivedReward); err != nil {
+			return fmt.Errorf("show reward: %w", err)
 		}
 
 		return nil
-	}
-
-	receivedReward, err := o.openBox(ctx, chatID, readyBox, now)
-	if err != nil {
-		return fmt.Errorf("open box: %w", err)
-	}
-
-	if err := o.notifier.ShowReward(ctx, chatID, receivedReward); err != nil {
-		return fmt.Errorf("show reward: %w", err)
+	}); err != nil {
+		return fmt.Errorf("transaction: %w", err)
 	}
 
 	return nil
@@ -72,6 +79,15 @@ func (o *OpenBox) openBox(
 		CreatedAt: completedAt,
 	}); err != nil {
 		return reward.Reward{}, fmt.Errorf("insert received reward: %w", err)
+	}
+
+	if _, err := o.repo.InsertCard(ctx, card.Card{
+		ChatID:    chatID,
+		RewardID:  receivedReward.ID,
+		Count:     1,
+		UpdatedAt: completedAt,
+	}); err != nil {
+		return reward.Reward{}, fmt.Errorf("insert card: %w", err)
 	}
 
 	return receivedReward, nil
