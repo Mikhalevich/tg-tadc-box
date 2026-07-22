@@ -32,6 +32,7 @@ func (p *Postgres) GetBoxByID(
 				box
 			WHERE
 				id = $1
+			FOR UPDATE
 		`
 
 		dbBox model.Box
