@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/model"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
-	"github.com/jmoiron/sqlx"
 )
 
 func (p *Postgres) GetRewardsByType(

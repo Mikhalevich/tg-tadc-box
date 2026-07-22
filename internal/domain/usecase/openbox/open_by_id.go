@@ -35,7 +35,7 @@ func (o *OpenBox) OpenByID(
 		return nil
 	}
 
-	receivedReward, err := o.openBox(ctx, readyBox, now)
+	receivedReward, err := o.openBox(ctx, chatID, readyBox, now)
 	if err != nil {
 		return fmt.Errorf("open box: %w", err)
 	}
@@ -49,6 +49,7 @@ func (o *OpenBox) OpenByID(
 
 func (o *OpenBox) openBox(
 	ctx context.Context,
+	chatID msginfo.ChatID,
 	readyBox box.Box,
 	completedAt time.Time,
 ) (reward.Reward, error) {
@@ -62,6 +63,15 @@ func (o *OpenBox) openBox(
 	receivedReward, err := o.rewardGenerator.Generate(ctx)
 	if err != nil {
 		return reward.Reward{}, fmt.Errorf("generate reward: %w", err)
+	}
+
+	if err := o.repo.InsertReceivedReward(ctx, reward.ReceivedReward{
+		ChatID:    chatID,
+		RewardID:  receivedReward.ID,
+		BoxID:     readyBox.ID,
+		CreatedAt: completedAt,
+	}); err != nil {
+		return reward.Reward{}, fmt.Errorf("insert received reward: %w", err)
 	}
 
 	return receivedReward, nil

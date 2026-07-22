@@ -9,6 +9,16 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
+type ID int
+
+func (id ID) Int() int {
+	return int(id)
+}
+
+func IDFromInt(id int) ID {
+	return ID(id)
+}
+
 type Status string
 
 const (
@@ -33,7 +43,7 @@ func (t Type) String() string {
 }
 
 type Box struct {
-	ID                  int
+	ID                  ID
 	ChatID              msginfo.ChatID
 	Status              Status
 	Type                Type

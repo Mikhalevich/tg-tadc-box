@@ -56,7 +56,7 @@ func (n *Notifier) sendBoxIsAvailable(
 	ctx context.Context,
 	domBox box.Box,
 ) error {
-	openBoxBtn, err := box.OpenBoxButton(domBox.ID)
+	openBoxBtn, err := box.OpenBoxButton(domBox.ID.Int())
 	if err != nil {
 		return fmt.Errorf("open box button: %w", err)
 	}

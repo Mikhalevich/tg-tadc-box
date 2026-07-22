@@ -39,7 +39,7 @@ func (o *OpenBox) Open(
 		return fmt.Errorf("insert box: %w", err)
 	}
 
-	newBox.ID = boxID
+	newBox.ID = box.IDFromInt(boxID)
 
 	if err := o.notifier.ShowBoxInfo(ctx, newBox, newBox.AvailableAfter(now)); err != nil {
 		return fmt.Errorf("show new box info: %w", err)

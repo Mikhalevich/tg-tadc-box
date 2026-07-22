@@ -48,7 +48,7 @@ func (r *ReadyBox) processTransaction(
 			return fmt.Errorf("show box info: %w", err)
 		}
 
-		ids = append(ids, readyBox.ID)
+		ids = append(ids, readyBox.ID.Int())
 	}
 
 	if err := r.repo.SetBoxReadyNotificationAt(ctx, ids, now); err != nil {

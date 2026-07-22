@@ -14,6 +14,10 @@ type Repository interface {
 	InsertBox(ctx context.Context, b box.Box) (int, error)
 	GetBoxByID(ctx context.Context, id int) (box.Box, error)
 	UpdateBox(ctx context.Context, b box.Box) error
+	InsertReceivedReward(
+		ctx context.Context,
+		rwd reward.ReceivedReward,
+	) error
 }
 
 type RewardGenerator interface {
