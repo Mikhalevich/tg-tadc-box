@@ -17,7 +17,8 @@ func (p *Postgres) GetRewardCountByType(
 	var (
 		query = `
 			SELECT
-				type, COUNT(*) AS total
+				type,
+				COUNT(*) AS total
 			FROM
 				reward
 			GROUP BY

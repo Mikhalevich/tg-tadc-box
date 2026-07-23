@@ -36,7 +36,6 @@ func (p *Postgres) GetCollectedCardByPos(
 				WHERE
 					cc.chat_id = $1 AND
 					r.type = $2
-					
 			)
 			SELECT
 				id,

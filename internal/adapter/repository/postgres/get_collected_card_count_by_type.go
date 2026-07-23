@@ -19,7 +19,8 @@ func (p *Postgres) GetCollectedCardCountByType(
 	var (
 		query = `
 			SELECT
-				r.type, COUNT(*) AS total
+				r.type,
+				COUNT(*) AS total
 			FROM
 				collected_cards AS cc INNER JOIN reward AS r ON cc.reward_id = r.id
 			WHERE
