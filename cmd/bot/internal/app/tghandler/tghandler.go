@@ -21,7 +21,10 @@ type BoxProcessor interface {
 }
 
 type CardViewer interface {
-	Total(ctx context.Context, chatID msginfo.ChatID) error
+	Total(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+	) error
 	Page(
 		ctx context.Context,
 		chatID msginfo.ChatID,
@@ -63,7 +66,8 @@ func New(
 
 func (t *TGHandler) registerCBHandlers() {
 	t.cbHanlers = map[button.Operation]cbHandler{
-		button.OperationOpenBox:  t.cbOpenBox,
-		button.OperationCardPage: t.cbCollectedCardPage,
+		button.OperationOpenBox:   t.cbOpenBox,
+		button.OperationCardPage:  t.cbCollectedCardPage,
+		button.OperationCardTotal: t.cbCollectedCardTotalPage,
 	}
 }

@@ -13,7 +13,10 @@ func (t *TGHandler) MyCards(
 	msg tgbot.BotMessage,
 	sender tgbot.MessageSender,
 ) error {
-	if err := t.cardViewer.Total(ctx, msginfo.ChatIDFromInt64(msg.ChatID)); err != nil {
+	if err := t.cardViewer.Total(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+	); err != nil {
 		return fmt.Errorf("view total: %w", err)
 	}
 

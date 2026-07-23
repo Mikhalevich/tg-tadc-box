@@ -83,3 +83,18 @@ func (t *TGHandler) cbCollectedCardPage(
 
 	return nil
 }
+
+func (t *TGHandler) cbCollectedCardTotalPage(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
+	if err := t.cardViewer.Total(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+	); err != nil {
+		return fmt.Errorf("total page: %w", err)
+	}
+
+	return nil
+}
