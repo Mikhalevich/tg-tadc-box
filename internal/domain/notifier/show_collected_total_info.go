@@ -23,12 +23,10 @@ func (n *Notifier) ShowCollectedTotalInfo(
 	if err := n.sender.SendMessage(
 		ctx,
 		msginfo.Message{
-			ChatID: chatID,
-			Type:   msginfo.MessageTypeMarkdown,
-			Text:   makeCollectedTotalInfoMsg(infos),
-			Buttons: []button.ButtonRow{
-				buttons,
-			},
+			ChatID:  chatID,
+			Type:    msginfo.MessageTypeMarkdown,
+			Text:    makeCollectedTotalInfoMsg(infos),
+			Buttons: buttons,
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)
@@ -48,20 +46,24 @@ func makeCollectedTotalInfoMsg(infos []card.CollectedCardInfo) string {
 	return strings.Join(lines, "\n")
 }
 
-func makeCollectedTotalInfoButtons(infos []card.CollectedCardInfo) (button.ButtonRow, error) {
-	buttons := make(button.ButtonRow, 0, len(infos))
+func makeCollectedTotalInfoButtons(infos []card.CollectedCardInfo) ([]button.ButtonRow, error) {
+	buttons := make([]button.ButtonRow, 0, len(infos))
 
 	for _, info := range infos {
 		if info.Collected == 0 {
 			continue
 		}
 
-		btn, err := card.PageButton(info.Type.String(), info.Type, 1)
+		btn, err := card.PageButton(
+			fmt.Sprintf("Show %s(%d)", info.Type.String(), info.Collected),
+			info.Type,
+			1,
+		)
 		if err != nil {
 			return nil, fmt.Errorf("crate page button: %w", err)
 		}
 
-		buttons = append(buttons, btn)
+		buttons = append(buttons, button.Row(btn))
 	}
 
 	return buttons, nil

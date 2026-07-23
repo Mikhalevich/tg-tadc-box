@@ -74,6 +74,7 @@ func (t *TGHandler) cbCollectedCardPage(
 	if err := t.cardViewer.Page(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
+		msginfo.MessageIDFromInt(msg.MessageID),
 		payload.Type,
 		payload.Page,
 	); err != nil {

@@ -34,6 +34,7 @@ const (
 	MessageTypePNG
 	MessageTypeImageProvider
 	MessageTypeEditMarkdown
+	MessageTypeEditPNG
 )
 
 func (mt MessageType) Int() int {

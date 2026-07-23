@@ -13,6 +13,7 @@ import (
 func (n *Notifier) ShowCollectedReward(
 	ctx context.Context,
 	chatID msginfo.ChatID,
+	messageID msginfo.MessageID,
 	rew reward.Reward,
 	count int,
 	previousPage card.CollectedCardsPage,
@@ -31,11 +32,12 @@ func (n *Notifier) ShowCollectedReward(
 	if err := n.sender.SendMessage(
 		ctx,
 		msginfo.Message{
-			ChatID:  chatID,
-			Type:    msginfo.MessageTypePNG,
-			Payload: payload,
-			Text:    fmt.Sprintf("x%d", count),
-			Buttons: []button.ButtonRow{buttons},
+			ChatID:     chatID,
+			ReplyMsgID: messageID,
+			Type:       msginfo.MessageTypeEditPNG,
+			Payload:    payload,
+			Text:       fmt.Sprintf("x%d", count),
+			Buttons:    []button.ButtonRow{buttons},
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)

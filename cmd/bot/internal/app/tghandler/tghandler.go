@@ -25,6 +25,7 @@ type CardViewer interface {
 	Page(
 		ctx context.Context,
 		chatID msginfo.ChatID,
+		messageID msginfo.MessageID,
 		rewardType reward.RewardType,
 		page int,
 	) error

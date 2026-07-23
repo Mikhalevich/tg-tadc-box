@@ -13,6 +13,7 @@ import (
 func (v *ViewCards) Page(
 	ctx context.Context,
 	chatID msginfo.ChatID,
+	messageID msginfo.MessageID,
 	rewardType reward.RewardType,
 	page int,
 ) error {
@@ -50,6 +51,7 @@ func (v *ViewCards) Page(
 	if err := v.notifier.ShowCollectedReward(
 		ctx,
 		chatID,
+		messageID,
 		collectedReward,
 		cardByPos.Count,
 		pageInfo(page-1, maxPos),

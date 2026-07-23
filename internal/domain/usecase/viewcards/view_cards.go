@@ -41,6 +41,7 @@ type Notifier interface {
 	ShowCollectedReward(
 		ctx context.Context,
 		chatID msginfo.ChatID,
+		messageID msginfo.MessageID,
 		rew reward.Reward,
 		count int,
 		previousPage card.CollectedCardsPage,
