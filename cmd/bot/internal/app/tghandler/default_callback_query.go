@@ -7,6 +7,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/app/tgbot"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 )
@@ -49,8 +50,34 @@ func (t *TGHandler) cbOpenBox(ctx context.Context, msg tgbot.BotMessage, btn *bu
 		return fmt.Errorf("get open box payload: %w", err)
 	}
 
-	if err := t.boxProcessor.OpenByID(ctx, msginfo.ChatIDFromInt64(msg.ChatID), payload.ID); err != nil {
+	if err := t.boxProcessor.OpenByID(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+		payload.ID,
+	); err != nil {
 		return fmt.Errorf("open box by id: %w", err)
+	}
+
+	return nil
+}
+
+func (t *TGHandler) cbCollectedCardPage(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
+	payload, err := button.GetPayload[card.PageButtonPayload](*btn)
+	if err != nil {
+		return fmt.Errorf("get collected cards payload: %w", err)
+	}
+
+	if err := t.cardViewer.Page(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+		payload.Type,
+		payload.Page,
+	); err != nil {
+		return fmt.Errorf("view page: %w", err)
 	}
 
 	return nil

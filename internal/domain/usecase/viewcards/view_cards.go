@@ -9,20 +9,42 @@ import (
 )
 
 type Repository interface {
-	GetCollectedCardAfterID(ctx context.Context, afterID card.ID) (card.Card, error)
+	GetCollectedCardCountByType(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+	) (map[reward.RewardType]int, error)
+	GetCollectedCardByPos(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		rewardType reward.RewardType,
+		pos int,
+	) (card.Card, error)
+	GetCollectedCardMaxPos(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		rewardType reward.RewardType,
+	) (int, error)
 }
 
 type RewardProvider interface {
 	GetRewardByID(ctx context.Context, id reward.ID) (reward.Reward, error)
+	GetRewardCountByType(ctx context.Context) (map[reward.RewardType]int, error)
 }
 
 type Notifier interface {
 	NoCollectedCards(ctx context.Context, chatID msginfo.ChatID) error
+	ShowCollectedTotalInfo(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		info []card.CollectedCardInfo,
+	) error
 	ShowCollectedReward(
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		rew reward.Reward,
 		count int,
+		previousPage card.CollectedCardsPage,
+		nextPage card.CollectedCardsPage,
 	) error
 }
 

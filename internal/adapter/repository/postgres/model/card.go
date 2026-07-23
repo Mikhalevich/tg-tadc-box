@@ -35,3 +35,8 @@ func ToDBCard(domCard card.Card) Card {
 		UpdatedAt: domCard.UpdatedAt,
 	}
 }
+
+type CollectedCardTotalInfo struct {
+	Type  string `db:"type"`
+	Total int    `db:"total"`
+}

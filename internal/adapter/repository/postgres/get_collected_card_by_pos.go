@@ -10,15 +10,34 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/model"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
-func (p *Postgres) GetCollectedCardAfterID(
+func (p *Postgres) GetCollectedCardByPos(
 	ctx context.Context,
-	afterID card.ID,
+	chatID msginfo.ChatID,
+	rewardType reward.RewardType,
+	position int,
 ) (card.Card, error) {
 	var (
 		query = `
+			WITH cards_by_pos AS (
+				SELECT
+					cc.id,
+					cc.chat_id,
+					cc.reward_id,
+					cc.count,
+					cc.updated_at,
+					ROW_NUMBER() OVER (ORDER BY cc.id) AS position
+				FROM
+					collected_cards AS cc INNER JOIN reward AS r ON cc.reward_id = r.id
+				WHERE
+					cc.chat_id = $1 AND
+					r.type = $2
+					
+			)
 			SELECT
 				id,
 				chat_id,
@@ -26,13 +45,9 @@ func (p *Postgres) GetCollectedCardAfterID(
 				count,
 				updated_at
 			FROM
-				collected_cards
+				cards_by_pos
 			WHERE
-				id > $1
-			ORDER BY
-				id
-			LIMIT
-				1
+				position = $3
 		`
 
 		dbCard model.Card
@@ -43,7 +58,9 @@ func (p *Postgres) GetCollectedCardAfterID(
 		p.transactor.ExtContext(ctx),
 		&dbCard,
 		query,
-		afterID,
+		chatID.Int64(),
+		rewardType.String(),
+		position,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return card.Card{}, perror.NotFound("cards not found")

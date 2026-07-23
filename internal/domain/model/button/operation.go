@@ -3,7 +3,8 @@ package button
 type Operation string
 
 const (
-	OperationOpenBox Operation = "OpenBox"
+	OperationOpenBox  Operation = "OpenBox"
+	OperationCardPage Operation = "CardPage"
 )
 
 func (o Operation) String() string {
