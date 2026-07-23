@@ -36,7 +36,7 @@ func (m *messageSender) SendMessage(
 			ParseMode:   models.ParseModeMarkdown,
 			ReplyMarkup: makeButtonsMarkup(msg.Buttons...),
 		}); err != nil {
-			return fmt.Errorf("eidt message text: %w", err)
+			return fmt.Errorf("edit message text: %w", err)
 		}
 
 	case msginfo.MessageTypePNG:

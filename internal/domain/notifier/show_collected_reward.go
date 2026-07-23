@@ -37,7 +37,10 @@ func (n *Notifier) ShowCollectedReward(
 			Type:       msginfo.MessageTypeEditPNG,
 			Payload:    payload,
 			Text:       fmt.Sprintf("x%d", count),
-			Buttons:    []button.ButtonRow{buttons},
+			Buttons: []button.ButtonRow{
+				button.Row(card.TotalButton("Back")),
+				buttons,
+			},
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)

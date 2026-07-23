@@ -28,3 +28,7 @@ func PageButton(caption string, rewardType reward.RewardType, page int) (button.
 
 	return btn, nil
 }
+
+func TotalButton(caption string) button.Button {
+	return button.CreateButtonWithoutPayload(caption, button.OperationCardTotal, true)
+}

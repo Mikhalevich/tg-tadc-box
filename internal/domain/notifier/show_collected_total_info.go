@@ -39,7 +39,7 @@ func makeCollectedTotalInfoMsg(infos []card.CollectedCardInfo) string {
 	lines := make([]string, 0, len(infos))
 
 	for _, info := range infos {
-		line := fmt.Sprintf("%s %d/%d", info.Type.String(), info.Collected, info.Total)
+		line := fmt.Sprintf("%s *%d*/%d", info.Type.String(), info.Collected, info.Total)
 		lines = append(lines, line)
 	}
 
