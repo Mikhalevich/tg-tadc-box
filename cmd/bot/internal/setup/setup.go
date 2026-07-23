@@ -20,6 +20,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/viewcards"
 )
 
 func StartBot(ctx context.Context, cfg config.Config) error {
@@ -42,6 +43,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		timeProvider        = timeprovider.New()
 		rewardGenerator     = rewardgenerator.New(pgDB)
 		boxProcessor        = openbox.New(pgDB, pgDB.Transactor(), rewardGenerator, notificationService, timeProvider)
+		cardViewer          = viewcards.New(pgDB, pgDB, notificationService)
 	)
 
 	if err := app.Start(
@@ -49,6 +51,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		cfg.Bot,
 		msgProcessor,
 		boxProcessor,
+		cardViewer,
 		notificationService,
 	); err != nil {
 		return fmt.Errorf("app start: %w", err)

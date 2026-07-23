@@ -31,3 +31,8 @@ func ToDomRewards(dbRewards []Reward) []reward.Reward {
 
 	return domRewards
 }
+
+type RewardTotalInfo struct {
+	Type  string `db:"type"`
+	Total int    `db:"total"`
+}

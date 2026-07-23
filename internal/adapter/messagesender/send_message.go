@@ -11,6 +11,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
+//nolint:cyclop,funlen
 func (m *messageSender) SendMessage(
 	ctx context.Context,
 	msg msginfo.SenderMessage,
@@ -49,6 +50,21 @@ func (m *messageSender) SendMessage(
 			ReplyMarkup: makeButtonsMarkup(msg.Buttons...),
 		}); err != nil {
 			return fmt.Errorf("send photo: %w", err)
+		}
+
+	case msginfo.MessageTypeEditPNG:
+		if _, err := m.bot.EditMessageMedia(ctx, &bot.EditMessageMediaParams{
+			ChatID:    msg.ChatID.Int64(),
+			MessageID: msg.ReplyMsgID.Int(),
+			Media: &models.InputMediaPhoto{
+				Media:           "attach://filename",
+				Caption:         msg.Text,
+				ParseMode:       models.ParseModeMarkdown,
+				MediaAttachment: bytes.NewReader(msg.Payload),
+			},
+			ReplyMarkup: makeButtonsMarkup(msg.Buttons...),
+		}); err != nil {
+			return fmt.Errorf("edit media: %w", err)
 		}
 
 	case msginfo.MessageTypeImageProvider:

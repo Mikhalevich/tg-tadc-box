@@ -24,3 +24,14 @@ type Card struct {
 	Count     int
 	UpdatedAt time.Time
 }
+
+type CollectedCardsPage struct {
+	Page    int
+	IsValid bool
+}
+
+type CollectedCardInfo struct {
+	Type      reward.RewardType
+	Collected int
+	Total     int
+}
