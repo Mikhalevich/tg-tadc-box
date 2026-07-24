@@ -1,11 +1,9 @@
 package box
 
 import (
-	"fmt"
 	"slices"
 	"time"
 
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
@@ -59,25 +57,4 @@ func (b Box) IsStatus(statuses ...Status) bool {
 
 func (b Box) AvailableAfter(now time.Time) time.Duration {
 	return b.AvailableAt.Sub(now)
-}
-
-type OpenBoxButtonPayload struct {
-	ID int
-}
-
-func OpenBoxButton(boxID int) (button.Button, error) {
-	btn, err := button.CreateButton(
-		"Open",
-		button.OperationOpenBox,
-		true,
-		OpenBoxButtonPayload{
-			ID: boxID,
-		},
-	)
-
-	if err != nil {
-		return button.Button{}, fmt.Errorf("create button: %w", err)
-	}
-
-	return btn, nil
 }

@@ -53,6 +53,7 @@ func (t *TGHandler) cbOpenBox(ctx context.Context, msg tgbot.BotMessage, btn *bu
 	if err := t.boxProcessor.OpenByID(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
+		msginfo.MessageIDFromInt(msg.MessageID),
 		payload.ID,
 	); err != nil {
 		return fmt.Errorf("open box by id: %w", err)

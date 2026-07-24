@@ -15,6 +15,7 @@ import (
 func (o *OpenBox) OpenByID(
 	ctx context.Context,
 	chatID msginfo.ChatID,
+	messageID msginfo.MessageID,
 	id int,
 ) error {
 	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
@@ -42,7 +43,7 @@ func (o *OpenBox) OpenByID(
 			return fmt.Errorf("open box: %w", err)
 		}
 
-		if err := o.notifier.ShowReward(ctx, chatID, receivedReward); err != nil {
+		if err := o.notifier.ShowReward(ctx, chatID, messageID, receivedReward); err != nil {
 			return fmt.Errorf("show reward: %w", err)
 		}
 

@@ -35,7 +35,12 @@ type RewardGenerator interface {
 
 type Notifier interface {
 	ShowBoxInfo(ctx context.Context, b box.Box, availableAfter time.Duration) error
-	ShowReward(ctx context.Context, chatID msginfo.ChatID, receivedReward reward.Reward) error
+	ShowReward(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		messageID msginfo.MessageID,
+		receivedReward reward.Reward,
+	) error
 }
 
 type TimeProvider interface {

@@ -17,7 +17,12 @@ type cbHandler func(ctx context.Context, msg tgbot.BotMessage, btn *button.Butto
 
 type BoxProcessor interface {
 	Open(ctx context.Context, chatID msginfo.ChatID) error
-	OpenByID(ctx context.Context, chatID msginfo.ChatID, id int) error
+	OpenByID(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		messageID msginfo.MessageID,
+		id int,
+	) error
 }
 
 type CardViewer interface {
