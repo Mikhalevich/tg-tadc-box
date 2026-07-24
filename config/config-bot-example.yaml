@@ -7,3 +7,5 @@ bot:
   webhook_token: "webhook_token or empty if running in polling mode"
 postgres:
   connection: "host=postgres port=5432 user=bot password=bot dbname=bot sslmode=disable"
+open_box:
+  common_wait_period: 3s

@@ -42,8 +42,15 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		notificationService = notifier.New(msgProcessor, msgProcessor, imageProvider)
 		timeProvider        = timeprovider.New()
 		rewardGenerator     = rewardgenerator.New(pgDB)
-		boxProcessor        = openbox.New(pgDB, pgDB.Transactor(), rewardGenerator, notificationService, timeProvider)
-		cardViewer          = viewcards.New(pgDB, pgDB, notificationService)
+		boxProcessor        = openbox.New(
+			pgDB,
+			pgDB.Transactor(),
+			rewardGenerator,
+			notificationService,
+			timeProvider,
+			cfg.OpenBox.CommonWaitPeriod,
+		)
+		cardViewer = viewcards.New(pgDB, pgDB, notificationService)
 	)
 
 	if err := app.Start(

@@ -1,10 +1,15 @@
 package config
 
+import (
+	"time"
+)
+
 type Config struct {
 	LogLevel string   `yaml:"log_level" required:"true"`
 	Tracing  Tracing  `yaml:"tracing" required:"true"`
 	Bot      Bot      `yaml:"bot" required:"true"`
 	Postgres Postgres `yaml:"postgres" required:"true"`
+	OpenBox  OpenBox  `yaml:"open_box" required:"true"`
 }
 
 func (c *Config) Level() string {
@@ -31,4 +36,8 @@ type Bot struct {
 
 type Postgres struct {
 	Connection string `yaml:"connection" required:"true"`
+}
+
+type OpenBox struct {
+	CommonWaitPeriod time.Duration `yaml:"common_wait_period"`
 }

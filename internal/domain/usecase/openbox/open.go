@@ -9,10 +9,6 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-const (
-	boxWaitPeriod = 1 * time.Second
-)
-
 func (o *OpenBox) Open(
 	ctx context.Context,
 	chatID msginfo.ChatID,
@@ -32,7 +28,7 @@ func (o *OpenBox) Open(
 		return nil
 	}
 
-	newBox := createNormalBox(chatID, now)
+	newBox := createNormalBox(chatID, now, o.commonWaitPeriod)
 
 	boxID, err := o.repo.InsertBox(ctx, newBox)
 	if err != nil {
@@ -51,12 +47,13 @@ func (o *OpenBox) Open(
 func createNormalBox(
 	chatID msginfo.ChatID,
 	createdAt time.Time,
+	commonWaitPeriod time.Duration,
 ) box.Box {
 	return box.Box{
 		ChatID:      chatID,
 		Status:      box.StatusInProgress,
 		Type:        box.TypeNormal,
 		CreatedAt:   createdAt,
-		AvailableAt: createdAt.Add(boxWaitPeriod),
+		AvailableAt: createdAt.Add(commonWaitPeriod),
 	}
 }
