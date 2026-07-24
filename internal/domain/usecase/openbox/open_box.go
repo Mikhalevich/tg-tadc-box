@@ -43,11 +43,12 @@ type TimeProvider interface {
 }
 
 type OpenBox struct {
-	repo            Repository
-	transactor      Transactor
-	rewardGenerator RewardGenerator
-	notifier        Notifier
-	timeProvider    TimeProvider
+	repo             Repository
+	transactor       Transactor
+	rewardGenerator  RewardGenerator
+	notifier         Notifier
+	timeProvider     TimeProvider
+	commonWaitPeriod time.Duration
 }
 
 func New(
@@ -56,12 +57,14 @@ func New(
 	rewardGenertor RewardGenerator,
 	notifier Notifier,
 	timeProvider TimeProvider,
+	commonWaitPeriod time.Duration,
 ) *OpenBox {
 	return &OpenBox{
-		repo:            repo,
-		transactor:      transactor,
-		rewardGenerator: rewardGenertor,
-		notifier:        notifier,
-		timeProvider:    timeProvider,
+		repo:             repo,
+		transactor:       transactor,
+		rewardGenerator:  rewardGenertor,
+		notifier:         notifier,
+		timeProvider:     timeProvider,
+		commonWaitPeriod: commonWaitPeriod,
 	}
 }
