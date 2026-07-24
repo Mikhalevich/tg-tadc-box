@@ -11,6 +11,7 @@ import (
 func (n *Notifier) ShowReward(
 	ctx context.Context,
 	chatID msginfo.ChatID,
+	messageID msginfo.MessageID,
 	receivedReward reward.Reward,
 ) error {
 	payload, err := n.imageProvider.Reward(ctx, receivedReward)
@@ -21,9 +22,10 @@ func (n *Notifier) ShowReward(
 	if err := n.sender.SendMessage(
 		ctx,
 		msginfo.Message{
-			ChatID:  chatID,
-			Type:    msginfo.MessageTypePNG,
-			Payload: payload,
+			ChatID:     chatID,
+			ReplyMsgID: messageID,
+			Type:       msginfo.MessageTypeEditPNG,
+			Payload:    payload,
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)
