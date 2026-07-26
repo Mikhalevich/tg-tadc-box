@@ -8,6 +8,7 @@ VALUES
     ('common', 'assets/common/caine/1.jpg', NOW()),
     ('common', 'assets/common/caine/2.jpg', NOW()),
     ('common', 'assets/common/caine/3.jpg', NOW()),
+    ('common', 'assets/common/caine/4.jpg', NOW()),
 
     ('common', 'assets/common/gangle/1.jpg', NOW()),
     ('common', 'assets/common/gangle/2.jpg', NOW()),
@@ -48,6 +49,8 @@ VALUES
     ('rare', 'assets/rare/npc/1.jpg', NOW()),
 
     ('rare', 'assets/rare/pomni/1.jpg', NOW()),
+    ('rare', 'assets/rare/pomni/2.jpg', NOW()),
+    ('rare', 'assets/rare/pomni/3.jpg', NOW()),
 
     ('rare', 'assets/rare/ragatha/1.jpg', NOW()),
 
@@ -60,6 +63,8 @@ INSERT INTO reward(type, uri, created_at)
 VALUES
     ('epic', 'assets/epic/caine/1.jpg', NOW()),
     ('epic', 'assets/epic/caine/2.jpg', NOW()),
+    ('epic', 'assets/epic/caine/3.jpg', NOW()),
+    ('epic', 'assets/epic/caine/4.jpg', NOW()),
 
     ('epic', 'assets/epic/jax/1.jpg', NOW()),
     ('epic', 'assets/epic/jax/2.jpg', NOW()),
@@ -68,6 +73,8 @@ VALUES
     ('epic', 'assets/epic/pomni/2.jpg', NOW()),
     ('epic', 'assets/epic/pomni/3.jpg', NOW()),
     ('epic', 'assets/epic/pomni/4.jpg', NOW()),
+    ('epic', 'assets/epic/pomni/5.jpg', NOW()),
+    ('epic', 'assets/epic/pomni/6.jpg', NOW()),
 
     ('epic', 'assets/epic/ragatha/1.jpg', NOW()),
 
@@ -78,10 +85,14 @@ VALUES
 -- legendary
 INSERT INTO reward(type, uri, created_at)
 VALUES
+    ('legendary', 'assets/legendary/caine/1.jpg', NOW()),
+
     ('legendary', 'assets/legendary/gangle/1.jpg', NOW()),
 
     ('legendary', 'assets/legendary/jax/1.jpg', NOW()),
-    ('legendary', 'assets/legendary/jax/2.jpg', NOW())
+    ('legendary', 'assets/legendary/jax/2.jpg', NOW()),
+
+    ('legendary', 'assets/legendary/pomni/1.jpg', NOW())
 
     ON CONFLICT (uri) DO NOTHING;
 
