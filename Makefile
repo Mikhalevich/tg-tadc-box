@@ -11,8 +11,12 @@ GOPRIVATE = GOPRIVATE=github.com/Mikhalevich/
 LINTER_NAME := golangci-lint
 LINTER_VERSION := v2.12.2
 
+APP_TAG := 0.1.0
+
 .PHONY: all build test compose-up compose-down load-test-data vendor install-linter \
-lint fmt tools-update generate load-assets
+lint fmt tools-update generate load-assets \
+minikube-load-images minikube-encrypt-secrets minikube-helm-install minikube-helm-uninstall \
+install-helm-secrets generate-helm-secrets
 
 all: build
 
@@ -57,3 +61,22 @@ load-assets:
 		-v ./script/db/dataset/assets.sql:/script/assets.sql \
 		alpine/psql:17.7 \
 		"postgresql://bot:bot@localhost:5432/bot" -f /script/assets.sql
+
+minikube-load-images:
+	./script/k8s/minikube-helm/load_images.sh ${APP_TAG}
+
+minikube-encrypt-secrets:
+	./script/k8s/minikube-helm/encrypt_secrets.sh
+
+minikube-helm-install:
+	./script/k8s/minikube-helm/install.sh ${APP_TAG}
+
+minikube-helm-uninstall:
+	./script/k8s/minikube-helm/uninstall.sh
+
+install-helm-secrets:
+	helm plugin install https://github.com/jkroepke/helm-secrets/releases/download/v4.7.4/secrets-4.7.4.tgz --verify=false
+
+generate-helm-secrets:
+	mkdir -p ~/.config/sops/age/
+	age-keygen -o ~/.config/sops/age/keys.txt
