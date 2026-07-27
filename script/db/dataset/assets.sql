@@ -41,20 +41,26 @@ VALUES
     ('rare', 'assets/rare/caine/2.jpg', NOW()),
 
     ('rare', 'assets/rare/gangle/1.jpg', NOW()),
+    ('rare', 'assets/rare/gangle/2.jpg', NOW()),
 
     ('rare', 'assets/rare/jax/1.jpg', NOW()),
+    ('rare', 'assets/rare/jax/2.jpg', NOW()),
 
     ('rare', 'assets/rare/kinger/1.jpg', NOW()),
+    ('rare', 'assets/rare/kinger/2.jpg', NOW()),
 
     ('rare', 'assets/rare/npc/1.jpg', NOW()),
 
     ('rare', 'assets/rare/pomni/1.jpg', NOW()),
     ('rare', 'assets/rare/pomni/2.jpg', NOW()),
     ('rare', 'assets/rare/pomni/3.jpg', NOW()),
+    ('rare', 'assets/rare/pomni/4.jpg', NOW()),
 
     ('rare', 'assets/rare/ragatha/1.jpg', NOW()),
+    ('rare', 'assets/rare/ragatha/2.jpg', NOW()),
 
-    ('rare', 'assets/rare/zooble/1.jpg', NOW())
+    ('rare', 'assets/rare/zooble/1.jpg', NOW()),
+    ('rare', 'assets/rare/zooble/2.jpg', NOW())
 
     ON CONFLICT (uri) DO NOTHING;
 
