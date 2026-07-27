@@ -74,6 +74,9 @@ VALUES
 
     ('epic', 'assets/epic/jax/1.jpg', NOW()),
     ('epic', 'assets/epic/jax/2.jpg', NOW()),
+    ('epic', 'assets/epic/jax/3.jpg', NOW()),
+
+    ('epic', 'assets/epic/kinger/1.jpg', NOW()),
 
     ('epic', 'assets/epic/pomni/1.jpg', NOW()),
     ('epic', 'assets/epic/pomni/2.jpg', NOW()),
@@ -83,8 +86,11 @@ VALUES
     ('epic', 'assets/epic/pomni/6.jpg', NOW()),
 
     ('epic', 'assets/epic/ragatha/1.jpg', NOW()),
+    ('epic', 'assets/epic/ragatha/2.jpg', NOW()),
 
-    ('epic', 'assets/epic/ribbit/1.jpg', NOW())
+    ('epic', 'assets/epic/ribbit/1.jpg', NOW()),
+
+    ('epic', 'assets/epic/zooble/1.jpg', NOW())
 
     ON CONFLICT (uri) DO NOTHING;
 
