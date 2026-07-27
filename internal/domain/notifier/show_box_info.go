@@ -24,7 +24,7 @@ func (n *Notifier) ShowBoxInfo(
 	}
 
 	if err := n.sendBoxIsAvailable(ctx, domBox); err != nil {
-		return fmt.Errorf("send box is abailable: %w", err)
+		return fmt.Errorf("send box is available: %w", err)
 	}
 
 	return nil

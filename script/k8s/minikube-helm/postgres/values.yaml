@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: "postgres"
+  tag: "16.3-alpine3.20"
+
+ports:
+- name: http
+  containerPort: 5432
+  protocol: TCP
+
+service:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 5432
+    targetPort: 5432
+
+env:
+- name: POSTGRES_DB
+  value: bot
+- name: POSTGRES_USER
+  value: bot
+- name: POSTGRES_PASSWORD
+  value: bot
+
+resources:
+  requests:
+    memory: "200Mi"
+    cpu: "300m"
+  limits:
+    memory: "512Mi"
+    cpu: "700m"

@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+
+helm uninstall --kube-context minikube poller
+helm uninstall --kube-context minikube bot
+helm uninstall --kube-context minikube jaeger
+helm uninstall --kube-context minikube postgres
