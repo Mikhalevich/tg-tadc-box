@@ -41,20 +41,26 @@ VALUES
     ('rare', 'assets/rare/caine/2.jpg', NOW()),
 
     ('rare', 'assets/rare/gangle/1.jpg', NOW()),
+    ('rare', 'assets/rare/gangle/2.jpg', NOW()),
 
     ('rare', 'assets/rare/jax/1.jpg', NOW()),
+    ('rare', 'assets/rare/jax/2.jpg', NOW()),
 
     ('rare', 'assets/rare/kinger/1.jpg', NOW()),
+    ('rare', 'assets/rare/kinger/2.jpg', NOW()),
 
     ('rare', 'assets/rare/npc/1.jpg', NOW()),
 
     ('rare', 'assets/rare/pomni/1.jpg', NOW()),
     ('rare', 'assets/rare/pomni/2.jpg', NOW()),
     ('rare', 'assets/rare/pomni/3.jpg', NOW()),
+    ('rare', 'assets/rare/pomni/4.jpg', NOW()),
 
     ('rare', 'assets/rare/ragatha/1.jpg', NOW()),
+    ('rare', 'assets/rare/ragatha/2.jpg', NOW()),
 
-    ('rare', 'assets/rare/zooble/1.jpg', NOW())
+    ('rare', 'assets/rare/zooble/1.jpg', NOW()),
+    ('rare', 'assets/rare/zooble/2.jpg', NOW())
 
     ON CONFLICT (uri) DO NOTHING;
 
@@ -68,6 +74,9 @@ VALUES
 
     ('epic', 'assets/epic/jax/1.jpg', NOW()),
     ('epic', 'assets/epic/jax/2.jpg', NOW()),
+    ('epic', 'assets/epic/jax/3.jpg', NOW()),
+
+    ('epic', 'assets/epic/kinger/1.jpg', NOW()),
 
     ('epic', 'assets/epic/pomni/1.jpg', NOW()),
     ('epic', 'assets/epic/pomni/2.jpg', NOW()),
@@ -77,8 +86,11 @@ VALUES
     ('epic', 'assets/epic/pomni/6.jpg', NOW()),
 
     ('epic', 'assets/epic/ragatha/1.jpg', NOW()),
+    ('epic', 'assets/epic/ragatha/2.jpg', NOW()),
 
-    ('epic', 'assets/epic/ribbit/1.jpg', NOW())
+    ('epic', 'assets/epic/ribbit/1.jpg', NOW()),
+
+    ('epic', 'assets/epic/zooble/1.jpg', NOW())
 
     ON CONFLICT (uri) DO NOTHING;
 
