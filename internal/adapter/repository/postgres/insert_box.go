@@ -22,6 +22,7 @@ func (p *Postgres) InsertBox(
 				type,
 				created_at,
 				available_at,
+				ready_notification_at,
 				completed_at
 			) VALUES (
 				:chat_id,
@@ -29,6 +30,7 @@ func (p *Postgres) InsertBox(
 				:type,
 				:created_at,
 				:available_at,
+				:ready_notification_at,
 				:completed_at
 			)
 			RETURNING
