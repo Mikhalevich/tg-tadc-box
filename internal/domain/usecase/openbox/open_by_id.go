@@ -9,6 +9,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
@@ -16,10 +17,15 @@ func (o *OpenBox) OpenByID(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	messageID msginfo.MessageID,
-	id int,
+	boxID int,
 ) error {
 	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
-		readyBox, err := o.repo.GetBoxByID(ctx, id)
+		profile, err := o.repo.GetPlayerByChatID(ctx, chatID)
+		if err != nil {
+			return fmt.Errorf("get user by chat_id: %w", err)
+		}
+
+		readyBox, err := o.repo.GetBoxByID(ctx, boxID)
 		if err != nil {
 			return fmt.Errorf("get box by id: %w", err)
 		}
@@ -38,7 +44,7 @@ func (o *OpenBox) OpenByID(
 			return nil
 		}
 
-		receivedReward, err := o.openBox(ctx, chatID, readyBox, now)
+		receivedReward, err := o.openBox(ctx, profile, readyBox, now)
 		if err != nil {
 			return fmt.Errorf("open box: %w", err)
 		}
@@ -57,7 +63,7 @@ func (o *OpenBox) OpenByID(
 
 func (o *OpenBox) openBox(
 	ctx context.Context,
-	chatID msginfo.ChatID,
+	profile player.Player,
 	readyBox box.Box,
 	completedAt time.Time,
 ) (reward.Reward, error) {
@@ -74,7 +80,7 @@ func (o *OpenBox) openBox(
 	}
 
 	if err := o.repo.InsertReceivedReward(ctx, reward.ReceivedReward{
-		ChatID:    chatID,
+		ChatID:    profile.ChatID,
 		RewardID:  receivedReward.ID,
 		BoxID:     readyBox.ID,
 		CreatedAt: completedAt,
@@ -83,12 +89,16 @@ func (o *OpenBox) openBox(
 	}
 
 	if _, err := o.repo.InsertCard(ctx, card.Card{
-		ChatID:    chatID,
+		ChatID:    profile.ChatID,
 		RewardID:  receivedReward.ID,
 		Count:     1,
 		UpdatedAt: completedAt,
 	}); err != nil {
 		return reward.Reward{}, fmt.Errorf("insert card: %w", err)
+	}
+
+	if err := o.markOpenedBoxInUserProfile(ctx, profile); err != nil {
+		return reward.Reward{}, fmt.Errorf("mark opened box in user profile: %w", err)
 	}
 
 	return receivedReward, nil
@@ -106,6 +116,19 @@ func isInProgress(status box.Status) error {
 		return perror.InvalidStatus("box already canceled")
 
 	case box.StatusInProgress:
+	}
+
+	return nil
+}
+
+func (o *OpenBox) markOpenedBoxInUserProfile(
+	ctx context.Context,
+	plr player.Player,
+) error {
+	plr.Profile.OpenedBoxes.Common++
+
+	if err := o.repo.UpdatePlayer(ctx, plr); err != nil {
+		return fmt.Errorf("update player: %w", err)
 	}
 
 	return nil
