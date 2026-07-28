@@ -16,7 +16,8 @@ APP_TAG := 0.1.0
 .PHONY: all build test compose-up compose-down load-test-data vendor install-linter \
 lint fmt tools-update generate load-assets \
 minikube-load-images minikube-encrypt-secrets minikube-helm-install minikube-helm-uninstall \
-install-helm-secrets generate-helm-secrets
+install-helm-secrets generate-helm-secrets \
+do-helm-load-images do-helm-encrypt-secrets do-helm-install do-helm-uninstall
 
 all: build
 
@@ -80,3 +81,15 @@ install-helm-secrets:
 generate-helm-secrets:
 	mkdir -p ~/.config/sops/age/
 	age-keygen -o ~/.config/sops/age/keys.txt
+
+do-helm-load-images:
+	./script/k8s/do-helm/load_images.sh ${APP_TAG}
+
+do-helm-encrypt-secrets:
+	./script/k8s/do-helm/encrypt_secrets.sh
+
+do-helm-install:
+	./script/k8s/do-helm/install.sh ${APP_TAG}
+
+do-helm-uninstall:
+	./script/k8s/do-helm/uninstall.sh
