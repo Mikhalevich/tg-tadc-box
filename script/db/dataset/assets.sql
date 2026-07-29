@@ -9,18 +9,22 @@ VALUES
     ('common', 'assets/common/caine/2.jpg', NOW()),
     ('common', 'assets/common/caine/3.jpg', NOW()),
     ('common', 'assets/common/caine/4.jpg', NOW()),
+    ('common', 'assets/common/caine/5.jpg', NOW()),
 
     ('common', 'assets/common/gangle/1.jpg', NOW()),
     ('common', 'assets/common/gangle/2.jpg', NOW()),
     ('common', 'assets/common/gangle/3.jpg', NOW()),
     ('common', 'assets/common/gangle/4.jpg', NOW()),
     ('common', 'assets/common/gangle/5.jpg', NOW()),
+    ('common', 'assets/common/gangle/6.jpg', NOW()),
 
     ('common', 'assets/common/jax/1.jpg', NOW()),
     ('common', 'assets/common/jax/2.jpg', NOW()),
     ('common', 'assets/common/jax/3.jpg', NOW()),
     ('common', 'assets/common/jax/4.jpg', NOW()),
     ('common', 'assets/common/jax/5.jpg', NOW()),
+    ('common', 'assets/common/jax/6.jpg', NOW()),
+    ('common', 'assets/common/jax/7.jpg', NOW()),
 
     ('common', 'assets/common/kinger/1.jpg', NOW()),
     ('common', 'assets/common/kinger/2.jpg', NOW()),
@@ -33,6 +37,7 @@ VALUES
     ('common', 'assets/common/pomni/6.jpg', NOW()),
     ('common', 'assets/common/pomni/7.jpg', NOW()),
     ('common', 'assets/common/pomni/8.jpg', NOW()),
+    ('common', 'assets/common/pomni/9.jpg', NOW()),
 
     ('common', 'assets/common/ragatha/1.jpg', NOW()),
     ('common', 'assets/common/ragatha/2.jpg', NOW()),
@@ -40,6 +45,7 @@ VALUES
     ('common', 'assets/common/ragatha/4.jpg', NOW()),
     ('common', 'assets/common/ragatha/5.jpg', NOW()),
     ('common', 'assets/common/ragatha/6.jpg', NOW()),
+    ('common', 'assets/common/ragatha/7.jpg', NOW()),
 
     ('common', 'assets/common/zooble/1.jpg', NOW())
 
@@ -67,6 +73,7 @@ VALUES
     ('rare', 'assets/rare/pomni/2.jpg', NOW()),
     ('rare', 'assets/rare/pomni/3.jpg', NOW()),
     ('rare', 'assets/rare/pomni/4.jpg', NOW()),
+    ('rare', 'assets/rare/pomni/5.jpg', NOW()),
 
     ('rare', 'assets/rare/ragatha/1.jpg', NOW()),
     ('rare', 'assets/rare/ragatha/2.jpg', NOW()),
@@ -90,6 +97,9 @@ VALUES
     ('epic', 'assets/epic/jax/3.jpg', NOW()),
 
     ('epic', 'assets/epic/kinger/1.jpg', NOW()),
+
+    ('epic', 'assets/epic/npc/1.jpg', NOW()),
+    ('epic', 'assets/epic/npc/2.jpg', NOW()),
 
     ('epic', 'assets/epic/pomni/1.jpg', NOW()),
     ('epic', 'assets/epic/pomni/2.jpg', NOW()),
