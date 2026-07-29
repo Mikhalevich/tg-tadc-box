@@ -10,7 +10,7 @@ func makeRoutes(tbot *tgbot.TGBot, handler *tghandler.TGHandler) {
 
 	tbot.AddTextCommand("start", handler.Start)
 
-	tbot.AddMenuCommand("get_box", "get gift box for receiving reward", handler.Open)
+	tbot.AddMenuCommand("get_box", "receive gift box", handler.Open)
 	tbot.AddMenuCommand("my_cards", "view my cards", handler.MyCards)
 
 	tbot.AddDefaultHandler(handler.DefaultHandler)
