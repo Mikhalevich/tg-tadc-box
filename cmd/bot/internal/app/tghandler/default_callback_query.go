@@ -44,7 +44,26 @@ func (t *TGHandler) DefaultCallbackQuery(ctx context.Context, msg tgbot.BotMessa
 	return nil
 }
 
-func (t *TGHandler) cbOpenBox(ctx context.Context, msg tgbot.BotMessage, btn *button.Button) error {
+func (t *TGHandler) cbGetBox(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
+	if err := t.boxProcessor.Open(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+	); err != nil {
+		return fmt.Errorf("open box: %w", err)
+	}
+
+	return nil
+}
+
+func (t *TGHandler) cbOpenBox(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
 	payload, err := button.GetPayload[box.OpenBoxButtonPayload](*btn)
 	if err != nil {
 		return fmt.Errorf("get open box payload: %w", err)

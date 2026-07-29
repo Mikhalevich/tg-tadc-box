@@ -60,6 +60,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		boxProcessor,
 		cardViewer,
 		notificationService,
+		notificationService,
 	); err != nil {
 		return fmt.Errorf("app start: %w", err)
 	}

@@ -26,3 +26,11 @@ func OpenBoxButton(boxID int) (button.Button, error) {
 
 	return btn, nil
 }
+
+func GetBoxButton() button.Button {
+	return button.CreateButtonWithoutPayload(
+		"Get Box",
+		button.OperationGetBox,
+		true,
+	)
+}

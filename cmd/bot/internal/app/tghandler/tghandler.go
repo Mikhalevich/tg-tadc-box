@@ -9,11 +9,11 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
+type cbHandler func(ctx context.Context, msg tgbot.BotMessage, btn *button.Button) error
+
 type ButtonProvider interface {
 	GetButton(ctx context.Context, id button.ID) (*button.Button, error)
 }
-
-type cbHandler func(ctx context.Context, msg tgbot.BotMessage, btn *button.Button) error
 
 type BoxProcessor interface {
 	Open(ctx context.Context, chatID msginfo.ChatID) error
@@ -39,6 +39,10 @@ type CardViewer interface {
 	) error
 }
 
+type Notifier interface {
+	Welcome(ctx context.Context, chatID msginfo.ChatID) error
+}
+
 type ErrorNotifier interface {
 	ParseError(ctx context.Context, chatID msginfo.ChatID, err error) error
 }
@@ -48,6 +52,7 @@ type TGHandler struct {
 	buttonProvider ButtonProvider
 	boxProcessor   BoxProcessor
 	cardViewer     CardViewer
+	notifier       Notifier
 	errorNotifier  ErrorNotifier
 }
 
@@ -55,12 +60,14 @@ func New(
 	buttonProvider ButtonProvider,
 	boxProcessor BoxProcessor,
 	cardViewer CardViewer,
+	notifier Notifier,
 	errorNotifier ErrorNotifier,
 ) *TGHandler {
 	tgh := &TGHandler{
 		buttonProvider: buttonProvider,
 		boxProcessor:   boxProcessor,
 		cardViewer:     cardViewer,
+		notifier:       notifier,
 		errorNotifier:  errorNotifier,
 	}
 
@@ -71,6 +78,7 @@ func New(
 
 func (t *TGHandler) registerCBHandlers() {
 	t.cbHanlers = map[button.Operation]cbHandler{
+		button.OperationGetBox:    t.cbGetBox,
 		button.OperationOpenBox:   t.cbOpenBox,
 		button.OperationCardPage:  t.cbCollectedCardPage,
 		button.OperationCardTotal: t.cbCollectedCardTotalPage,
