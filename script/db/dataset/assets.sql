@@ -13,6 +13,8 @@ VALUES
     ('common', 'assets/common/gangle/1.jpg', NOW()),
     ('common', 'assets/common/gangle/2.jpg', NOW()),
     ('common', 'assets/common/gangle/3.jpg', NOW()),
+    ('common', 'assets/common/gangle/4.jpg', NOW()),
+    ('common', 'assets/common/gangle/5.jpg', NOW()),
 
     ('common', 'assets/common/jax/1.jpg', NOW()),
     ('common', 'assets/common/jax/2.jpg', NOW()),
@@ -21,14 +23,23 @@ VALUES
     ('common', 'assets/common/jax/5.jpg', NOW()),
 
     ('common', 'assets/common/kinger/1.jpg', NOW()),
+    ('common', 'assets/common/kinger/2.jpg', NOW()),
 
     ('common', 'assets/common/pomni/1.jpg', NOW()),
     ('common', 'assets/common/pomni/2.jpg', NOW()),
     ('common', 'assets/common/pomni/3.jpg', NOW()),
     ('common', 'assets/common/pomni/4.jpg', NOW()),
+    ('common', 'assets/common/pomni/5.jpg', NOW()),
+    ('common', 'assets/common/pomni/6.jpg', NOW()),
+    ('common', 'assets/common/pomni/7.jpg', NOW()),
+    ('common', 'assets/common/pomni/8.jpg', NOW()),
 
     ('common', 'assets/common/ragatha/1.jpg', NOW()),
     ('common', 'assets/common/ragatha/2.jpg', NOW()),
+    ('common', 'assets/common/ragatha/3.jpg', NOW()),
+    ('common', 'assets/common/ragatha/4.jpg', NOW()),
+    ('common', 'assets/common/ragatha/5.jpg', NOW()),
+    ('common', 'assets/common/ragatha/6.jpg', NOW()),
 
     ('common', 'assets/common/zooble/1.jpg', NOW())
 
@@ -45,6 +56,7 @@ VALUES
 
     ('rare', 'assets/rare/jax/1.jpg', NOW()),
     ('rare', 'assets/rare/jax/2.jpg', NOW()),
+    ('rare', 'assets/rare/jax/3.jpg', NOW()),
 
     ('rare', 'assets/rare/kinger/1.jpg', NOW()),
     ('rare', 'assets/rare/kinger/2.jpg', NOW()),
@@ -58,6 +70,7 @@ VALUES
 
     ('rare', 'assets/rare/ragatha/1.jpg', NOW()),
     ('rare', 'assets/rare/ragatha/2.jpg', NOW()),
+    ('rare', 'assets/rare/ragatha/3.jpg', NOW()),
 
     ('rare', 'assets/rare/zooble/1.jpg', NOW()),
     ('rare', 'assets/rare/zooble/2.jpg', NOW())
