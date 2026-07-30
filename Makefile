@@ -15,7 +15,7 @@ APP_TAG := 0.1.1
 
 .PHONY: all build test compose-up compose-down load-test-data vendor install-linter \
 lint fmt tools-update generate load-assets \
-minikube-load-images minikube-encrypt-secrets minikube-helm-install minikube-helm-uninstall \
+minikube-load-images minikube-decrypt-secrets minikube-encrypt-secrets minikube-helm-install minikube-helm-uninstall \
 install-helm-secrets generate-helm-secrets \
 do-helm-load-images do-helm-encrypt-secrets do-helm-install do-helm-uninstall
 
@@ -24,6 +24,7 @@ all: build
 build:
 	go build -mod=vendor -o $(BIN_PATH)/bot ./cmd/bot/main.go
 	go build -mod=vendor -o $(BIN_PATH)/poller ./cmd/poller/main.go
+	go build -mod=vendor -o $(BIN_PATH)/outboxpoller ./cmd/outboxpoller/main.go
 
 test:
 	go test ./...
@@ -65,6 +66,9 @@ load-assets:
 
 minikube-load-images:
 	./script/k8s/minikube-helm/load_images.sh ${APP_TAG}
+
+minikube-decrypt-secrets:
+	./script/k8s/minikube-helm/decrypt_secrets.sh
 
 minikube-encrypt-secrets:
 	./script/k8s/minikube-helm/encrypt_secrets.sh

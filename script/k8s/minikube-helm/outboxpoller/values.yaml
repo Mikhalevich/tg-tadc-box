@@ -11,7 +11,7 @@ dbmigration:
     tag: "0.1.0"
 
 image:
-  repository: "poller"
+  repository: "outboxpoller"
   tag: "0.1.0"
 
 resources:
@@ -21,6 +21,9 @@ resources:
   limits:
     memory: "128Mi"
     cpu: "200m"
+
+bot:
+  token: "telegram bot api token"
 
 postgres:
   connStr: "host=postgres-service port=5432 user=bot password=bot dbname=bot sslmode=disable"

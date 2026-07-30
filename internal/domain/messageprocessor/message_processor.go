@@ -28,27 +28,20 @@ type ButtonRepository interface {
 	SetButtonRows(ctx context.Context, rows ...button.ButtonRow) error
 }
 
-type ImageProvider interface {
-	Image(ctx context.Context) ([]byte, error)
-}
-
 type MessageProcessor struct {
 	sender           Sender
 	escaper          MarkdownEscaper
 	buttonRepository ButtonRepository
-	imageProvider    ImageProvider
 }
 
 func New(
 	sender Sender,
 	escaper MarkdownEscaper,
 	buttonRepository ButtonRepository,
-	imageProvider ImageProvider,
 ) *MessageProcessor {
 	return &MessageProcessor{
 		sender:           sender,
 		escaper:          escaper,
 		buttonRepository: buttonRepository,
-		imageProvider:    imageProvider,
 	}
 }

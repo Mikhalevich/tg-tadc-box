@@ -1,10 +1,13 @@
 log_level: "info"
 tracing:
   endpoint: "jaeger:4318"
-  service_name: "poller"
+  service_name: "outbox-poller"
+bot:
+  token: "bot_token"
 postgres:
   connection: "host=postgres port=5432 user=bot password=bot dbname=bot sslmode=disable"
-box_ready_notification_worker:
-  count: 1
-  interval: 5s
+worker:
+  count: 2
+  interval: 1s
   batch_size: 10
+  max_retry_count: 10
