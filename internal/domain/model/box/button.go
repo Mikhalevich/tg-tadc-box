@@ -27,10 +27,10 @@ func OpenBoxButton(boxID int) (button.Button, error) {
 	return btn, nil
 }
 
-func GetBoxButton() button.Button {
+func GetBoxButton(caption string, isDelete bool) button.Button {
 	return button.CreateButtonWithoutPayload(
-		"Get Box",
+		caption,
 		button.OperationGetBox,
-		true,
+		isDelete,
 	)
 }
