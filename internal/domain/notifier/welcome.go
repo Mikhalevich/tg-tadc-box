@@ -13,7 +13,7 @@ func (n *Notifier) Welcome(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) error {
-	msg := `Welcome to the Amaizing Digital Circus card collection bot.
+	msg := `Welcome to the Amazing Digital Circus card collection bot.
 Click button to receive your first reward.
 `
 	if err := n.sender.SendMessage(

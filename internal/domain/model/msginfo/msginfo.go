@@ -32,7 +32,6 @@ const (
 	MessageTypePlain MessageType = iota + 1
 	MessageTypeMarkdown
 	MessageTypePNG
-	MessageTypeImageProvider
 	MessageTypeEditMarkdown
 	MessageTypeEditPNG
 )

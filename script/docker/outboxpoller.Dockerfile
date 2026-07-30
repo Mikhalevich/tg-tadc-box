@@ -1,0 +1,15 @@
+FROM golang:1.26-alpine3.23 AS builder
+
+WORKDIR /app
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=vendor -a -installsuffix cgo -ldflags="-w -s" -o ./bin/outboxpoller cmd/outboxpoller/main.go
+
+FROM alpine:3.23
+
+WORKDIR /app/
+
+COPY --from=builder /app/bin/outboxpoller /app/outboxpoller
+
+ENTRYPOINT ["./outboxpoller", "-config", "./config/config-outboxpoller.yaml"]

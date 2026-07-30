@@ -11,7 +11,6 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-//nolint:cyclop,funlen
 func (m *messageSender) SendMessage(
 	ctx context.Context,
 	msg msginfo.SenderMessage,
@@ -66,9 +65,6 @@ func (m *messageSender) SendMessage(
 		}); err != nil {
 			return fmt.Errorf("edit media: %w", err)
 		}
-
-	case msginfo.MessageTypeImageProvider:
-		return fmt.Errorf("invalid message type: %v", msg.Type)
 
 	default:
 		return fmt.Errorf("invalid message type: %v", msg.Type)

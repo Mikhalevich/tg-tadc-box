@@ -8,23 +8,20 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/uptrace/opentelemetry-go-extra/otelsql"
 
-	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/app"
-	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/config"
-	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/markdownescaper"
+	"github.com/Mikhalevich/tg-tadc-box/cmd/outboxpoller/internal/app"
+	"github.com/Mikhalevich/tg-tadc-box/cmd/outboxpoller/internal/config"
+	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/messagesender"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/driver"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/transaction"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/timeprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
-	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/imageprovider"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/viewcards"
+	outboxmsgsender "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/messagesender"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/outboxprocessor"
 )
 
-func StartBot(ctx context.Context, cfg config.Config) error {
+func StartWorker(ctx context.Context, cfg config.Config) error {
 	botAPI, err := bot.New(cfg.Bot.Token, bot.WithSkipGetMe())
 	if err != nil {
 		return fmt.Errorf("creating bot api: %w", err)
@@ -34,38 +31,28 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 	if err != nil {
 		return fmt.Errorf("make postgres: %w", err)
 	}
+
 	defer dbCleanup()
 
 	var (
-		msgSender           = messagesender.New(botAPI)
-		msgProcessor        = messageprocessor.New(msgSender, msgSender, pgDB)
-		notificationService = notifier.New(
-			pgDB,
-			markdownescaper.New(),
-			outboximageprovider.New(),
-		)
-		boxProcessor = openbox.New(
+		messageSender    = messagesender.New(botAPI)
+		messageProcessor = messageprocessor.New(messageSender, messageSender, pgDB)
+		imageProvider    = imageprovider.New()
+		timeProvider     = timeprovider.New()
+		outboxProcessor  = outboxprocessor.New(
 			pgDB,
 			pgDB.Transactor(),
-			rewardgenerator.New(pgDB),
-			notificationService,
-			timeprovider.New(),
-			cfg.OpenBox.CommonWaitPeriod,
+			outboxmsgsender.New(messageProcessor, imageProvider),
+			timeProvider,
 		)
-		cardViewer = viewcards.New(pgDB, pgDB, notificationService)
 	)
 
-	if err := app.Start(
+	app.New(
+		outboxProcessor,
+	).Run(
 		ctx,
-		cfg.Bot,
-		msgProcessor,
-		boxProcessor,
-		cardViewer,
-		notificationService,
-		notificationService,
-	); err != nil {
-		return fmt.Errorf("app start: %w", err)
-	}
+		cfg.Worker,
+	)
 
 	return nil
 }
