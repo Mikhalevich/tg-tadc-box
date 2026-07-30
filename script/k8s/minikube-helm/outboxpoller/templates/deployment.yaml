@@ -23,8 +23,8 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          command: ["/app/poller"]
-          args: ["-config", "/app/config/config-poller.yaml"]
+          command: ["/app/outboxpoller"]
+          args: ["-config", "/app/config/config-outboxpoller.yaml"]
           volumeMounts:
           - name: config-volume
             mountPath: /app/config
