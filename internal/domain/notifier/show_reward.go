@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
@@ -26,6 +28,9 @@ func (n *Notifier) ShowReward(
 			ReplyMsgID: messageID,
 			Type:       msginfo.MessageTypeEditPNG,
 			Payload:    payload,
+			Buttons: []button.ButtonRow{
+				button.Row(box.GetBoxButton("Schedule next box", false)),
+			},
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)

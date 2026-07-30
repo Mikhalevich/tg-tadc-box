@@ -23,7 +23,7 @@ Click button to receive your first reward.
 			Type:   msginfo.MessageTypePlain,
 			Text:   msg,
 			Buttons: []button.ButtonRow{
-				button.Row(box.GetBoxButton()),
+				button.Row(box.GetBoxButton("Get Box", true)),
 			},
 		},
 	); err != nil {
