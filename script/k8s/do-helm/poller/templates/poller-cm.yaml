@@ -8,8 +8,6 @@ data:
     tracing:
       endpoint: "jaeger-service:4318"
       service_name: "poller"
-    bot:
-      token: {{ .Values.bot.token }}
     postgres:
       connection: {{ .Values.postgres.connStr }}
     box_ready_notification_worker:

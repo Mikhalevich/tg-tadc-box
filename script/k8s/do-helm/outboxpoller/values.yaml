@@ -7,11 +7,11 @@ replicaCount: 3
 dbmigration:
   name: "sqlmigrate"
   image:
-    repository: "sqlmigrate"
+    repository: "registry.digitalocean.com/tadc-box-registry/sqlmigrate"
     tag: "0.1.0"
 
 image:
-  repository: "outboxpoller"
+  repository: "registry.digitalocean.com/tadc-box-registry/outboxpoller"
   tag: "0.1.0"
 
 resources:
