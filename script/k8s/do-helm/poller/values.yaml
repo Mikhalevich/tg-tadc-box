@@ -22,8 +22,5 @@ resources:
     memory: "128Mi"
     cpu: "200m"
 
-bot:
-  token: "telegram bot api token"
-
 postgres:
   connStr: "pg connection string"
