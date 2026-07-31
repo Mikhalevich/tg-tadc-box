@@ -14,4 +14,9 @@ data:
       connection: {{ .Values.postgres.connStr }}
     open_box:
       common_wait_period: 3s
+    box_reward_percent:
+      normal:
+        legendary: 1
+        epic: 5
+        rare: 20
 
