@@ -10,6 +10,7 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/app"
 	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/config"
+	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/markdownescaper"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/messagesender"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres"
@@ -37,10 +38,10 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 	defer dbCleanup()
 
 	var (
-		msgSender           = messagesender.New(botAPI)
-		msgProcessor        = messageprocessor.New(msgSender, msgSender, pgDB)
-		markdownEscaper = markdownescaper.New(),
-		outboxNotifier = notifier.New(
+		msgSender       = messagesender.New(botAPI)
+		msgProcessor    = messageprocessor.New(msgSender, msgSender, pgDB)
+		markdownEscaper = markdownescaper.New()
+		outboxNotifier  = notifier.New(
 			pgDB,
 			markdownEscaper,
 			outboximageprovider.New(),
@@ -71,8 +72,8 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		msgProcessor,
 		boxProcessor,
 		cardViewer,
-		notificationService,
-		notificationService,
+		outboxNotifier,
+		outboxNotifier,
 	); err != nil {
 		return fmt.Errorf("app start: %w", err)
 	}
