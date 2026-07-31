@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"math/rand/v2"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
-const (
-	legendaryPercent = 5
-	epicPercent      = 10
-	rarePercent      = 30
-)
+type RewardPercent struct {
+	Rare      int
+	Epic      int
+	Legendary int
+}
 
 type RewardsGetter interface {
 	GetRewardsByType(
@@ -23,18 +24,29 @@ type RewardsGetter interface {
 
 type RewardGenerator struct {
 	rewardsGetter RewardsGetter
+	rewardPercent map[box.Type]RewardPercent
 }
 
 func New(
 	rewardsGetter RewardsGetter,
+	rewardPercent map[box.Type]RewardPercent,
 ) RewardGenerator {
 	return RewardGenerator{
 		rewardsGetter: rewardsGetter,
+		rewardPercent: rewardPercent,
 	}
 }
 
-func (r RewardGenerator) Generate(ctx context.Context) (reward.Reward, error) {
-	rewardType := pickRewardType()
+func (r RewardGenerator) Generate(
+	ctx context.Context,
+	boxType box.Type,
+) (reward.Reward, error) {
+	rewardPercent, ok := r.rewardPercent[boxType]
+	if !ok {
+		return reward.Reward{}, fmt.Errorf("no such box reward %q", boxType.String())
+	}
+
+	rewardType := pickRewardType(rewardPercent)
 
 	rewards, err := r.rewardsGetter.GetRewardsByType(ctx, rewardType)
 	if err != nil {
@@ -53,17 +65,17 @@ func percent() int {
 	return rand.IntN(100) + 1
 }
 
-func pickRewardType() reward.RewardType {
+func pickRewardType(rewardPercent RewardPercent) reward.RewardType {
 	roll := percent()
 
 	switch {
-	case roll <= legendaryPercent:
+	case roll <= rewardPercent.Legendary:
 		return reward.RewardTypeLegendary
 
-	case roll <= epicPercent:
+	case roll <= rewardPercent.Epic:
 		return reward.RewardTypeEpic
 
-	case roll <= rarePercent:
+	case roll <= rewardPercent.Rare:
 		return reward.RewardTypeRare
 	}
 

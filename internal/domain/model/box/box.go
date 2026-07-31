@@ -1,6 +1,7 @@
 package box
 
 import (
+	"fmt"
 	"slices"
 	"time"
 
@@ -38,6 +39,14 @@ const (
 
 func (t Type) String() string {
 	return string(t)
+}
+
+func TypeFromString(str string) (Type, error) {
+	if str == TypeNormal.String() {
+		return Type(str), nil
+	}
+
+	return "", fmt.Errorf("invalid type string %q", str)
 }
 
 type Box struct {

@@ -74,7 +74,7 @@ func (o *OpenBox) openBox(
 		return reward.Reward{}, fmt.Errorf("update box: %w", err)
 	}
 
-	receivedReward, err := o.rewardGenerator.Generate(ctx)
+	receivedReward, err := o.rewardGenerator.Generate(ctx, box.TypeNormal)
 	if err != nil {
 		return reward.Reward{}, fmt.Errorf("generate reward: %w", err)
 	}

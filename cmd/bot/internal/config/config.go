@@ -5,11 +5,12 @@ import (
 )
 
 type Config struct {
-	LogLevel string   `yaml:"log_level" required:"true"`
-	Tracing  Tracing  `yaml:"tracing" required:"true"`
-	Bot      Bot      `yaml:"bot" required:"true"`
-	Postgres Postgres `yaml:"postgres" required:"true"`
-	OpenBox  OpenBox  `yaml:"open_box" required:"true"`
+	LogLevel         string                      `yaml:"log_level" required:"true"`
+	Tracing          Tracing                     `yaml:"tracing" required:"true"`
+	Bot              Bot                         `yaml:"bot" required:"true"`
+	Postgres         Postgres                    `yaml:"postgres" required:"true"`
+	OpenBox          OpenBox                     `yaml:"open_box" required:"true"`
+	BoxRewardPercent map[string]BoxRewardPercent `yaml:"box_reward_percent" required:"true"`
 }
 
 func (c *Config) Level() string {
@@ -40,4 +41,10 @@ type Postgres struct {
 
 type OpenBox struct {
 	CommonWaitPeriod time.Duration `yaml:"common_wait_period"`
+}
+
+type BoxRewardPercent struct {
+	Legendary int `yaml:"legendary" required:"true"`
+	Epic      int `yaml:"epic" required:"true"`
+	Rare      int `yaml:"rare" required:"true"`
 }
