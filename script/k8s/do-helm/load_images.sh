@@ -16,3 +16,7 @@ docker push registry.digitalocean.com/tadc-box-registry/sqlmigrate:${VERSION}
 docker build -t poller:${VERSION} -f ./script/docker/poller.Dockerfile .
 docker tag poller:${VERSION} registry.digitalocean.com/tadc-box-registry/poller:${VERSION}
 docker push registry.digitalocean.com/tadc-box-registry/poller:${VERSION}
+
+docker build -t outboxpoller:${VERSION} -f ./script/docker/outboxpoller.Dockerfile .
+docker tag outboxpoller:${VERSION} registry.digitalocean.com/tadc-box-registry/outboxpoller:${VERSION}
+docker push registry.digitalocean.com/tadc-box-registry/outboxpoller:${VERSION}

@@ -89,6 +89,9 @@ generate-helm-secrets:
 do-helm-load-images:
 	./script/k8s/do-helm/load_images.sh ${APP_TAG}
 
+do-helm-decrypt-secrets:
+	./script/k8s/do-helm/decrypt_secrets.sh
+
 do-helm-encrypt-secrets:
 	./script/k8s/do-helm/encrypt_secrets.sh
 
