@@ -38,7 +38,7 @@ type Transactor interface {
 }
 
 type RewardGenerator interface {
-	Generate(ctx context.Context) (reward.Reward, error)
+	Generate(ctx context.Context, boxType box.Type) (reward.Reward, error)
 }
 
 type Notifier interface {

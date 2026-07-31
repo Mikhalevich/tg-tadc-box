@@ -13,7 +13,7 @@ LINTER_VERSION := v2.12.2
 
 APP_TAG := 0.1.1
 
-.PHONY: all build test compose-up compose-down load-test-data vendor install-linter \
+.PHONY: all build test bench compose-up compose-down load-test-data vendor install-linter \
 lint fmt tools-update generate load-assets \
 minikube-load-images minikube-decrypt-secrets minikube-encrypt-secrets minikube-helm-install minikube-helm-uninstall \
 install-helm-secrets generate-helm-secrets \
@@ -28,6 +28,9 @@ build:
 
 test:
 	go test ./...
+
+bench:
+	go test -bench=. -benchmem ./...
 
 compose-up:
 	docker compose -f ./script/docker/docker-compose.yml up --build

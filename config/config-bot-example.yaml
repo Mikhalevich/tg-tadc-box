@@ -9,3 +9,8 @@ postgres:
   connection: "host=postgres port=5432 user=bot password=bot dbname=bot sslmode=disable"
 open_box:
   common_wait_period: 3s
+box_reward_percent:
+  normal:
+    legendary: 1
+    epic: 5
+    rare: 20

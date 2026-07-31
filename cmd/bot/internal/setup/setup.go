@@ -18,6 +18,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/transaction"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/timeprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
@@ -37,6 +38,11 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 	}
 	defer dbCleanup()
 
+	boxRewardPercent, err := convertBoxRewardPercent(cfg.BoxRewardPercent)
+	if err != nil {
+		return fmt.Errorf("invalid box rewards percent: %w", err)
+	}
+
 	var (
 		msgSender       = messagesender.New(botAPI)
 		msgProcessor    = messageprocessor.New(msgSender, msgSender, pgDB)
@@ -49,7 +55,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		boxProcessor = openbox.New(
 			pgDB,
 			pgDB.Transactor(),
-			rewardgenerator.New(pgDB),
+			rewardgenerator.New(pgDB, boxRewardPercent),
 			outboxNotifier,
 			timeprovider.New(),
 			cfg.OpenBox.CommonWaitPeriod,
@@ -102,4 +108,25 @@ func MakePostgres(cfg config.Postgres) (*postgres.Postgres, func(), error) {
 	return p, func() {
 		dbConn.Close()
 	}, nil
+}
+
+func convertBoxRewardPercent(
+	cfgRewards map[string]config.BoxRewardPercent,
+) (map[box.Type]rewardgenerator.RewardPercent, error) {
+	rewards := make(map[box.Type]rewardgenerator.RewardPercent, len(cfgRewards))
+
+	for strType, percents := range cfgRewards {
+		boxType, err := box.TypeFromString(strType)
+		if err != nil {
+			return nil, fmt.Errorf("convert box type: %w", err)
+		}
+
+		rewards[boxType] = rewardgenerator.RewardPercent{
+			Legendary: percents.Legendary,
+			Epic:      percents.Epic,
+			Rare:      percents.Rare,
+		}
+	}
+
+	return rewards, nil
 }
