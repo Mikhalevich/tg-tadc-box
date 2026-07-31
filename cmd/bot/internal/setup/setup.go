@@ -39,20 +39,30 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 	var (
 		msgSender           = messagesender.New(botAPI)
 		msgProcessor        = messageprocessor.New(msgSender, msgSender, pgDB)
-		notificationService = notifier.New(
+		markdownEscaper = markdownescaper.New(),
+		outboxNotifier = notifier.New(
 			pgDB,
-			markdownescaper.New(),
+			markdownEscaper,
 			outboximageprovider.New(),
 		)
 		boxProcessor = openbox.New(
 			pgDB,
 			pgDB.Transactor(),
 			rewardgenerator.New(pgDB),
-			notificationService,
+			outboxNotifier,
 			timeprovider.New(),
 			cfg.OpenBox.CommonWaitPeriod,
 		)
-		cardViewer = viewcards.New(pgDB, pgDB, notificationService)
+		directNotifier = notifier.New(
+			msgProcessor,
+			markdownEscaper,
+			imageprovider.New(),
+		)
+		cardViewer = viewcards.New(
+			pgDB,
+			pgDB,
+			directNotifier,
+		)
 	)
 
 	if err := app.Start(
