@@ -12,6 +12,7 @@ VALUES
     ('common', 'assets/common/caine/5.jpg', NOW()),
     ('common', 'assets/common/caine/6.jpg', NOW()),
     ('common', 'assets/common/caine/7.jpg', NOW()),
+    ('common', 'assets/common/caine/8.jpg', NOW()),
 
     ('common', 'assets/common/gangle/1.jpg', NOW()),
     ('common', 'assets/common/gangle/2.jpg', NOW()),
@@ -20,6 +21,7 @@ VALUES
     ('common', 'assets/common/gangle/5.jpg', NOW()),
     ('common', 'assets/common/gangle/6.jpg', NOW()),
     ('common', 'assets/common/gangle/7.jpg', NOW()),
+    ('common', 'assets/common/gangle/8.jpg', NOW()),
 
     ('common', 'assets/common/jax/1.jpg', NOW()),
     ('common', 'assets/common/jax/2.jpg', NOW()),
@@ -47,6 +49,7 @@ VALUES
     ('common', 'assets/common/pomni/8.jpg', NOW()),
     ('common', 'assets/common/pomni/9.jpg', NOW()),
     ('common', 'assets/common/pomni/10.jpg', NOW()),
+    ('common', 'assets/common/pomni/11.jpg', NOW()),
 
     ('common', 'assets/common/ragatha/1.jpg', NOW()),
     ('common', 'assets/common/ragatha/2.jpg', NOW()),
@@ -55,9 +58,11 @@ VALUES
     ('common', 'assets/common/ragatha/5.jpg', NOW()),
     ('common', 'assets/common/ragatha/6.jpg', NOW()),
     ('common', 'assets/common/ragatha/7.jpg', NOW()),
+    ('common', 'assets/common/ragatha/8.jpg', NOW()),
 
     ('common', 'assets/common/zooble/1.jpg', NOW()),
-    ('common', 'assets/common/zooble/2.jpg', NOW())
+    ('common', 'assets/common/zooble/2.jpg', NOW()),
+    ('common', 'assets/common/zooble/3.jpg', NOW())
 
     ON CONFLICT (uri) DO NOTHING;
 
@@ -68,9 +73,12 @@ VALUES
     ('rare', 'assets/rare/caine/2.jpg', NOW()),
     ('rare', 'assets/rare/caine/3.jpg', NOW()),
     ('rare', 'assets/rare/caine/4.jpg', NOW()),
+    ('rare', 'assets/rare/caine/5.jpg', NOW()),
 
     ('rare', 'assets/rare/gangle/1.jpg', NOW()),
     ('rare', 'assets/rare/gangle/2.jpg', NOW()),
+    ('rare', 'assets/rare/gangle/3.jpg', NOW()),
+    ('rare', 'assets/rare/gangle/4.jpg', NOW()),
 
     ('rare', 'assets/rare/jax/1.jpg', NOW()),
     ('rare', 'assets/rare/jax/2.jpg', NOW()),
@@ -87,6 +95,8 @@ VALUES
     ('rare', 'assets/rare/pomni/3.jpg', NOW()),
     ('rare', 'assets/rare/pomni/4.jpg', NOW()),
     ('rare', 'assets/rare/pomni/5.jpg', NOW()),
+    ('rare', 'assets/rare/pomni/6.jpg', NOW()),
+    ('rare', 'assets/rare/pomni/7.jpg', NOW()),
 
     ('rare', 'assets/rare/ragatha/1.jpg', NOW()),
     ('rare', 'assets/rare/ragatha/2.jpg', NOW()),
@@ -107,6 +117,8 @@ VALUES
     ('epic', 'assets/epic/caine/4.jpg', NOW()),
     ('epic', 'assets/epic/caine/5.jpg', NOW()),
 
+    ('epic', 'assets/epic/gangle/1.jpg', NOW()),
+
     ('epic', 'assets/epic/jax/1.jpg', NOW()),
     ('epic', 'assets/epic/jax/2.jpg', NOW()),
     ('epic', 'assets/epic/jax/3.jpg', NOW()),
@@ -115,6 +127,7 @@ VALUES
 
     ('epic', 'assets/epic/npc/1.jpg', NOW()),
     ('epic', 'assets/epic/npc/2.jpg', NOW()),
+    ('epic', 'assets/epic/npc/3.jpg', NOW()),
 
     ('epic', 'assets/epic/pomni/1.jpg', NOW()),
     ('epic', 'assets/epic/pomni/2.jpg', NOW()),
