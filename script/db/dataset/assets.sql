@@ -148,6 +148,9 @@ VALUES
     ('epic', 'assets/epic/jax/1.jpg', NOW()),
     ('epic', 'assets/epic/jax/2.jpg', NOW()),
     ('epic', 'assets/epic/jax/3.jpg', NOW()),
+    ('epic', 'assets/epic/jax/4.jpg', NOW()),
+
+    ('epic', 'assets/epic/kaufmo/1.jpg', NOW()),
 
     ('epic', 'assets/epic/kinger/1.jpg', NOW()),
     ('epic', 'assets/epic/kinger/2.jpg', NOW()),
@@ -183,7 +186,6 @@ VALUES
     ('legendary', 'assets/legendary/gangle/1.jpg', NOW()),
 
     ('legendary', 'assets/legendary/jax/1.jpg', NOW()),
-    ('legendary', 'assets/legendary/jax/2.jpg', NOW()),
 
     ('legendary', 'assets/legendary/kinger/1.jpg', NOW()),
 
