@@ -118,3 +118,18 @@ func (t *TGHandler) cbCollectedCardTotalPage(
 
 	return nil
 }
+
+func (t *TGHandler) cbAbstractDuplicatedAll(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
+	if err := t.cardAbstracter.All(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+	); err != nil {
+		return fmt.Errorf("abstract all: %w", err)
+	}
+
+	return nil
+}
