@@ -21,10 +21,12 @@ func (v *ViewCards) Page(
 		return perror.InvalidParam("invalid page")
 	}
 
-	maxPos, err := v.repo.GetCollectedCardMaxPos(ctx, chatID, rewardType)
+	profile, err := v.playerProvider.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
-		return fmt.Errorf("get collected card max pos: %w", err)
+		return fmt.Errorf("get player by chat id: %w", err)
 	}
+
+	maxPos := profile.Profile.Cards.CardsMaxPos(rewardType)
 
 	if maxPos == 0 {
 		if err := v.notifier.NoCollectedCards(ctx, chatID); err != nil {
@@ -38,10 +40,7 @@ func (v *ViewCards) Page(
 		return perror.InvalidParam("invalid page")
 	}
 
-	cardByPos, err := v.repo.GetCollectedCardByPos(ctx, chatID, rewardType, page)
-	if err != nil {
-		return fmt.Errorf("get collected card by pos %d: %w", page, err)
-	}
+	cardByPos := profile.Profile.Cards.CardByPos(rewardType, page)
 
 	collectedReward, err := v.rewardProvider.GetRewardByID(ctx, cardByPos.RewardID)
 	if err != nil {

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
@@ -20,7 +19,7 @@ func (o *OpenBox) OpenByID(
 	boxID int,
 ) error {
 	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
-		profile, err := o.repo.GetPlayerByChatID(ctx, chatID)
+		profile, err := o.playerProvider.GetPlayerByChatID(ctx, chatID)
 		if err != nil {
 			return fmt.Errorf("get user by chat_id: %w", err)
 		}
@@ -88,16 +87,7 @@ func (o *OpenBox) openBox(
 		return reward.Reward{}, fmt.Errorf("insert received reward: %w", err)
 	}
 
-	if _, err := o.repo.InsertCard(ctx, card.Card{
-		ChatID:    profile.ChatID,
-		RewardID:  receivedReward.ID,
-		Count:     1,
-		UpdatedAt: completedAt,
-	}); err != nil {
-		return reward.Reward{}, fmt.Errorf("insert card: %w", err)
-	}
-
-	if err := o.markOpenedBoxInUserProfile(ctx, profile); err != nil {
+	if err := o.markRewardInUserProfile(ctx, profile, receivedReward); err != nil {
 		return reward.Reward{}, fmt.Errorf("mark opened box in user profile: %w", err)
 	}
 
@@ -121,13 +111,16 @@ func isInProgress(status box.Status) error {
 	return nil
 }
 
-func (o *OpenBox) markOpenedBoxInUserProfile(
+func (o *OpenBox) markRewardInUserProfile(
 	ctx context.Context,
 	plr player.Player,
+	rwd reward.Reward,
 ) error {
+	plr.Profile.Cards.AddReward(rwd.Type, rwd.ID, rwd.CreatedAt)
+
 	plr.Profile.OpenedBoxes.Common++
 
-	if err := o.repo.UpdatePlayer(ctx, plr); err != nil {
+	if err := o.playerProvider.UpdatePlayer(ctx, plr); err != nil {
 		return fmt.Errorf("update player: %w", err)
 	}
 

@@ -5,20 +5,12 @@ import (
 	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
 type Repository interface {
-	GetPlayerByChatID(
-		ctx context.Context,
-		chatID msginfo.ChatID,
-	) (player.Player, error)
-	InsertPlayer(ctx context.Context, usr player.Player) (int, error)
-	UpdatePlayer(ctx context.Context, usr player.Player) error
-
 	GetBoxesByStatus(ctx context.Context, chatID msginfo.ChatID, statuses ...box.Status) ([]box.Box, error)
 	InsertBox(ctx context.Context, b box.Box) (int, error)
 	GetBoxByID(ctx context.Context, id int) (box.Box, error)
@@ -27,14 +19,18 @@ type Repository interface {
 		ctx context.Context,
 		rwd reward.ReceivedReward,
 	) error
-	InsertCard(
-		ctx context.Context,
-		receivedCard card.Card,
-	) (int, error)
 }
 
 type Transactor interface {
 	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
+}
+
+type PlayerProvider interface {
+	GetPlayerByChatID(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+	) (player.Player, error)
+	UpdatePlayer(ctx context.Context, usr player.Player) error
 }
 
 type RewardGenerator interface {
@@ -58,6 +54,7 @@ type TimeProvider interface {
 type OpenBox struct {
 	repo             Repository
 	transactor       Transactor
+	playerProvider   PlayerProvider
 	rewardGenerator  RewardGenerator
 	notifier         Notifier
 	timeProvider     TimeProvider
@@ -67,6 +64,7 @@ type OpenBox struct {
 func New(
 	repo Repository,
 	transactor Transactor,
+	playerProvider PlayerProvider,
 	rewardGenertor RewardGenerator,
 	notifier Notifier,
 	timeProvider TimeProvider,
@@ -75,6 +73,7 @@ func New(
 	return &OpenBox{
 		repo:             repo,
 		transactor:       transactor,
+		playerProvider:   playerProvider,
 		rewardGenerator:  rewardGenertor,
 		notifier:         notifier,
 		timeProvider:     timeProvider,

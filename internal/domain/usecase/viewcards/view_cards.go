@@ -5,25 +5,15 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
-type Repository interface {
-	GetCollectedCardCountByType(
+type PlayerProvider interface {
+	GetPlayerByChatID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-	) (map[reward.RewardType]int, error)
-	GetCollectedCardByPos(
-		ctx context.Context,
-		chatID msginfo.ChatID,
-		rewardType reward.RewardType,
-		pos int,
-	) (card.Card, error)
-	GetCollectedCardMaxPos(
-		ctx context.Context,
-		chatID msginfo.ChatID,
-		rewardType reward.RewardType,
-	) (int, error)
+	) (player.Player, error)
 }
 
 type RewardProvider interface {
@@ -50,18 +40,18 @@ type Notifier interface {
 }
 
 type ViewCards struct {
-	repo           Repository
+	playerProvider PlayerProvider
 	rewardProvider RewardProvider
 	notifier       Notifier
 }
 
 func New(
-	repo Repository,
+	playerProvider PlayerProvider,
 	rewardProvider RewardProvider,
 	notifier Notifier,
 ) *ViewCards {
 	return &ViewCards{
-		repo:           repo,
+		playerProvider: playerProvider,
 		rewardProvider: rewardProvider,
 		notifier:       notifier,
 	}
