@@ -7,8 +7,6 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 )
 
 func (o *OpenBox) Open(
@@ -16,12 +14,12 @@ func (o *OpenBox) Open(
 	chatID msginfo.ChatID,
 ) error {
 	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
-		now := o.timeProvider.Now()
-
-		_, isNewPlayer, err := o.getOrCreateUserProfile(ctx, chatID, now)
+		_, isNewPlayer, err := o.playerProvider.GetPlayerByChatID(ctx, chatID)
 		if err != nil {
 			return fmt.Errorf("get user profile: %w", err)
 		}
+
+		now := o.timeProvider.Now()
 
 		isAvailable, err := o.isNewBoxScheduleAvailable(ctx, chatID, now)
 		if err != nil {
@@ -42,51 +40,6 @@ func (o *OpenBox) Open(
 	}
 
 	return nil
-}
-
-// getOrCreateUserProfile get or create user profile
-// returns user, is user created flag and error.
-func (o *OpenBox) getOrCreateUserProfile(
-	ctx context.Context,
-	chatID msginfo.ChatID,
-	now time.Time,
-) (player.Player, bool, error) {
-	plr, err := o.repo.GetPlayerByChatID(ctx, chatID)
-	if err != nil {
-		if !perror.IsType(err, perror.TypeNotFound) {
-			return player.Player{}, false, fmt.Errorf("get player by chat id: %w", err)
-		}
-
-		plr, err := o.createPlayer(ctx, chatID, now)
-		if err != nil {
-			return player.Player{}, false, fmt.Errorf("create player: %w", err)
-		}
-
-		return plr, true, nil
-	}
-
-	return plr, false, nil
-}
-
-func (o *OpenBox) createPlayer(
-	ctx context.Context,
-	chatID msginfo.ChatID,
-	createdAt time.Time,
-) (player.Player, error) {
-	plr := player.Player{
-		ChatID:           chatID,
-		CreatedAt:        createdAt,
-		ProfileUpdatedAt: createdAt,
-	}
-
-	id, err := o.repo.InsertPlayer(ctx, plr)
-	if err != nil {
-		return player.Player{}, fmt.Errorf("insert player: %w", err)
-	}
-
-	plr.ID = player.IDFromInt(id)
-
-	return plr, nil
 }
 
 func (o *OpenBox) isNewBoxScheduleAvailable(

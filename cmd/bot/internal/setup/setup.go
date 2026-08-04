@@ -21,11 +21,13 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/imageprovider"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/playerprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/viewcards"
 )
 
+//nolint:funlen
 func StartBot(ctx context.Context, cfg config.Config) error {
 	botAPI, err := bot.New(cfg.Bot.Token, bot.WithSkipGetMe())
 	if err != nil {
@@ -52,12 +54,15 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			markdownEscaper,
 			outboximageprovider.New(),
 		)
-		boxProcessor = openbox.New(
+		timeProvider   = timeprovider.New()
+		playerProvider = playerprovider.New(pgDB, timeProvider)
+		boxProcessor   = openbox.New(
 			pgDB,
 			pgDB.Transactor(),
+			playerProvider,
 			rewardgenerator.New(pgDB, boxRewardPercent),
 			outboxNotifier,
-			timeprovider.New(),
+			timeProvider,
 			cfg.OpenBox.CommonWaitPeriod,
 		)
 		directNotifier = notifier.New(
@@ -66,7 +71,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			imageprovider.New(),
 		)
 		cardViewer = viewcards.New(
-			pgDB,
+			playerProvider,
 			pgDB,
 			directNotifier,
 		)
