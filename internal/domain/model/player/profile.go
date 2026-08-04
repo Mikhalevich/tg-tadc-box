@@ -1,10 +1,14 @@
 package player
 
 type Profile struct {
-	OpenedBoxes OpenedBoxs
+	OpenedBoxes OpenedBoxes
 	Cards       CardsCollected
 }
 
-type OpenedBoxs struct {
+type OpenedBoxes struct {
 	Common int
+}
+
+func (ob OpenedBoxes) Count() int {
+	return ob.Common
 }

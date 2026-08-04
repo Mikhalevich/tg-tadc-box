@@ -13,7 +13,7 @@ type PlayerProvider interface {
 	GetPlayerByChatID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-	) (player.Player, bool, error)
+	) (player.Player, error)
 }
 
 type RewardProvider interface {

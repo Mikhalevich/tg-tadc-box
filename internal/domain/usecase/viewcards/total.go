@@ -13,7 +13,7 @@ func (v *ViewCards) Total(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) error {
-	profile, _, err := v.playerProvider.GetPlayerByChatID(ctx, chatID)
+	profile, err := v.playerProvider.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
 		return fmt.Errorf("get player by chat id: %w", err)
 	}

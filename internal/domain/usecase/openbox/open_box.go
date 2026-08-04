@@ -29,7 +29,7 @@ type PlayerProvider interface {
 	GetPlayerByChatID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-	) (player.Player, bool, error)
+	) (player.Player, error)
 	UpdatePlayer(ctx context.Context, usr player.Player) error
 }
 

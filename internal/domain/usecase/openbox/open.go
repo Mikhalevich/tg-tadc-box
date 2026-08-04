@@ -7,6 +7,7 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 )
 
 func (o *OpenBox) Open(
@@ -14,7 +15,7 @@ func (o *OpenBox) Open(
 	chatID msginfo.ChatID,
 ) error {
 	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
-		_, isNewPlayer, err := o.playerProvider.GetPlayerByChatID(ctx, chatID)
+		profile, err := o.playerProvider.GetPlayerByChatID(ctx, chatID)
 		if err != nil {
 			return fmt.Errorf("get user profile: %w", err)
 		}
@@ -30,7 +31,7 @@ func (o *OpenBox) Open(
 			return nil
 		}
 
-		if err := o.scheduleBox(ctx, chatID, now, isNewPlayer); err != nil {
+		if err := o.scheduleBox(ctx, chatID, now, isNoOpenBoxes(profile)); err != nil {
 			return fmt.Errorf("schedule box: %w", err)
 		}
 
@@ -40,6 +41,10 @@ func (o *OpenBox) Open(
 	}
 
 	return nil
+}
+
+func isNoOpenBoxes(profile player.Player) bool {
+	return profile.Profile.OpenedBoxes.Count() == 0
 }
 
 func (o *OpenBox) isNewBoxScheduleAvailable(
