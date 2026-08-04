@@ -27,6 +27,7 @@ type Notifier interface {
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		info []card.CollectedCardInfo,
+		abstractDuplicatesGloinksAmount int,
 	) error
 	ShowCollectedReward(
 		ctx context.Context,

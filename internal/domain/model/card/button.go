@@ -30,5 +30,17 @@ func PageButton(caption string, rewardType reward.RewardType, page int) (button.
 }
 
 func TotalButton(caption string) button.Button {
-	return button.CreateButtonWithoutPayload(caption, button.OperationCardTotal, true)
+	return button.CreateButtonWithoutPayload(
+		caption,
+		button.OperationCardTotal,
+		true,
+	)
+}
+
+func AbstractDuplicatesAllButton(caption string) button.Button {
+	return button.CreateButtonWithoutPayload(
+		caption,
+		button.OperationAbstractDuplicatesAll,
+		false,
+	)
 }

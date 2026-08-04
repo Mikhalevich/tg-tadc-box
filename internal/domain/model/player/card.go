@@ -6,6 +6,16 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
+var (
+	//nolint:gochecknoglobals,mnd
+	abstractionGloinksCosts = map[reward.RewardType]int{
+		reward.RewardTypeCommon:    1,
+		reward.RewardTypeRare:      5,
+		reward.RewardTypeEpic:      25,
+		reward.RewardTypeLegendary: 100,
+	}
+)
+
 type Card struct {
 	RewardID  reward.ID
 	Count     int
@@ -80,4 +90,54 @@ func findCardIdxByRewardID(cards []Card, rewardID reward.ID) int {
 	}
 
 	return -1
+}
+
+// AbstractDuplicatesAll remove all duplicates from cards
+// returns gloinks amount of abstracted cards.
+func (cc *CardsCollected) AbstractDuplicatesAll() int {
+	return cc.processAbstractionDuplicatesAll(removeDuplicates)
+}
+
+// ViewCostOfAbstractionDuplicatesAll view possible gloinks amount
+// if doing AbstractDuplicatesAll function.
+func (cc *CardsCollected) ViewCostOfAbstractionDuplicatesAll() int {
+	return cc.processAbstractionDuplicatesAll(countDuplicates)
+}
+
+func (cc *CardsCollected) processAbstractionDuplicatesAll(
+	processorFn func(cards []Card) int,
+) int {
+	gloinksAmount := 0
+	for rewardType, cards := range cc.CardsByType {
+		count := processorFn(cards)
+		gloinksAmount += abstractionGloinksCosts[rewardType] * count
+	}
+
+	return gloinksAmount
+}
+
+// removeDuplicates removes duplicates
+// returns count of removing cards.
+func removeDuplicates(cards []Card) int {
+	removedCount := 0
+	for idx, crd := range cards {
+		if crd.Count > 1 {
+			cards[idx].Count = 1
+			removedCount += crd.Count - 1
+		}
+	}
+
+	return removedCount
+}
+
+// countDuplicates counts duplicates.
+func countDuplicates(cards []Card) int {
+	duplicatesCount := 0
+	for _, crd := range cards {
+		if crd.Count > 1 {
+			duplicatesCount += crd.Count - 1
+		}
+	}
+
+	return duplicatesCount
 }

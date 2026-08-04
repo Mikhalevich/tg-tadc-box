@@ -14,8 +14,9 @@ func (n *Notifier) ShowCollectedTotalInfo(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	infos []card.CollectedCardInfo,
+	abstractDuplicatesGloinksAmount int,
 ) error {
-	buttons, err := makeCollectedTotalInfoButtons(infos)
+	buttons, err := makeCollectedTotalInfoButtons(infos, abstractDuplicatesGloinksAmount)
 	if err != nil {
 		return fmt.Errorf("make collected total info buttons: %w", err)
 	}
@@ -46,8 +47,23 @@ func makeCollectedTotalInfoMsg(infos []card.CollectedCardInfo) string {
 	return strings.Join(lines, "\n")
 }
 
-func makeCollectedTotalInfoButtons(infos []card.CollectedCardInfo) ([]button.ButtonRow, error) {
-	buttons := make([]button.ButtonRow, 0, len(infos))
+func calculateButtonsCount(
+	infos []card.CollectedCardInfo,
+	abstractDuplicatesGloinksAmount int,
+) int {
+	if abstractDuplicatesGloinksAmount > 0 {
+		return len(infos) + 1
+	}
+
+	return len(infos)
+}
+
+func makeCollectedTotalInfoButtons(
+	infos []card.CollectedCardInfo,
+	abstractDuplicatesGloinksAmount int,
+) ([]button.ButtonRow, error) {
+	buttons := make([]button.ButtonRow, 0,
+		calculateButtonsCount(infos, abstractDuplicatesGloinksAmount))
 
 	for _, info := range infos {
 		if info.Collected == 0 {
@@ -64,6 +80,17 @@ func makeCollectedTotalInfoButtons(infos []card.CollectedCardInfo) ([]button.But
 		}
 
 		buttons = append(buttons, button.Row(btn))
+	}
+
+	if abstractDuplicatesGloinksAmount > 0 {
+		buttons = append(buttons,
+			button.Row(
+				card.AbstractDuplicatesAllButton(
+					fmt.Sprintf("Abstract duplicates for %d gloinks",
+						abstractDuplicatesGloinksAmount),
+				),
+			),
+		)
 	}
 
 	return buttons, nil

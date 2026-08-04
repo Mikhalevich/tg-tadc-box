@@ -3,12 +3,15 @@ package player
 type Profile struct {
 	OpenedBoxes OpenedBoxes
 	Cards       CardsCollected
+	Wallet      Wallet
 }
 
-type OpenedBoxes struct {
-	Common int
-}
+// AbstractDuplicatesAll remove all duplicates from cards
+// and add abstracted gloinks amount to wallet
+// returns abstracted gloinks amount.
+func (p *Profile) AbstractDuplicatesAll() int {
+	gloinksAmount := p.Cards.AbstractDuplicatesAll()
+	p.Wallet.GloinksAmount += gloinksAmount
 
-func (ob OpenedBoxes) Count() int {
-	return ob.Common
+	return gloinksAmount
 }

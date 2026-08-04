@@ -23,6 +23,7 @@ import (
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/playerprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/abstractcard"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/viewcards"
 )
@@ -75,6 +76,11 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			pgDB,
 			directNotifier,
 		)
+		cardAbstracter = abstractcard.New(
+			playerProvider,
+			pgDB.Transactor(),
+			outboxNotifier,
+		)
 	)
 
 	if err := app.Start(
@@ -83,6 +89,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		msgProcessor,
 		boxProcessor,
 		cardViewer,
+		cardAbstracter,
 		outboxNotifier,
 		outboxNotifier,
 	); err != nil {

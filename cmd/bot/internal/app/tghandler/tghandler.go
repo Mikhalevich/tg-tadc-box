@@ -39,6 +39,10 @@ type CardViewer interface {
 	) error
 }
 
+type CardAbstracter interface {
+	All(ctx context.Context, chatID msginfo.ChatID) error
+}
+
 type Notifier interface {
 	Welcome(ctx context.Context, chatID msginfo.ChatID) error
 }
@@ -52,6 +56,7 @@ type TGHandler struct {
 	buttonProvider ButtonProvider
 	boxProcessor   BoxProcessor
 	cardViewer     CardViewer
+	cardAbstracter CardAbstracter
 	notifier       Notifier
 	errorNotifier  ErrorNotifier
 }
@@ -60,6 +65,7 @@ func New(
 	buttonProvider ButtonProvider,
 	boxProcessor BoxProcessor,
 	cardViewer CardViewer,
+	cardAbstracter CardAbstracter,
 	notifier Notifier,
 	errorNotifier ErrorNotifier,
 ) *TGHandler {
@@ -67,6 +73,7 @@ func New(
 		buttonProvider: buttonProvider,
 		boxProcessor:   boxProcessor,
 		cardViewer:     cardViewer,
+		cardAbstracter: cardAbstracter,
 		notifier:       notifier,
 		errorNotifier:  errorNotifier,
 	}
@@ -78,9 +85,10 @@ func New(
 
 func (t *TGHandler) registerCBHandlers() {
 	t.cbHanlers = map[button.Operation]cbHandler{
-		button.OperationGetBox:    t.cbGetBox,
-		button.OperationOpenBox:   t.cbOpenBox,
-		button.OperationCardPage:  t.cbCollectedCardPage,
-		button.OperationCardTotal: t.cbCollectedCardTotalPage,
+		button.OperationGetBox:                t.cbGetBox,
+		button.OperationOpenBox:               t.cbOpenBox,
+		button.OperationCardPage:              t.cbCollectedCardPage,
+		button.OperationCardTotal:             t.cbCollectedCardTotalPage,
+		button.OperationAbstractDuplicatesAll: t.cbAbstractDuplicatedAll,
 	}
 }
