@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/app/tgbot"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
@@ -51,7 +52,7 @@ type Shop interface {
 	BuyBox(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-		rewardType reward.RewardType,
+		boxType box.Type,
 	) error
 }
 

@@ -1,8 +1,6 @@
 package gloink
 
-import (
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
-)
+import "github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 
 type Amount int
 
@@ -19,6 +17,6 @@ func (a Amount) Multiply(count int) Amount {
 }
 
 type BoxCost struct {
-	Type   reward.RewardType
+	Type   box.Type
 	Amount Amount
 }

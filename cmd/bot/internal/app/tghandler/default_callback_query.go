@@ -148,7 +148,7 @@ func (t *TGHandler) cbBuyBox(
 	if err := t.shop.BuyBox(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
-		payload.Type,
+		payload.BoxType,
 	); err != nil {
 		return fmt.Errorf("buy box: %w", err)
 	}

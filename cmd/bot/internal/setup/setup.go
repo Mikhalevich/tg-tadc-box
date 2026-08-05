@@ -3,6 +3,7 @@ package setup
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/go-telegram/bot"
 	"github.com/jmoiron/sqlx"
@@ -20,7 +21,6 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/playerprovider"
@@ -46,7 +46,12 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 
 	boxRewardPercent, err := convertBoxRewardPercent(cfg.BoxRewardPercent)
 	if err != nil {
-		return fmt.Errorf("invalid box rewards percent: %w", err)
+		return fmt.Errorf("convert box rewards percent: %w", err)
+	}
+
+	boxWaitPeriod, err := convertBoxWaitPeriod(cfg.BoxWaitPeriod)
+	if err != nil {
+		return fmt.Errorf("convert box wait period: %w", err)
 	}
 
 	var (
@@ -61,13 +66,13 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		timeProvider   = timeprovider.New()
 		playerProvider = playerprovider.New(pgDB, timeProvider)
 		boxProcessor   = openbox.New(
+			boxWaitPeriod,
 			pgDB,
 			pgDB.Transactor(),
 			playerProvider,
 			rewardgenerator.New(pgDB, boxRewardPercent),
 			outboxNotifier,
 			timeProvider,
-			cfg.OpenBox.CommonWaitPeriod,
 		)
 		directNotifier = notifier.New(
 			msgProcessor,
@@ -86,8 +91,9 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		)
 		shop = shop.New(
 			convertBoxCosts(cfg.BoxCosts),
-			playerProvider,
 			pgDB.Transactor(),
+			playerProvider,
+			boxProcessor,
 			outboxNotifier,
 		)
 	)
@@ -157,26 +163,43 @@ func convertBoxCosts(
 	cfgBoxCosts map[string]config.BoxCost,
 ) []gloink.BoxCost {
 	var (
-		boxCosts           = make([]gloink.BoxCost, 0, len(cfgBoxCosts))
-		rewardTypeOrdering = []reward.RewardType{
-			reward.RewardTypeCommon,
-			reward.RewardTypeRare,
-			reward.RewardTypeEpic,
-			reward.RewardTypeLegendary,
+		boxCosts        = make([]gloink.BoxCost, 0, len(cfgBoxCosts))
+		boxTypeOrdering = []box.Type{
+			box.TypeNormal,
+			box.TypeRare,
+			box.TypeEpic,
+			box.TypeLegendary,
 		}
 	)
 
-	for _, rewardType := range rewardTypeOrdering {
-		cost, ok := cfgBoxCosts[rewardType.String()]
+	for _, boxType := range boxTypeOrdering {
+		cost, ok := cfgBoxCosts[boxType.String()]
 		if !ok {
 			continue
 		}
 
 		boxCosts = append(boxCosts, gloink.BoxCost{
-			Type:   rewardType,
+			Type:   boxType,
 			Amount: gloink.AmountFromInt(cost.Amount),
 		})
 	}
 
 	return boxCosts
+}
+
+func convertBoxWaitPeriod(
+	cfgBoxWaitPeriod map[string]time.Duration,
+) (map[box.Type]time.Duration, error) {
+	boxWaitPeriod := make(map[box.Type]time.Duration, len(cfgBoxWaitPeriod))
+
+	for boxTypeRaw, waitPeriod := range cfgBoxWaitPeriod {
+		boxType, err := box.TypeFromString(boxTypeRaw)
+		if err != nil {
+			return nil, fmt.Errorf("convert to box type: %w", err)
+		}
+
+		boxWaitPeriod[boxType] = waitPeriod
+	}
+
+	return boxWaitPeriod, nil
 }
