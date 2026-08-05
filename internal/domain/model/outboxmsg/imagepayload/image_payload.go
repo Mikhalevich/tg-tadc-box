@@ -5,19 +5,21 @@ import (
 	"encoding/gob"
 	"fmt"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
 type PayloadType string
 
 const (
-	PayloadTypeCommonChest PayloadType = "common_chest"
-	PayloadTypeReward      PayloadType = "reward"
+	PayloadTypeChest  PayloadType = "chest"
+	PayloadTypeReward PayloadType = "reward"
 )
 
 type ImagePayload struct {
-	Type   PayloadType
-	Reward reward.Reward
+	Type    PayloadType
+	Reward  reward.Reward
+	BoxType box.Type
 }
 
 func (p ImagePayload) GOBEncode() ([]byte, error) {

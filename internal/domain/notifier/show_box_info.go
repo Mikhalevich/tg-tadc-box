@@ -61,7 +61,7 @@ func (n *Notifier) sendBoxIsAvailable(
 		return fmt.Errorf("open box button: %w", err)
 	}
 
-	payload, err := n.imageProvider.Chest(ctx)
+	payload, err := n.imageProvider.Chest(ctx, domBox.Type)
 	if err != nil {
 		return fmt.Errorf("receive chest paylod: %w", err)
 	}

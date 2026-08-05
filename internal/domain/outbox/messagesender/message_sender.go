@@ -3,6 +3,7 @@ package messagesender
 import (
 	"context"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
@@ -19,7 +20,7 @@ type ImageProvider interface {
 		ctx context.Context,
 		rew reward.Reward,
 	) ([]byte, error)
-	Chest(ctx context.Context) ([]byte, error)
+	Chest(ctx context.Context, boxType box.Type) ([]byte, error)
 }
 
 type MessageSender struct {
