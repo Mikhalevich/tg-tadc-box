@@ -8,6 +8,7 @@ const (
 	OperationCardPage              Operation = "CardPage"
 	OperationCardTotal             Operation = "CardTotal"
 	OperationAbstractDuplicatesAll Operation = "AbstractDuplicatesAll"
+	OperationBuyBox                Operation = "BuyBox"
 )
 
 func (o Operation) String() string {

@@ -19,12 +19,15 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/timeprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/playerprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/abstractcard"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/shop"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/viewcards"
 )
 
@@ -81,6 +84,12 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			pgDB.Transactor(),
 			outboxNotifier,
 		)
+		shop = shop.New(
+			convertBoxCosts(cfg.BoxCosts),
+			playerProvider,
+			pgDB.Transactor(),
+			outboxNotifier,
+		)
 	)
 
 	if err := app.Start(
@@ -90,6 +99,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		boxProcessor,
 		cardViewer,
 		cardAbstracter,
+		shop,
 		outboxNotifier,
 		outboxNotifier,
 	); err != nil {
@@ -141,4 +151,32 @@ func convertBoxRewardPercent(
 	}
 
 	return rewards, nil
+}
+
+func convertBoxCosts(
+	cfgBoxCosts map[string]config.BoxCost,
+) []gloink.BoxCost {
+	var (
+		boxCosts           = make([]gloink.BoxCost, 0, len(cfgBoxCosts))
+		rewardTypeOrdering = []reward.RewardType{
+			reward.RewardTypeCommon,
+			reward.RewardTypeRare,
+			reward.RewardTypeEpic,
+			reward.RewardTypeLegendary,
+		}
+	)
+
+	for _, rewardType := range rewardTypeOrdering {
+		cost, ok := cfgBoxCosts[rewardType.String()]
+		if !ok {
+			continue
+		}
+
+		boxCosts = append(boxCosts, gloink.BoxCost{
+			Type:   rewardType,
+			Amount: gloink.AmountFromInt(cost.Amount),
+		})
+	}
+
+	return boxCosts
 }

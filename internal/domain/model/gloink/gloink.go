@@ -10,8 +10,15 @@ func (a Amount) Int() int {
 	return int(a)
 }
 
+func AmountFromInt(amount int) Amount {
+	return Amount(amount)
+}
+
 func (a Amount) Multiply(count int) Amount {
 	return Amount(a.Int() * count)
 }
 
-type BoxCosts map[reward.RewardType]Amount
+type BoxCost struct {
+	Type   reward.RewardType
+	Amount Amount
+}

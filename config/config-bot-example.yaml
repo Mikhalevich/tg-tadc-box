@@ -14,3 +14,10 @@ box_reward_percent:
     legendary: 1
     epic: 5
     rare: 20
+box_costs:
+  rare:
+    amount: 25
+  epic:
+    amount: 125
+  legendary:
+    amount: 500
