@@ -36,8 +36,8 @@ func (m *MessageSender) loadPayload(ctx context.Context, payload []byte) ([]byte
 	}
 
 	switch imgPayload.Type {
-	case imagepayload.PayloadTypeCommonChest:
-		image, err := m.imageProvider.Chest(ctx)
+	case imagepayload.PayloadTypeChest:
+		image, err := m.imageProvider.Chest(ctx, imgPayload.BoxType)
 		if err != nil {
 			return nil, fmt.Errorf("get chest: %w", err)
 		}

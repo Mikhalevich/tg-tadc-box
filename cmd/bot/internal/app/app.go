@@ -17,6 +17,7 @@ func Start(
 	boxScheduler tghandler.BoxProcessor,
 	cardViewer tghandler.CardViewer,
 	cardAbstracter tghandler.CardAbstracter,
+	shop tghandler.Shop,
 	notifier tghandler.Notifier,
 	errorNotifier tghandler.ErrorNotifier,
 ) error {
@@ -26,6 +27,7 @@ func Start(
 			boxScheduler,
 			cardViewer,
 			cardAbstracter,
+			shop,
 			notifier,
 			errorNotifier,
 		)

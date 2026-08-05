@@ -34,3 +34,11 @@ func GetBoxButton(caption string, isDelete bool) button.Button {
 		isDelete,
 	)
 }
+
+func ShopButton(caption string) button.Button {
+	return button.CreateButtonWithoutPayload(
+		caption,
+		button.OperationShop,
+		false,
+	)
+}

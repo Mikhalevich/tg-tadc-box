@@ -44,7 +44,7 @@ func (r *ReadyBox) processTransaction(
 	ids := make([]int, 0, len(readyBoxes))
 
 	for _, readyBox := range readyBoxes {
-		if err := r.notifier.ShowBoxInfo(ctx, readyBox, 0); err != nil {
+		if err := r.notifier.ShowReadyToOpenBox(ctx, readyBox); err != nil {
 			return fmt.Errorf("show box info: %w", err)
 		}
 

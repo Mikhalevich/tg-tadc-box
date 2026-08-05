@@ -9,8 +9,9 @@ type Config struct {
 	Tracing          Tracing                     `yaml:"tracing" required:"true"`
 	Bot              Bot                         `yaml:"bot" required:"true"`
 	Postgres         Postgres                    `yaml:"postgres" required:"true"`
-	OpenBox          OpenBox                     `yaml:"open_box" required:"true"`
 	BoxRewardPercent map[string]BoxRewardPercent `yaml:"box_reward_percent" required:"true"`
+	BoxCosts         map[string]BoxCost          `yaml:"box_costs" required:"true"`
+	BoxWaitPeriod    map[string]time.Duration    `yaml:"box_wait_period" required:"true"`
 }
 
 func (c *Config) Level() string {
@@ -39,12 +40,12 @@ type Postgres struct {
 	Connection string `yaml:"connection" required:"true"`
 }
 
-type OpenBox struct {
-	CommonWaitPeriod time.Duration `yaml:"common_wait_period"`
-}
-
 type BoxRewardPercent struct {
 	Legendary int `yaml:"legendary" required:"true"`
 	Epic      int `yaml:"epic" required:"true"`
 	Rare      int `yaml:"rare" required:"true"`
+}
+
+type BoxCost struct {
+	Amount int `yaml:"amount" required:"true"`
 }

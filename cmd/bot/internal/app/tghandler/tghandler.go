@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/app/tgbot"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
@@ -43,6 +44,18 @@ type CardAbstracter interface {
 	All(ctx context.Context, chatID msginfo.ChatID) error
 }
 
+type Shop interface {
+	ViewBoxes(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+	) error
+	BuyBox(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		boxType box.Type,
+	) error
+}
+
 type Notifier interface {
 	Welcome(ctx context.Context, chatID msginfo.ChatID) error
 }
@@ -57,6 +70,7 @@ type TGHandler struct {
 	boxProcessor   BoxProcessor
 	cardViewer     CardViewer
 	cardAbstracter CardAbstracter
+	shop           Shop
 	notifier       Notifier
 	errorNotifier  ErrorNotifier
 }
@@ -66,6 +80,7 @@ func New(
 	boxProcessor BoxProcessor,
 	cardViewer CardViewer,
 	cardAbstracter CardAbstracter,
+	shop Shop,
 	notifier Notifier,
 	errorNotifier ErrorNotifier,
 ) *TGHandler {
@@ -74,6 +89,7 @@ func New(
 		boxProcessor:   boxProcessor,
 		cardViewer:     cardViewer,
 		cardAbstracter: cardAbstracter,
+		shop:           shop,
 		notifier:       notifier,
 		errorNotifier:  errorNotifier,
 	}
@@ -90,5 +106,7 @@ func (t *TGHandler) registerCBHandlers() {
 		button.OperationCardPage:              t.cbCollectedCardPage,
 		button.OperationCardTotal:             t.cbCollectedCardTotalPage,
 		button.OperationAbstractDuplicatesAll: t.cbAbstractDuplicatedAll,
+		button.OperationBuyBox:                t.cbBuyBox,
+		button.OperationShop:                  t.cbShop,
 	}
 }

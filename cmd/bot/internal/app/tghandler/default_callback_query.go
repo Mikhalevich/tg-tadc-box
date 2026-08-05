@@ -8,6 +8,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 )
@@ -129,6 +130,42 @@ func (t *TGHandler) cbAbstractDuplicatedAll(
 		msginfo.ChatIDFromInt64(msg.ChatID),
 	); err != nil {
 		return fmt.Errorf("abstract all: %w", err)
+	}
+
+	return nil
+}
+
+func (t *TGHandler) cbBuyBox(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
+	payload, err := button.GetPayload[gloink.BuyBoxButtonPayload](*btn)
+	if err != nil {
+		return fmt.Errorf("get buy box payload: %w", err)
+	}
+
+	if err := t.shop.BuyBox(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+		payload.BoxType,
+	); err != nil {
+		return fmt.Errorf("buy box: %w", err)
+	}
+
+	return nil
+}
+
+func (t *TGHandler) cbShop(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
+	if err := t.shop.ViewBoxes(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+	); err != nil {
+		return fmt.Errorf("view boxes: %w", err)
 	}
 
 	return nil

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 )
@@ -12,13 +13,13 @@ func (n *Notifier) ShowGloinksWalletAfterAbstraction(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	wallet player.Wallet,
-	abstractedGloinksAmount int,
+	abstractedAmount gloink.Amount,
 ) error {
 	var (
 		msgTemplate = `Duplicates abstracted for *%d* gloinks
 Your gloinks amount is *%d*
 `
-		msg = fmt.Sprintf(msgTemplate, abstractedGloinksAmount, wallet.GloinksAmount)
+		msg = fmt.Sprintf(msgTemplate, abstractedAmount, wallet.GloinksAmount)
 	)
 
 	if err := n.sender.SendMessage(

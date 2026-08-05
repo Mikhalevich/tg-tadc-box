@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/outboxmsg/imagepayload"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
@@ -32,9 +33,10 @@ func (i *ImageProvider) Reward(
 	return buf, nil
 }
 
-func (i *ImageProvider) Chest(ctx context.Context) ([]byte, error) {
+func (i *ImageProvider) Chest(ctx context.Context, boxType box.Type) ([]byte, error) {
 	payload := imagepayload.ImagePayload{
-		Type: imagepayload.PayloadTypeCommonChest,
+		Type:    imagepayload.PayloadTypeChest,
+		BoxType: boxType,
 	}
 
 	buf, err := payload.GOBEncode()

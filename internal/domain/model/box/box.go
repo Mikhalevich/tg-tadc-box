@@ -34,7 +34,10 @@ func (s Status) String() string {
 type Type string
 
 const (
-	TypeNormal Type = "normal"
+	TypeNormal    Type = "normal"
+	TypeRare      Type = "rare"
+	TypeEpic      Type = "epic"
+	TypeLegendary Type = "legendary"
 )
 
 func (t Type) String() string {
@@ -42,7 +45,8 @@ func (t Type) String() string {
 }
 
 func TypeFromString(str string) (Type, error) {
-	if str == TypeNormal.String() {
+	switch str {
+	case TypeNormal.String(), TypeRare.String(), TypeEpic.String(), TypeLegendary.String():
 		return Type(str), nil
 	}
 
@@ -66,4 +70,9 @@ func (b Box) IsStatus(statuses ...Status) bool {
 
 func (b Box) AvailableAfter(now time.Time) time.Duration {
 	return b.AvailableAt.Sub(now)
+}
+
+type InProgressBox struct {
+	Box            Box
+	AvailableAfter time.Duration
 }

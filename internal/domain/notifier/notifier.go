@@ -3,6 +3,7 @@ package notifier
 import (
 	"context"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
@@ -21,7 +22,7 @@ type MarkdownEscaper interface {
 }
 
 type ImageProvider interface {
-	Chest(ctx context.Context) ([]byte, error)
+	Chest(ctx context.Context, boxType box.Type) ([]byte, error)
 	Reward(ctx context.Context, rew reward.Reward) ([]byte, error)
 }
 
