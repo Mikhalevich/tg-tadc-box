@@ -22,7 +22,7 @@ func (o *OpenBox) Open(
 		if _, err := o.processScheduleBox(
 			ctx,
 			chatID,
-			box.TypeNormal,
+			box.TypeCommon,
 			isNoOpenBoxes(profile),
 		); err != nil {
 			return fmt.Errorf("process schedule box: %w", err)

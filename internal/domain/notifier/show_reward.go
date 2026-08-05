@@ -41,7 +41,7 @@ func (n *Notifier) ShowReward(
 func makeShowRewardButtons(
 	boxType box.Type,
 ) []button.ButtonRow {
-	if boxType == box.TypeNormal {
+	if boxType == box.TypeCommon {
 		return []button.ButtonRow{
 			button.Row(box.GetBoxButton("Schedule next box", false)),
 		}

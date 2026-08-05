@@ -165,7 +165,7 @@ func convertBoxCosts(
 	var (
 		boxCosts        = make([]gloink.BoxCost, 0, len(cfgBoxCosts))
 		boxTypeOrdering = []box.Type{
-			box.TypeNormal,
+			box.TypeCommon,
 			box.TypeRare,
 			box.TypeEpic,
 			box.TypeLegendary,

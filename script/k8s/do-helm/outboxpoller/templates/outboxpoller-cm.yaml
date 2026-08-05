@@ -14,7 +14,7 @@ data:
       connection: {{ .Values.postgres.connStr }}
     worker:
       count: 1
-      interval: 2s
+      interval: 1s
       batch_size: 10
       max_retry_count: 10
 

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	normalPath    = "assets/chest/normal.jpg"
+	commonPath    = "assets/chest/common.jpg"
 	rarePath      = "assets/chest/rare.jpg"
 	epicPath      = "assets/chest/epic.jpg"
 	legendaryPath = "assets/chest/legendary.jpg"
@@ -41,8 +41,8 @@ func (i *ImageProvider) Chest(
 
 func chestPathByType(boxType box.Type) string {
 	switch boxType {
-	case box.TypeNormal:
-		return normalPath
+	case box.TypeCommon:
+		return commonPath
 
 	case box.TypeRare:
 		return rarePath
@@ -54,5 +54,5 @@ func chestPathByType(boxType box.Type) string {
 		return legendaryPath
 	}
 
-	return normalPath
+	return commonPath
 }
