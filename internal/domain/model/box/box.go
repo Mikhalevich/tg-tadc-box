@@ -34,7 +34,7 @@ func (s Status) String() string {
 type Type string
 
 const (
-	TypeNormal    Type = "normal"
+	TypeCommon    Type = "common"
 	TypeRare      Type = "rare"
 	TypeEpic      Type = "epic"
 	TypeLegendary Type = "legendary"
@@ -46,7 +46,7 @@ func (t Type) String() string {
 
 func TypeFromString(str string) (Type, error) {
 	switch str {
-	case TypeNormal.String(), TypeRare.String(), TypeEpic.String(), TypeLegendary.String():
+	case TypeCommon.String(), TypeRare.String(), TypeEpic.String(), TypeLegendary.String():
 		return Type(str), nil
 	}
 

@@ -12,11 +12,33 @@ data:
       token: {{ .Values.bot.token }}
     postgres:
       connection: {{ .Values.postgres.connStr }}
-    open_box:
-      common_wait_period: 3s
     box_reward_percent:
-      normal:
+      common:
         legendary: 1
         epic: 5
         rare: 20
+      rare:
+        legendary: 4
+        epic: 10
+        rare: 100
+      epic:
+        legendary: 20
+        epic: 100
+        rare: 100
+      legendary:
+        legendary: 100
+        epic: 100
+        rare: 100
+    box_costs:
+      rare:
+        amount: 25
+      epic:
+        amount: 125
+      legendary:
+        amount: 500
+    box_wait_period:
+      common: 10s
+      rare: 10s
+      epic: 10s
+      legendary: 10s
 

@@ -11,7 +11,7 @@ GOPRIVATE = GOPRIVATE=github.com/Mikhalevich/
 LINTER_NAME := golangci-lint
 LINTER_VERSION := v2.12.2
 
-APP_TAG := 0.1.2
+APP_TAG := 0.3.0
 
 .PHONY: all build test bench compose-up compose-down load-test-data vendor install-linter \
 lint fmt tools-update generate load-assets \

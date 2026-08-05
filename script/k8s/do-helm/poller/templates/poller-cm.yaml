@@ -12,7 +12,7 @@ data:
       connection: {{ .Values.postgres.connStr }}
     box_ready_notification_worker:
       count: 1
-      interval: 1s
+      interval: 2s
       batch_size: 10
 
 
