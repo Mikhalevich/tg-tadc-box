@@ -3,6 +3,7 @@ package abstractcard
 import (
 	"context"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 )
@@ -24,7 +25,7 @@ type Notifier interface {
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		wallet player.Wallet,
-		abstractedGloinksAmount int,
+		abstractedAmount gloink.Amount,
 	) error
 }
 

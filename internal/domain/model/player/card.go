@@ -3,12 +3,13 @@ package player
 import (
 	"time"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
 var (
 	//nolint:gochecknoglobals,mnd
-	abstractionGloinksCosts = map[reward.RewardType]int{
+	abstractionGloinksCosts = map[reward.RewardType]gloink.Amount{
 		reward.RewardTypeCommon:    1,
 		reward.RewardTypeRare:      5,
 		reward.RewardTypeEpic:      25,
@@ -94,23 +95,23 @@ func findCardIdxByRewardID(cards []Card, rewardID reward.ID) int {
 
 // AbstractDuplicatesAll remove all duplicates from cards
 // returns gloinks amount of abstracted cards.
-func (cc *CardsCollected) AbstractDuplicatesAll() int {
+func (cc *CardsCollected) AbstractDuplicatesAll() gloink.Amount {
 	return cc.processAbstractionDuplicatesAll(removeDuplicates)
 }
 
 // ViewCostOfAbstractionDuplicatesAll view possible gloinks amount
 // if doing AbstractDuplicatesAll function.
-func (cc *CardsCollected) ViewCostOfAbstractionDuplicatesAll() int {
+func (cc *CardsCollected) ViewCostOfAbstractionDuplicatesAll() gloink.Amount {
 	return cc.processAbstractionDuplicatesAll(countDuplicates)
 }
 
 func (cc *CardsCollected) processAbstractionDuplicatesAll(
 	processorFn func(cards []Card) int,
-) int {
-	gloinksAmount := 0
+) gloink.Amount {
+	var gloinksAmount gloink.Amount
 	for rewardType, cards := range cc.CardsByType {
 		count := processorFn(cards)
-		gloinksAmount += abstractionGloinksCosts[rewardType] * count
+		gloinksAmount += abstractionGloinksCosts[rewardType].Multiply(count)
 	}
 
 	return gloinksAmount

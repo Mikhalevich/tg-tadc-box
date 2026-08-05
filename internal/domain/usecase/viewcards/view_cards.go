@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
@@ -27,7 +28,7 @@ type Notifier interface {
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		info []card.CollectedCardInfo,
-		abstractDuplicatesGloinksAmount int,
+		abstractDuplicatesAmount gloink.Amount,
 	) error
 	ShowCollectedReward(
 		ctx context.Context,
