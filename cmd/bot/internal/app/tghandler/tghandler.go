@@ -107,5 +107,6 @@ func (t *TGHandler) registerCBHandlers() {
 		button.OperationCardTotal:             t.cbCollectedCardTotalPage,
 		button.OperationAbstractDuplicatesAll: t.cbAbstractDuplicatedAll,
 		button.OperationBuyBox:                t.cbBuyBox,
+		button.OperationShop:                  t.cbShop,
 	}
 }

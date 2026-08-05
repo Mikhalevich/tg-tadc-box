@@ -26,6 +26,10 @@ type BoxScheduler interface {
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		boxType box.Type,
+	) (bool, error)
+	ShowInProgressBoxes(
+		ctx context.Context,
+		chatID msginfo.ChatID,
 	) error
 }
 

@@ -9,56 +9,85 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
+// ScheduleBox schedule box
+// returns is sheduled flag and error.
 func (o *OpenBox) ScheduleBox(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	boxType box.Type,
-) error {
+) (bool, error) {
+	var (
+		isScheduled = false
+		err         error
+	)
+
 	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
-		inProgressBoxes, err := o.inProgressBoxesByType(ctx, chatID, boxType)
-		if err != nil {
-			return fmt.Errorf("get in progress boxes by type %s: %w", boxType.String(), err)
-		}
-
-		now := o.timeProvider.Now()
-
-		if len(inProgressBoxes) != 0 {
-			if err := o.notifier.ShowBoxInfo(ctx, inProgressBoxes[0], inProgressBoxes[0].AvailableAfter(now)); err != nil {
-				return fmt.Errorf("show existing box info: %w", err)
-			}
-
-			return nil
-		}
-
-		if err := o.scheduleBox(
+		isScheduled, err = o.processScheduleBox(
 			ctx,
 			chatID,
 			boxType,
-			now,
 			false,
-		); err != nil {
-			return fmt.Errorf("schedule box: %w", err)
+		)
+
+		if err != nil {
+			return fmt.Errorf("process schedule box: %w", err)
 		}
 
 		return nil
 	}); err != nil {
-		return fmt.Errorf("transaction: %w", err)
+		return false, fmt.Errorf("transaction: %w", err)
 	}
 
-	return nil
+	return isScheduled, nil
 }
 
-func (o *OpenBox) inProgressBoxesByType(
+// processScheduleBox schedule box
+// returns is sheduled flag and error.
+func (o *OpenBox) processScheduleBox(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	boxType box.Type,
-) ([]box.Box, error) {
-	boxes, err := o.repo.GetBoxesByStatus(ctx, chatID, box.StatusInProgress)
+	isImmediate bool,
+) (bool, error) {
+	inProgressBoxes, err := o.repo.GetBoxesByStatus(ctx, chatID, box.StatusInProgress)
 	if err != nil {
-		return nil, fmt.Errorf("get active boxes: %w", err)
+		return false, fmt.Errorf("get in_progress boxes: %w", err)
 	}
 
-	return filterBoxes(boxes, boxType), nil
+	if len(filterBoxes(inProgressBoxes, boxType)) != 0 {
+		if err := o.showInProgressBoxesNotification(
+			ctx,
+			chatID,
+			inProgressBoxes,
+		); err != nil {
+			return false, fmt.Errorf("show in_progress notification: %w", err)
+		}
+
+		return false, nil
+	}
+
+	newBox, err := o.scheduleBox(
+		ctx,
+		chatID,
+		boxType,
+		o.timeProvider.Now(),
+		isImmediate,
+	)
+	if err != nil {
+		return false, fmt.Errorf("schedule box: %w", err)
+	}
+
+	inProgressBoxes = append(inProgressBoxes, newBox)
+
+	if err := o.showInProgressBoxesNotification(
+		ctx,
+		chatID,
+		inProgressBoxes,
+	); err != nil {
+		return false, fmt.Errorf("show in_progress notification: %w", err)
+	}
+
+	return true, nil
 }
 
 func filterBoxes(boxes []box.Box, boxType box.Type) []box.Box {
@@ -79,7 +108,7 @@ func (o *OpenBox) scheduleBox(
 	boxType box.Type,
 	createdAt time.Time,
 	isImmediate bool,
-) error {
+) (box.Box, error) {
 	newBox := o.createBox(
 		chatID,
 		createdAt,
@@ -89,16 +118,12 @@ func (o *OpenBox) scheduleBox(
 
 	boxID, err := o.repo.InsertBox(ctx, newBox)
 	if err != nil {
-		return fmt.Errorf("insert box: %w", err)
+		return box.Box{}, fmt.Errorf("insert box: %w", err)
 	}
 
 	newBox.ID = box.IDFromInt(boxID)
 
-	if err := o.notifier.ShowBoxInfo(ctx, newBox, newBox.AvailableAfter(createdAt)); err != nil {
-		return fmt.Errorf("show new box info: %w", err)
-	}
-
-	return nil
+	return newBox, nil
 }
 
 func (o *OpenBox) createBox(

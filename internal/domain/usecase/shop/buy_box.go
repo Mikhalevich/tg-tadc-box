@@ -30,8 +30,13 @@ func (s *Shop) BuyBox(
 			return fmt.Errorf("decrease gloinks: %w", err)
 		}
 
-		if err := s.boxScheduler.ScheduleBox(ctx, chatID, boxType); err != nil {
+		isScheduled, err := s.boxScheduler.ScheduleBox(ctx, chatID, boxType)
+		if err != nil {
 			return fmt.Errorf("schedule box: %w", err)
+		}
+
+		if !isScheduled {
+			return perror.AlreadyExists("already exists")
 		}
 
 		if err := s.playerProvider.UpdatePlayer(ctx, plr); err != nil {
@@ -40,6 +45,10 @@ func (s *Shop) BuyBox(
 
 		return nil
 	}); err != nil {
+		if perror.IsType(err, perror.TypeAlreadyExists) {
+			return nil
+		}
+
 		return fmt.Errorf("transaction: %w", err)
 	}
 

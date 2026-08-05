@@ -17,7 +17,7 @@ type Transactor interface {
 }
 
 type Notifier interface {
-	ShowBoxInfo(ctx context.Context, b box.Box, availableAfter time.Duration) error
+	ShowReadyToOpenBox(ctx context.Context, domBox box.Box) error
 }
 
 type TimeProvider interface {

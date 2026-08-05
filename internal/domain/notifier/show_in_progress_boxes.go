@@ -3,6 +3,7 @@ package notifier
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
@@ -10,39 +11,38 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (n *Notifier) ShowBoxInfo(
+func (n *Notifier) ShowInProgressBoxes(
 	ctx context.Context,
-	domBox box.Box,
-	availableAfter time.Duration,
+	chatID msginfo.ChatID,
+	boxes []box.InProgressBox,
 ) error {
-	if availableAfter > 0 {
-		if err := n.sendBoxIsNotAvailableYet(ctx, domBox, availableAfter); err != nil {
-			return fmt.Errorf("send box is not available yet: %w", err)
+	inProgressBoxMsgLines := make([]string, 0, len(boxes))
+
+	for _, inProgressBox := range boxes {
+		if inProgressBox.AvailableAfter > 0 {
+			msgLine := fmt.Sprintf("*%s* box will be available after *%s*",
+				inProgressBox.Box.Type.String(),
+				n.escaper.EscapeMarkdown(inProgressBox.AvailableAfter.Truncate(time.Second).String()))
+
+			inProgressBoxMsgLines = append(inProgressBoxMsgLines, msgLine)
+
+			continue
 		}
 
+		if err := n.sendBoxIsAvailable(ctx, inProgressBox.Box); err != nil {
+			return fmt.Errorf("send box is available: %w", err)
+		}
+	}
+
+	if len(inProgressBoxMsgLines) == 0 {
 		return nil
 	}
-
-	if err := n.sendBoxIsAvailable(ctx, domBox); err != nil {
-		return fmt.Errorf("send box is available: %w", err)
-	}
-
-	return nil
-}
-
-func (n *Notifier) sendBoxIsNotAvailableYet(
-	ctx context.Context,
-	domBox box.Box,
-	availableAfter time.Duration,
-) error {
-	msg := fmt.Sprintf("Box will be available after *%s*",
-		n.escaper.EscapeMarkdown(availableAfter.Truncate(time.Second).String()))
 
 	if err := n.sender.SendMessage(
 		ctx,
 		msginfo.Message{
-			ChatID: domBox.ChatID,
-			Text:   msg,
+			ChatID: chatID,
+			Text:   strings.Join(inProgressBoxMsgLines, "\n"),
 			Type:   msginfo.MessageTypeMarkdown,
 		},
 	); err != nil {

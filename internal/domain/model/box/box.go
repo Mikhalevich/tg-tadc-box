@@ -71,3 +71,8 @@ func (b Box) IsStatus(statuses ...Status) bool {
 func (b Box) AvailableAfter(now time.Time) time.Duration {
 	return b.AvailableAt.Sub(now)
 }
+
+type InProgressBox struct {
+	Box            Box
+	AvailableAfter time.Duration
+}

@@ -155,3 +155,18 @@ func (t *TGHandler) cbBuyBox(
 
 	return nil
 }
+
+func (t *TGHandler) cbShop(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
+	if err := t.shop.ViewBoxes(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+	); err != nil {
+		return fmt.Errorf("view boxes: %w", err)
+	}
+
+	return nil
+}

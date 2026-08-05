@@ -36,11 +36,7 @@ func (o *OpenBox) OpenByID(
 		now := o.timeProvider.Now()
 
 		if readyBox.AvailableAt.After(now) {
-			if err := o.notifier.ShowBoxInfo(ctx, readyBox, readyBox.AvailableAt.Sub(now)); err != nil {
-				return fmt.Errorf("show box info: %w", err)
-			}
-
-			return nil
+			return perror.InvalidParam("box is not ready yet")
 		}
 
 		receivedReward, err := o.openBox(ctx, profile, readyBox, now)
@@ -48,7 +44,13 @@ func (o *OpenBox) OpenByID(
 			return fmt.Errorf("open box: %w", err)
 		}
 
-		if err := o.notifier.ShowReward(ctx, chatID, messageID, receivedReward); err != nil {
+		if err := o.notifier.ShowReward(
+			ctx,
+			chatID,
+			messageID,
+			receivedReward,
+			readyBox.Type,
+		); err != nil {
 			return fmt.Errorf("show reward: %w", err)
 		}
 

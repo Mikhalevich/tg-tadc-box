@@ -15,6 +15,7 @@ func (n *Notifier) ShowReward(
 	chatID msginfo.ChatID,
 	messageID msginfo.MessageID,
 	receivedReward reward.Reward,
+	boxType box.Type,
 ) error {
 	payload, err := n.imageProvider.Reward(ctx, receivedReward)
 	if err != nil {
@@ -28,13 +29,25 @@ func (n *Notifier) ShowReward(
 			ReplyMsgID: messageID,
 			Type:       msginfo.MessageTypeEditPNG,
 			Payload:    payload,
-			Buttons: []button.ButtonRow{
-				button.Row(box.GetBoxButton("Schedule next box", false)),
-			},
+			Buttons:    makeShowRewardButtons(boxType),
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)
 	}
 
 	return nil
+}
+
+func makeShowRewardButtons(
+	boxType box.Type,
+) []button.ButtonRow {
+	if boxType == box.TypeNormal {
+		return []button.ButtonRow{
+			button.Row(box.GetBoxButton("Schedule next box", false)),
+		}
+	}
+
+	return []button.ButtonRow{
+		button.Row(box.ShopButton("Visit shop")),
+	}
 }
