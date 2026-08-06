@@ -6,10 +6,9 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 )
 
-func (o *OpenBox) Open(
+func (o *OpenBox) OpenCommonBox(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) error {
@@ -23,7 +22,7 @@ func (o *OpenBox) Open(
 			ctx,
 			chatID,
 			box.TypeCommon,
-			isNoOpenBoxes(profile),
+			profile.Profile.IsNoOpenBoxes(),
 		); err != nil {
 			return fmt.Errorf("process schedule box: %w", err)
 		}
@@ -34,8 +33,4 @@ func (o *OpenBox) Open(
 	}
 
 	return nil
-}
-
-func isNoOpenBoxes(profile player.Player) bool {
-	return profile.Profile.OpenedBoxes.Count() == 0
 }

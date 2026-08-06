@@ -27,11 +27,11 @@ func OpenBoxButton(boxID int) (button.Button, error) {
 	return btn, nil
 }
 
-func GetBoxButton(caption string, isDelete bool) button.Button {
+func GetCommonBoxButton(caption string) button.Button {
 	return button.CreateButtonWithoutPayload(
 		caption,
-		button.OperationGetBox,
-		isDelete,
+		button.OperationGetCommonBox,
+		true,
 	)
 }
 

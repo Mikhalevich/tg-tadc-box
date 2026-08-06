@@ -26,16 +26,23 @@ func (s *Shop) BuyBox(
 			return fmt.Errorf("find box cost: %w", err)
 		}
 
-		if err := plr.Profile.Wallet.DecreaseGloinks(amount); err != nil {
-			return fmt.Errorf("decrease gloinks: %w", err)
+		if !amount.IsFree() {
+			if err := plr.Profile.Wallet.DecreaseGloinks(amount); err != nil {
+				return fmt.Errorf("decrease gloinks: %w", err)
+			}
 		}
 
-		isScheduled, err := s.boxScheduler.ScheduleBox(ctx, chatID, boxType)
+		isScheduled, err := s.boxScheduler.ScheduleBox(
+			ctx,
+			chatID,
+			boxType,
+			plr.Profile.IsNoOpenBoxes(),
+		)
 		if err != nil {
 			return fmt.Errorf("schedule box: %w", err)
 		}
 
-		if !isScheduled {
+		if !isScheduled || amount.IsFree() {
 			return nil
 		}
 

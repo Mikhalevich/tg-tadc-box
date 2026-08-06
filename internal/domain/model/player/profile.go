@@ -19,3 +19,7 @@ func (p *Profile) AbstractDuplicatesAll() gloink.Amount {
 
 	return gloinksAmount
 }
+
+func (p *Profile) IsNoOpenBoxes() bool {
+	return p.OpenedBoxes.Count() == 0
+}

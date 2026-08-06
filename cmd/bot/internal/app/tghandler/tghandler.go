@@ -17,7 +17,7 @@ type ButtonProvider interface {
 }
 
 type BoxProcessor interface {
-	Open(ctx context.Context, chatID msginfo.ChatID) error
+	OpenCommonBox(ctx context.Context, chatID msginfo.ChatID) error
 	OpenByID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
@@ -101,7 +101,7 @@ func New(
 
 func (t *TGHandler) registerCBHandlers() {
 	t.cbHanlers = map[button.Operation]cbHandler{
-		button.OperationGetBox:                t.cbGetBox,
+		button.OperationGetCommonBox:          t.cbGetCommonBox,
 		button.OperationOpenBox:               t.cbOpenBox,
 		button.OperationCardPage:              t.cbCollectedCardPage,
 		button.OperationCardTotal:             t.cbCollectedCardTotalPage,

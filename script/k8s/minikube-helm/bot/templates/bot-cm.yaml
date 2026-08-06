@@ -30,6 +30,8 @@ data:
         epic: 100
         rare: 100
     box_costs:
+      common:
+        amount: 0
       rare:
         amount: 25
       epic:

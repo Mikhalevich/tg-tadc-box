@@ -45,16 +45,16 @@ func (t *TGHandler) DefaultCallbackQuery(ctx context.Context, msg tgbot.BotMessa
 	return nil
 }
 
-func (t *TGHandler) cbGetBox(
+func (t *TGHandler) cbGetCommonBox(
 	ctx context.Context,
 	msg tgbot.BotMessage,
 	btn *button.Button,
 ) error {
-	if err := t.boxProcessor.Open(
+	if err := t.boxProcessor.OpenCommonBox(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
 	); err != nil {
-		return fmt.Errorf("open box: %w", err)
+		return fmt.Errorf("open common box: %w", err)
 	}
 
 	return nil
