@@ -54,9 +54,38 @@ func (o *OpenBox) OpenByID(
 			return fmt.Errorf("show reward: %w", err)
 		}
 
+		if err := o.schedulePendingBoxIfAvailable(
+			ctx,
+			chatID,
+			readyBox.Type,
+			now,
+		); err != nil {
+			return fmt.Errorf("schedule pending box if available: %w", err)
+		}
+
 		return nil
 	}); err != nil {
 		return fmt.Errorf("transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (o *OpenBox) schedulePendingBoxIfAvailable(
+	ctx context.Context,
+	chatID msginfo.ChatID,
+	boxType box.Type,
+	now time.Time,
+) error {
+	if err := o.repo.ChangeFirstBoxStatusByType(
+		ctx,
+		chatID,
+		boxType,
+		box.StatusInProgress,
+		box.StatusPending,
+		now.Add(o.boxWaitPeriod[boxType]),
+	); err != nil {
+		return fmt.Errorf("change first box status by type: %w", err)
 	}
 
 	return nil
