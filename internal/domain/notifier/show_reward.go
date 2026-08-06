@@ -29,25 +29,13 @@ func (n *Notifier) ShowReward(
 			ReplyMsgID: messageID,
 			Type:       msginfo.MessageTypeEditPNG,
 			Payload:    payload,
-			Buttons:    makeShowRewardButtons(boxType),
+			Buttons: []button.ButtonRow{
+				button.Row(box.ShopButton("Get next box")),
+			},
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)
 	}
 
 	return nil
-}
-
-func makeShowRewardButtons(
-	boxType box.Type,
-) []button.ButtonRow {
-	if boxType == box.TypeCommon {
-		return []button.ButtonRow{
-			button.Row(box.GetBoxButton("Schedule next box", false)),
-		}
-	}
-
-	return []button.ButtonRow{
-		button.Row(box.ShopButton("Visit shop")),
-	}
 }

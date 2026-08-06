@@ -5,9 +5,14 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
+)
+
+const (
+	initialGloinksAmount = 100
 )
 
 // GetPlayerByChatID get existing or create a new player
@@ -39,8 +44,13 @@ func (p *PlayerProvider) createPlayer(
 	createdAt time.Time,
 ) (player.Player, error) {
 	plr := player.Player{
-		ChatID:           chatID,
-		CreatedAt:        createdAt,
+		ChatID:    chatID,
+		CreatedAt: createdAt,
+		Profile: player.Profile{
+			Wallet: player.Wallet{
+				GloinksAmount: gloink.AmountFromInt(initialGloinksAmount),
+			},
+		},
 		ProfileUpdatedAt: createdAt,
 	}
 

@@ -8,6 +8,10 @@ func (a Amount) Int() int {
 	return int(a)
 }
 
+func (a Amount) IsFree() bool {
+	return a == 0
+}
+
 func AmountFromInt(amount int) Amount {
 	return Amount(amount)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
@@ -19,7 +20,7 @@ func (n *Notifier) ShowBoxCosts(
 	var buttonRows []button.ButtonRow
 	for _, cost := range costs {
 		btn, err := gloink.BuyBoxButton(
-			fmt.Sprintf("%s %d gloinks", cost.Type.String(), cost.Amount.Int()),
+			makeMessageForBoxAmount(cost.Type, cost.Amount),
 			cost.Type,
 		)
 		if err != nil {
@@ -42,4 +43,12 @@ func (n *Notifier) ShowBoxCosts(
 	}
 
 	return nil
+}
+
+func makeMessageForBoxAmount(boxType box.Type, amount gloink.Amount) string {
+	if amount.Int() == 0 {
+		return "Free"
+	}
+
+	return fmt.Sprintf("%s %d gloinks", boxType.String(), amount.Int())
 }

@@ -15,6 +15,7 @@ func (o *OpenBox) ScheduleBox(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	boxType box.Type,
+	isImmediate bool,
 ) (bool, error) {
 	var (
 		isScheduled = false
@@ -26,7 +27,7 @@ func (o *OpenBox) ScheduleBox(
 			ctx,
 			chatID,
 			boxType,
-			false,
+			isImmediate,
 		)
 
 		if err != nil {

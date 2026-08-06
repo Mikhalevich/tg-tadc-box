@@ -25,6 +25,8 @@ box_reward_percent:
     epic: 100
     rare: 100
 box_costs:
+  common:
+    amount: 0
   rare:
     amount: 25
   epic:
@@ -32,7 +34,7 @@ box_costs:
   legendary:
     amount: 500
 box_wait_period:
-  common: 3s
+  common: 10s
   rare: 10s
   epic: 10s
   legendary: 10s
