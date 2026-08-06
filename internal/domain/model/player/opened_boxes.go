@@ -15,8 +15,8 @@ type OpenedBoxes struct {
 	Legendary int
 }
 
-func (ob *OpenedBoxes) Count() int {
-	return ob.Common + ob.Rare + ob.Epic + ob.Legendary
+func (ob *OpenedBoxes) CommonCount() int {
+	return ob.Common
 }
 
 func (ob *OpenedBoxes) Add(boxType box.Type) {

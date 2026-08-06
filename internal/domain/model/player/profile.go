@@ -20,6 +20,6 @@ func (p *Profile) AbstractDuplicatesAll() gloink.Amount {
 	return gloinksAmount
 }
 
-func (p *Profile) IsNoOpenBoxes() bool {
-	return p.OpenedBoxes.Count() == 0
+func (p *Profile) IsNoOpenCommonBoxes() bool {
+	return p.OpenedBoxes.CommonCount() == 0
 }
