@@ -8,7 +8,7 @@ bot:
 postgres:
   connection: "host=postgres port=5432 user=bot password=bot dbname=bot sslmode=disable"
 box_reward_percent:
-  normal:
+  common:
     legendary: 1
     epic: 5
     rare: 20
@@ -32,7 +32,7 @@ box_costs:
   legendary:
     amount: 500
 box_wait_period:
-  normal: 3s
+  common: 3s
   rare: 10s
   epic: 10s
   legendary: 10s

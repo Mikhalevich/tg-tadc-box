@@ -34,6 +34,8 @@ func (o *OpenBox) showInProgressBoxesNotification(
 	chatID msginfo.ChatID,
 	boxes []box.Box,
 ) error {
+	box.SortBoxByType(boxes)
+
 	if err := o.notifier.ShowInProgressBoxes(
 		ctx,
 		chatID,
