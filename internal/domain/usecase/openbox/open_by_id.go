@@ -89,7 +89,7 @@ func (o *OpenBox) openBox(
 		return reward.Reward{}, fmt.Errorf("insert received reward: %w", err)
 	}
 
-	if err := o.markRewardInUserProfile(ctx, profile, receivedReward); err != nil {
+	if err := o.markRewardInUserProfile(ctx, profile, receivedReward, readyBox.Type); err != nil {
 		return reward.Reward{}, fmt.Errorf("mark opened box in user profile: %w", err)
 	}
 
@@ -117,10 +117,11 @@ func (o *OpenBox) markRewardInUserProfile(
 	ctx context.Context,
 	plr player.Player,
 	rwd reward.Reward,
+	boxType box.Type,
 ) error {
 	plr.Profile.Cards.AddReward(rwd.Type, rwd.ID, rwd.CreatedAt)
 
-	plr.Profile.OpenedBoxes.Common++
+	plr.Profile.OpenedBoxes.Add(boxType)
 
 	if err := o.playerProvider.UpdatePlayer(ctx, plr); err != nil {
 		return fmt.Errorf("update player: %w", err)

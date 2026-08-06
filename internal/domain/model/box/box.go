@@ -62,6 +62,32 @@ func (t Type) Compare(other Type) int {
 	return 0
 }
 
+func (t Type) IsValid() bool {
+	switch t {
+	case TypeCommon, TypeRare, TypeEpic, TypeLegendary:
+		return true
+	}
+
+	return false
+}
+
+func (t Type) NextType() Type {
+	switch t {
+	case TypeCommon:
+		return TypeRare
+
+	case TypeRare:
+		return TypeEpic
+
+	case TypeEpic:
+		return TypeLegendary
+
+	case TypeLegendary:
+	}
+
+	return Type("")
+}
+
 func TypeFromString(str string) (Type, error) {
 	switch str {
 	case TypeCommon.String(), TypeRare.String(), TypeEpic.String(), TypeLegendary.String():
