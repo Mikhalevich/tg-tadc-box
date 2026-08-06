@@ -71,6 +71,7 @@ func (o *OpenBox) processScheduleBox(
 		ctx,
 		chatID,
 		boxType,
+		box.StatusInProgress,
 		o.timeProvider.Now(),
 		isImmediate,
 	)
@@ -107,6 +108,7 @@ func (o *OpenBox) scheduleBox(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	boxType box.Type,
+	boxStatus box.Status,
 	createdAt time.Time,
 	isImmediate bool,
 ) (box.Box, error) {
@@ -114,6 +116,7 @@ func (o *OpenBox) scheduleBox(
 		chatID,
 		createdAt,
 		boxType,
+		boxStatus,
 		isImmediate,
 	)
 
@@ -131,6 +134,7 @@ func (o *OpenBox) createBox(
 	chatID msginfo.ChatID,
 	createdAt time.Time,
 	boxType box.Type,
+	boxStatus box.Status,
 	isImmediate bool,
 ) box.Box {
 	var (
@@ -146,7 +150,7 @@ func (o *OpenBox) createBox(
 
 	return box.Box{
 		ChatID:              chatID,
-		Status:              box.StatusInProgress,
+		Status:              boxStatus,
 		Type:                boxType,
 		CreatedAt:           createdAt,
 		ReadyNotificationAt: readyNotificationAt,

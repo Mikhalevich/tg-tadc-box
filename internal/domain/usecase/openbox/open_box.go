@@ -50,6 +50,7 @@ type Notifier interface {
 		chatID msginfo.ChatID,
 		boxes []box.InProgressBox,
 	) error
+	ShowBonusBox(ctx context.Context, bonusBox box.Box) error
 }
 
 type TimeProvider interface {

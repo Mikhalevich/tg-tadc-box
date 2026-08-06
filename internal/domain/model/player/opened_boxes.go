@@ -35,14 +35,18 @@ func (ob *OpenedBoxes) Add(boxType box.Type) {
 	}
 }
 
-func (ob *OpenedBoxes) IsFreeBoxAvailable(openedBoxType box.Type) (box.Type, bool) {
+// IsBonusBoxAvailable check for free box availability
+// returns free box type and availability flag.
+func (ob *OpenedBoxes) IsBonusBoxAvailable(openedBoxType box.Type) (box.Type, bool) {
 	count := ob.openedBoxCount(openedBoxType)
 
 	if (count % freeBoxAfterOpenedBoxCount) != 0 {
 		return box.TypeCommon, false
 	}
 
-	return box.TypeCommon, false
+	bonusBoxType := openedBoxType.Next()
+
+	return bonusBoxType, bonusBoxType.IsValid()
 }
 
 func (ob *OpenedBoxes) openedBoxCount(boxType box.Type) int {
