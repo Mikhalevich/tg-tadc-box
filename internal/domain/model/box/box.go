@@ -51,11 +51,11 @@ func (t Type) Compare(other Type) int {
 
 	for _, inOrder := range []Type{TypeCommon, TypeRare, TypeEpic, TypeLegendary} {
 		if t == inOrder {
-			return 1
+			return -1
 		}
 
 		if other == inOrder {
-			return -1
+			return 1
 		}
 	}
 
