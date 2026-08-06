@@ -44,6 +44,24 @@ func (t Type) String() string {
 	return string(t)
 }
 
+func (t Type) Compare(other Type) int {
+	if t == other {
+		return 0
+	}
+
+	for _, inOrder := range []Type{TypeCommon, TypeRare, TypeEpic, TypeLegendary} {
+		if t == inOrder {
+			return 1
+		}
+
+		if other == inOrder {
+			return -1
+		}
+	}
+
+	return 0
+}
+
 func TypeFromString(str string) (Type, error) {
 	switch str {
 	case TypeCommon.String(), TypeRare.String(), TypeEpic.String(), TypeLegendary.String():
@@ -75,4 +93,10 @@ func (b Box) AvailableAfter(now time.Time) time.Duration {
 type InProgressBox struct {
 	Box            Box
 	AvailableAfter time.Duration
+}
+
+func SortBoxByType(boxes []Box) {
+	slices.SortFunc(boxes, func(a, b Box) int {
+		return a.Type.Compare(b.Type)
+	})
 }

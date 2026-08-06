@@ -36,7 +36,7 @@ func (s *Shop) BuyBox(
 		}
 
 		if !isScheduled {
-			return perror.AlreadyExists("already exists")
+			return nil
 		}
 
 		if err := s.playerProvider.UpdatePlayer(ctx, plr); err != nil {
@@ -45,10 +45,6 @@ func (s *Shop) BuyBox(
 
 		return nil
 	}); err != nil {
-		if perror.IsType(err, perror.TypeAlreadyExists) {
-			return nil
-		}
-
 		return fmt.Errorf("transaction: %w", err)
 	}
 

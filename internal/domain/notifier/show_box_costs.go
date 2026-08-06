@@ -19,7 +19,7 @@ func (n *Notifier) ShowBoxCosts(
 	var buttonRows []button.ButtonRow
 	for _, cost := range costs {
 		btn, err := gloink.BuyBoxButton(
-			fmt.Sprintf("Buy %s for %d gloinks", cost.Type.String(), cost.Amount.Int()),
+			fmt.Sprintf("%s %d gloinks", cost.Type.String(), cost.Amount.Int()),
 			cost.Type,
 		)
 		if err != nil {
