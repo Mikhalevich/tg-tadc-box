@@ -54,9 +54,38 @@ func (o *OpenBox) OpenByID(
 			return fmt.Errorf("show reward: %w", err)
 		}
 
+		if err := o.schedulePendingBoxIfAvailable(
+			ctx,
+			chatID,
+			readyBox.Type,
+			now,
+		); err != nil {
+			return fmt.Errorf("schedule pending box if available: %w", err)
+		}
+
 		return nil
 	}); err != nil {
 		return fmt.Errorf("transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (o *OpenBox) schedulePendingBoxIfAvailable(
+	ctx context.Context,
+	chatID msginfo.ChatID,
+	boxType box.Type,
+	now time.Time,
+) error {
+	if err := o.repo.ChangeFirstBoxStatusByType(
+		ctx,
+		chatID,
+		boxType,
+		box.StatusInProgress,
+		box.StatusPending,
+		now.Add(o.boxWaitPeriod[boxType]),
+	); err != nil {
+		return fmt.Errorf("change first box status by type: %w", err)
 	}
 
 	return nil
@@ -125,6 +154,73 @@ func (o *OpenBox) markRewardInUserProfile(
 
 	if err := o.playerProvider.UpdatePlayer(ctx, plr); err != nil {
 		return fmt.Errorf("update player: %w", err)
+	}
+
+	if err := o.assignFreeBoxIfAvailable(
+		ctx,
+		plr,
+		boxType,
+	); err != nil {
+		return fmt.Errorf("assign free box if available: %w", err)
+	}
+
+	return nil
+}
+
+func (o *OpenBox) assignFreeBoxIfAvailable(
+	ctx context.Context,
+	plr player.Player,
+	openedBoxType box.Type,
+) error {
+	bonusBoxType, isAvailable := plr.Profile.OpenedBoxes.IsBonusBoxAvailable(openedBoxType)
+	if !isAvailable {
+		return nil
+	}
+
+	if err := o.scheduleBonusBox(
+		ctx,
+		plr.ChatID,
+		bonusBoxType,
+	); err != nil {
+		return fmt.Errorf("schedule bonus box: %w", err)
+	}
+
+	return nil
+}
+
+func (o *OpenBox) scheduleBonusBox(
+	ctx context.Context,
+	chatID msginfo.ChatID,
+	boxType box.Type,
+) error {
+	inProgressBoxes, err := o.repo.GetBoxesByStatus(ctx, chatID, box.StatusInProgress)
+	if err != nil {
+		return fmt.Errorf("get in_progress boxes: %w", err)
+	}
+
+	boxStatus := box.StatusInProgress
+
+	if len(filterBoxes(inProgressBoxes, boxType)) != 0 {
+		boxStatus = box.StatusPending
+	}
+
+	newBox, err := o.scheduleBox(
+		ctx,
+		chatID,
+		boxType,
+		boxStatus,
+		o.timeProvider.Now(),
+		false,
+	)
+	if err != nil {
+		return fmt.Errorf("schedule box: %w", err)
+	}
+
+	if err := o.notifier.ShowBonusBox(
+		ctx,
+		newBox,
+	); err != nil {
+		return fmt.Errorf("show bonus box: %w", err)
 	}
 
 	return nil

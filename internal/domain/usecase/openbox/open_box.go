@@ -19,6 +19,14 @@ type Repository interface {
 		ctx context.Context,
 		rwd reward.ReceivedReward,
 	) error
+	ChangeFirstBoxStatusByType(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		boxType box.Type,
+		newStatus box.Status,
+		previousStatus box.Status,
+		availableAt time.Time,
+	) error
 }
 
 type Transactor interface {
@@ -50,6 +58,7 @@ type Notifier interface {
 		chatID msginfo.ChatID,
 		boxes []box.InProgressBox,
 	) error
+	ShowBonusBox(ctx context.Context, bonusBox box.Box) error
 }
 
 type TimeProvider interface {

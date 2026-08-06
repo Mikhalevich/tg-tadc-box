@@ -71,7 +71,7 @@ func (t Type) IsValid() bool {
 	return false
 }
 
-func (t Type) NextType() Type {
+func (t Type) Next() Type {
 	switch t {
 	case TypeCommon:
 		return TypeRare
