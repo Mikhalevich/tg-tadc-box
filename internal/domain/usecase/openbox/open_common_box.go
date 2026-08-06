@@ -22,7 +22,7 @@ func (o *OpenBox) OpenCommonBox(
 			ctx,
 			chatID,
 			box.TypeCommon,
-			profile.Profile.IsNoOpenBoxes(),
+			profile.Profile.IsNoOpenCommonBoxes(),
 		); err != nil {
 			return fmt.Errorf("process schedule box: %w", err)
 		}

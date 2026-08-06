@@ -8,6 +8,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 )
 
 func (s *Shop) BuyBox(
@@ -36,7 +37,7 @@ func (s *Shop) BuyBox(
 			ctx,
 			chatID,
 			boxType,
-			plr.Profile.IsNoOpenBoxes(),
+			isImmediate(boxType, plr),
 		)
 		if err != nil {
 			return fmt.Errorf("schedule box: %w", err)
@@ -56,6 +57,14 @@ func (s *Shop) BuyBox(
 	}
 
 	return nil
+}
+
+func isImmediate(boxType box.Type, plr player.Player) bool {
+	if boxType != box.TypeCommon {
+		return false
+	}
+
+	return plr.Profile.IsNoOpenCommonBoxes()
 }
 
 func (s *Shop) findBoxCost(boxType box.Type) (gloink.Amount, error) {
