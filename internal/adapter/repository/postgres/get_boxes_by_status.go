@@ -26,7 +26,8 @@ func (p *Postgres) GetBoxesByStatus(
 				created_at,
 				available_at,
 				ready_notification_at,
-				completed_at
+				completed_at,
+				meta
 			FROM
 				box
 			WHERE
@@ -54,5 +55,10 @@ func (p *Postgres) GetBoxesByStatus(
 		return nil, fmt.Errorf("get context: %w", err)
 	}
 
-	return model.ToDomBoxes(boxes), nil
+	domBoxes, err := model.ToDomBoxes(boxes)
+	if err != nil {
+		return nil, fmt.Errorf("convert to dom boxes: %w", err)
+	}
+
+	return domBoxes, nil
 }

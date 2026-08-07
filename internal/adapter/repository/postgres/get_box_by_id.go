@@ -27,7 +27,8 @@ func (p *Postgres) GetBoxByID(
 				created_at,
 				available_at,
 				ready_notification_at,
-				completed_at
+				completed_at,
+				meta
 			FROM
 				box
 			WHERE
@@ -46,5 +47,10 @@ func (p *Postgres) GetBoxByID(
 		return box.Box{}, fmt.Errorf("get context: %w", err)
 	}
 
-	return dbBox.ToDomBox(), nil
+	domBox, err := dbBox.ToDomBox()
+	if err != nil {
+		return box.Box{}, fmt.Errorf("convert to dom box: %w", err)
+	}
+
+	return domBox, nil
 }

@@ -51,7 +51,7 @@ type Notifier interface {
 		chatID msginfo.ChatID,
 		messageID msginfo.MessageID,
 		receivedReward reward.Reward,
-		boxType box.Type,
+		openingBox box.Box,
 	) error
 	ShowInProgressBoxes(
 		ctx context.Context,
@@ -66,17 +66,19 @@ type TimeProvider interface {
 }
 
 type OpenBox struct {
-	boxWaitPeriod   map[box.Type]time.Duration
-	repo            Repository
-	transactor      Transactor
-	playerProvider  PlayerProvider
-	rewardGenerator RewardGenerator
-	notifier        Notifier
-	timeProvider    TimeProvider
+	boxWaitPeriod    map[box.Type]time.Duration
+	bonusBoxAttempts map[box.Type]int
+	repo             Repository
+	transactor       Transactor
+	playerProvider   PlayerProvider
+	rewardGenerator  RewardGenerator
+	notifier         Notifier
+	timeProvider     TimeProvider
 }
 
 func New(
 	boxWaitPeriod map[box.Type]time.Duration,
+	bonusBoxAttempts map[box.Type]int,
 	repo Repository,
 	transactor Transactor,
 	playerProvider PlayerProvider,
@@ -85,12 +87,13 @@ func New(
 	timeProvider TimeProvider,
 ) *OpenBox {
 	return &OpenBox{
-		boxWaitPeriod:   boxWaitPeriod,
-		repo:            repo,
-		transactor:      transactor,
-		playerProvider:  playerProvider,
-		rewardGenerator: rewardGenertor,
-		notifier:        notifier,
-		timeProvider:    timeProvider,
+		boxWaitPeriod:    boxWaitPeriod,
+		bonusBoxAttempts: bonusBoxAttempts,
+		repo:             repo,
+		transactor:       transactor,
+		playerProvider:   playerProvider,
+		rewardGenerator:  rewardGenertor,
+		notifier:         notifier,
+		timeProvider:     timeProvider,
 	}
 }

@@ -26,11 +26,16 @@ func (p *Postgres) UpdateBox(
 		`
 	)
 
+	dbBox, err := model.ToDBBox(domBox)
+	if err != nil {
+		return fmt.Errorf("convert to db box: %w", err)
+	}
+
 	res, err := sqlx.NamedExecContext(
 		ctx,
 		p.transactor.ExtContext(ctx),
 		query,
-		model.ToDBBox(domBox),
+		dbBox,
 	)
 	if err != nil {
 		return fmt.Errorf("named exec: %w", err)

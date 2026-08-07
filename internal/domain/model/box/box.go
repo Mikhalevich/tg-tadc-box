@@ -106,6 +106,7 @@ type Box struct {
 	AvailableAt         time.Time
 	ReadyNotificationAt time.Time
 	CompletedAt         time.Time
+	Meta                Meta
 }
 
 func (b Box) IsStatus(statuses ...Status) bool {

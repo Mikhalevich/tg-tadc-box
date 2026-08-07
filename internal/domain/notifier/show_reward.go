@@ -15,7 +15,7 @@ func (n *Notifier) ShowReward(
 	chatID msginfo.ChatID,
 	messageID msginfo.MessageID,
 	receivedReward reward.Reward,
-	boxType box.Type,
+	openingBox box.Box,
 ) error {
 	payload, err := n.imageProvider.Reward(ctx, receivedReward)
 	if err != nil {
@@ -28,6 +28,7 @@ func (n *Notifier) ShowReward(
 			ChatID:     chatID,
 			ReplyMsgID: messageID,
 			Type:       msginfo.MessageTypeEditPNG,
+			Text:       makeBonusRewardDescription(openingBox.Meta),
 			Payload:    payload,
 			Buttons: []button.ButtonRow{
 				button.Row(box.ShopButton("Get next box")),
@@ -38,4 +39,16 @@ func (n *Notifier) ShowReward(
 	}
 
 	return nil
+}
+
+func makeBonusRewardDescription(meta box.Meta) string {
+	if !meta.BonusBox.IsValid {
+		return ""
+	}
+
+	return fmt.Sprintf(
+		"Reward for opening x%d *%s* boxes",
+		meta.BonusBox.Attempts,
+		meta.BonusBox.Type.String(),
+	)
 }
