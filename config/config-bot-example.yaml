@@ -38,3 +38,7 @@ box_wait_period:
   rare: 10s
   epic: 10s
   legendary: 10s
+bonus_box_attempts:
+  common: 3
+  rare: 3
+  epic: 3

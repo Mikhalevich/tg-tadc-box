@@ -43,4 +43,8 @@ data:
       rare: 10s
       epic: 10s
       legendary: 10s
+    bonus_box_attempts:
+      common: 10
+      rare: 10
+      epic: 10
 

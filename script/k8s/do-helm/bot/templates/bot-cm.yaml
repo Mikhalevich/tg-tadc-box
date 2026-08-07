@@ -44,3 +44,7 @@ data:
       rare: 6h
       epic: 12h
       legendary: 24h
+    bonus_box_attempts:
+      common: 10
+      rare: 10
+      epic: 10

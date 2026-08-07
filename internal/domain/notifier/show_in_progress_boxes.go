@@ -71,6 +71,7 @@ func (n *Notifier) sendBoxIsAvailable(
 		msginfo.Message{
 			ChatID:  domBox.ChatID,
 			Type:    msginfo.MessageTypePNG,
+			Text:    makeBonusBoxDescription(domBox.Meta),
 			Payload: payload,
 			Buttons: []button.ButtonRow{
 				{
@@ -83,4 +84,16 @@ func (n *Notifier) sendBoxIsAvailable(
 	}
 
 	return nil
+}
+
+func makeBonusBoxDescription(meta box.Meta) string {
+	if !meta.BonusBox.IsValid {
+		return ""
+	}
+
+	return fmt.Sprintf(
+		"Bonus box for opening x%d *%s* boxes",
+		meta.BonusBox.Attempts,
+		meta.BonusBox.Type.String(),
+	)
 }

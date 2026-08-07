@@ -23,7 +23,8 @@ func (p *Postgres) InsertBox(
 				created_at,
 				available_at,
 				ready_notification_at,
-				completed_at
+				completed_at,
+				meta
 			) VALUES (
 				:chat_id,
 				:status,
@@ -31,7 +32,8 @@ func (p *Postgres) InsertBox(
 				:created_at,
 				:available_at,
 				:ready_notification_at,
-				:completed_at
+				:completed_at,
+				:meta
 			)
 			RETURNING
 				id
@@ -42,7 +44,12 @@ func (p *Postgres) InsertBox(
 		boxID int
 	)
 
-	query, args, err := sqlx.Named(query, model.ToDBBox(domBox))
+	dbBox, err := model.ToDBBox(domBox)
+	if err != nil {
+		return 0, fmt.Errorf("convert to db box: %w", err)
+	}
+
+	query, args, err := sqlx.Named(query, dbBox)
 	if err != nil {
 		return 0, fmt.Errorf("sqlx named: %w", err)
 	}

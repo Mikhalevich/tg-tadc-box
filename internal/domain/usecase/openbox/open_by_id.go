@@ -49,7 +49,7 @@ func (o *OpenBox) OpenByID(
 			chatID,
 			messageID,
 			receivedReward,
-			readyBox.Type,
+			readyBox,
 		); err != nil {
 			return fmt.Errorf("show reward: %w", err)
 		}
@@ -156,7 +156,7 @@ func (o *OpenBox) markRewardInUserProfile(
 		return fmt.Errorf("update player: %w", err)
 	}
 
-	if err := o.assignFreeBoxIfAvailable(
+	if err := o.assignBonusBoxIfAvailable(
 		ctx,
 		plr,
 		boxType,
@@ -167,12 +167,20 @@ func (o *OpenBox) markRewardInUserProfile(
 	return nil
 }
 
-func (o *OpenBox) assignFreeBoxIfAvailable(
+func (o *OpenBox) assignBonusBoxIfAvailable(
 	ctx context.Context,
 	plr player.Player,
 	openedBoxType box.Type,
 ) error {
-	bonusBoxType, isAvailable := plr.Profile.OpenedBoxes.IsBonusBoxAvailable(openedBoxType)
+	count, ok := o.bonusBoxAttempts[openedBoxType]
+	if !ok {
+		return nil
+	}
+
+	bonusBoxType, isAvailable := plr.Profile.OpenedBoxes.IsBonusBoxAvailable(
+		openedBoxType,
+		count,
+	)
 	if !isAvailable {
 		return nil
 	}
@@ -181,6 +189,13 @@ func (o *OpenBox) assignFreeBoxIfAvailable(
 		ctx,
 		plr.ChatID,
 		bonusBoxType,
+		box.Meta{
+			BonusBox: box.BonusBox{
+				IsValid:  true,
+				Type:     openedBoxType,
+				Attempts: count,
+			},
+		},
 	); err != nil {
 		return fmt.Errorf("schedule bonus box: %w", err)
 	}
@@ -192,6 +207,7 @@ func (o *OpenBox) scheduleBonusBox(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	boxType box.Type,
+	meta box.Meta,
 ) error {
 	inProgressBoxes, err := o.repo.GetBoxesByStatus(ctx, chatID, box.StatusInProgress)
 	if err != nil {
@@ -210,6 +226,7 @@ func (o *OpenBox) scheduleBonusBox(
 		boxType,
 		boxStatus,
 		o.timeProvider.Now(),
+		meta,
 		false,
 	)
 	if err != nil {

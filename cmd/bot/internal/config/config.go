@@ -12,6 +12,7 @@ type Config struct {
 	BoxRewardPercent map[string]BoxRewardPercent `yaml:"box_reward_percent" required:"true"`
 	BoxCosts         map[string]BoxCost          `yaml:"box_costs" required:"true"`
 	BoxWaitPeriod    map[string]time.Duration    `yaml:"box_wait_period" required:"true"`
+	BonusBoxAttempts map[string]int              `yaml:"bonus_box_attempts" required:"true"`
 }
 
 func (c *Config) Level() string {

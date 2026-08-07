@@ -26,7 +26,8 @@ func (p *Postgres) GetReadyToOpenBoxes(
 				created_at,
 				available_at,
 				ready_notification_at,
-				completed_at
+				completed_at,
+				meta
 			FROM
 				box
 			WHERE
@@ -53,5 +54,10 @@ func (p *Postgres) GetReadyToOpenBoxes(
 		return nil, fmt.Errorf("select context: %w", err)
 	}
 
-	return model.ToDomBoxes(dbBoxes), nil
+	domBoxes, err := model.ToDomBoxes(dbBoxes)
+	if err != nil {
+		return nil, fmt.Errorf("convert to dom boxes: %w", err)
+	}
+
+	return domBoxes, nil
 }

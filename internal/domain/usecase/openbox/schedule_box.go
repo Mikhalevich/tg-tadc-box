@@ -73,6 +73,7 @@ func (o *OpenBox) processScheduleBox(
 		boxType,
 		box.StatusInProgress,
 		o.timeProvider.Now(),
+		box.Meta{},
 		isImmediate,
 	)
 	if err != nil {
@@ -110,6 +111,7 @@ func (o *OpenBox) scheduleBox(
 	boxType box.Type,
 	boxStatus box.Status,
 	createdAt time.Time,
+	meta box.Meta,
 	isImmediate bool,
 ) (box.Box, error) {
 	newBox := o.createBox(
@@ -117,6 +119,7 @@ func (o *OpenBox) scheduleBox(
 		createdAt,
 		boxType,
 		boxStatus,
+		meta,
 		isImmediate,
 	)
 
@@ -135,6 +138,7 @@ func (o *OpenBox) createBox(
 	createdAt time.Time,
 	boxType box.Type,
 	boxStatus box.Status,
+	meta box.Meta,
 	isImmediate bool,
 ) box.Box {
 	var (
@@ -155,5 +159,6 @@ func (o *OpenBox) createBox(
 		CreatedAt:           createdAt,
 		ReadyNotificationAt: readyNotificationAt,
 		AvailableAt:         availableAt,
+		Meta:                meta,
 	}
 }

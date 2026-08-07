@@ -54,6 +54,11 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		return fmt.Errorf("convert box wait period: %w", err)
 	}
 
+	bonusBoxAttempts, err := convertBonusBoxAttempts(cfg.BonusBoxAttempts)
+	if err != nil {
+		return fmt.Errorf("convert box wait period: %w", err)
+	}
+
 	var (
 		msgSender       = messagesender.New(botAPI)
 		msgProcessor    = messageprocessor.New(msgSender, msgSender, pgDB)
@@ -67,6 +72,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		playerProvider = playerprovider.New(pgDB, timeProvider)
 		boxProcessor   = openbox.New(
 			boxWaitPeriod,
+			bonusBoxAttempts,
 			pgDB,
 			pgDB.Transactor(),
 			playerProvider,
@@ -202,4 +208,21 @@ func convertBoxWaitPeriod(
 	}
 
 	return boxWaitPeriod, nil
+}
+
+func convertBonusBoxAttempts(
+	cfgBonusBoxAttempts map[string]int,
+) (map[box.Type]int, error) {
+	bonusBoxAttempts := make(map[box.Type]int, len(cfgBonusBoxAttempts))
+
+	for boxTypeRaw, attempts := range cfgBonusBoxAttempts {
+		boxType, err := box.TypeFromString(boxTypeRaw)
+		if err != nil {
+			return nil, fmt.Errorf("convert to box type: %w", err)
+		}
+
+		bonusBoxAttempts[boxType] = attempts
+	}
+
+	return bonusBoxAttempts, nil
 }
