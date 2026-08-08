@@ -24,13 +24,13 @@ type RewardProvider interface {
 
 type Notifier interface {
 	NoCollectedCards(ctx context.Context, chatID msginfo.ChatID) error
-	ShowCollectedTotalInfo(
+	ShowCardPageTotal(
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		info []card.CardPageTotal,
 		abstractDuplicatesAmount gloink.Amount,
 	) error
-	ShowCollectedReward(
+	ShowCardPage(
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		messageID msginfo.MessageID,

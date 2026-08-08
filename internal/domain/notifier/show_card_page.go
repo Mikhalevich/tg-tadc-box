@@ -10,7 +10,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
-func (n *Notifier) ShowCollectedReward(
+func (n *Notifier) ShowCardPage(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	messageID msginfo.MessageID,

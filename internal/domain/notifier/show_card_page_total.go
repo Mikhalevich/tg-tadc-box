@@ -11,7 +11,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (n *Notifier) ShowCollectedTotalInfo(
+func (n *Notifier) ShowCardPageTotal(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	infos []card.CardPageTotal,

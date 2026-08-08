@@ -23,7 +23,7 @@ func (v *ViewCards) Total(
 		return fmt.Errorf("get reward count by type: %w", err)
 	}
 
-	if err := v.notifier.ShowCollectedTotalInfo(
+	if err := v.notifier.ShowCardPageTotal(
 		ctx,
 		chatID,
 		makeCardPageTotal(profile.Profile.Cards.CardsCount(), totalRewardCount),

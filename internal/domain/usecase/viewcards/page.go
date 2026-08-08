@@ -47,7 +47,7 @@ func (v *ViewCards) Page(
 		return fmt.Errorf("get reward by id: %w", err)
 	}
 
-	if err := v.notifier.ShowCollectedReward(
+	if err := v.notifier.ShowCardPage(
 		ctx,
 		chatID,
 		messageID,
