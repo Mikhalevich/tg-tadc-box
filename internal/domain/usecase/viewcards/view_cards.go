@@ -36,8 +36,12 @@ type Notifier interface {
 		messageID msginfo.MessageID,
 		rew reward.Reward,
 		count int,
+		page int,
+		maxPage int,
 		previousPage card.CardPage,
 		nextPage card.CardPage,
+		firstPage card.CardPage,
+		lastPage card.CardPage,
 	) error
 }
 

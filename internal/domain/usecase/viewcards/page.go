@@ -26,9 +26,9 @@ func (v *ViewCards) Page(
 		return fmt.Errorf("get player by chat id: %w", err)
 	}
 
-	maxPos := profile.Profile.Cards.CardsMaxPos(rewardType)
+	maxPage := profile.Profile.Cards.CardsMaxPos(rewardType)
 
-	if maxPos == 0 {
+	if maxPage == 0 {
 		if err := v.notifier.NoCollectedCards(ctx, chatID); err != nil {
 			return fmt.Errorf("no collected cards notification: %w", err)
 		}
@@ -36,7 +36,7 @@ func (v *ViewCards) Page(
 		return nil
 	}
 
-	if page > maxPos {
+	if page > maxPage {
 		return perror.InvalidParam("invalid page")
 	}
 
@@ -53,13 +53,39 @@ func (v *ViewCards) Page(
 		messageID,
 		collectedReward,
 		cardByPos.Count,
-		makeCardPage(page-1, maxPos),
-		makeCardPage(page+1, maxPos),
+		page,
+		maxPage,
+		makeCardPage(page-1, maxPage),
+		makeFirstPage(page),
+		makeCardPage(page+1, maxPage),
+		makeLastPage(page, maxPage),
 	); err != nil {
 		return fmt.Errorf("show collected card: %w", err)
 	}
 
 	return nil
+}
+
+func makeFirstPage(page int) card.CardPage {
+	if page <= 1 {
+		return card.CardPage{}
+	}
+
+	return card.CardPage{
+		Page:    1,
+		IsValid: true,
+	}
+}
+
+func makeLastPage(page, maxPage int) card.CardPage {
+	if page >= maxPage {
+		return card.CardPage{}
+	}
+
+	return card.CardPage{
+		Page:    maxPage,
+		IsValid: true,
+	}
 }
 
 func makeCardPage(page, maxPage int) card.CardPage {

@@ -16,15 +16,39 @@ func (n *Notifier) ShowCollectedReward(
 	messageID msginfo.MessageID,
 	rew reward.Reward,
 	count int,
+	page int,
+	maxPage int,
 	previousPage card.CardPage,
 	nextPage card.CardPage,
+	firstPage card.CardPage,
+	lastPage card.CardPage,
 ) error {
 	payload, err := n.imageProvider.Reward(ctx, rew)
 	if err != nil {
 		return fmt.Errorf("receive image payload: %w", err)
 	}
 
-	buttons, err := makeCardPageButtons(rew.Type, previousPage, nextPage)
+	buttons, err := makeCardPageButtons(
+		rew.Type,
+		[]cardPageWithCaption{
+			{
+				Page:    firstPage,
+				Caption: "<<",
+			},
+			{
+				Page:    previousPage,
+				Caption: "<",
+			},
+			{
+				Page:    nextPage,
+				Caption: ">",
+			},
+			{
+				Page:    lastPage,
+				Caption: ">>",
+			},
+		},
+	)
 	if err != nil {
 		return fmt.Errorf("make cards buttons: %w", err)
 	}
@@ -36,7 +60,7 @@ func (n *Notifier) ShowCollectedReward(
 			ReplyMsgID: messageID,
 			Type:       msginfo.MessageTypeEditPNG,
 			Payload:    payload,
-			Text:       fmt.Sprintf("x%d", count),
+			Text:       fmt.Sprintf("%d/%d x%d", page, maxPage, count),
 			Buttons: []button.ButtonRow{
 				button.Row(card.TotalButton("Back")),
 				buttons,
@@ -49,29 +73,28 @@ func (n *Notifier) ShowCollectedReward(
 	return nil
 }
 
+type cardPageWithCaption struct {
+	Page    card.CardPage
+	Caption string
+}
+
 func makeCardPageButtons(
 	rewardType reward.RewardType,
-	previousPage card.CardPage,
-	nextPage card.CardPage,
+	pages []cardPageWithCaption,
 ) (button.ButtonRow, error) {
 	var buttons button.ButtonRow
 
-	if previousPage.IsValid {
-		prevBtn, err := card.PageButton("<", rewardType, previousPage.Page)
-		if err != nil {
-			return nil, fmt.Errorf("prev button: %w", err)
+	for _, page := range pages {
+		if !page.Page.IsValid {
+			continue
 		}
 
-		buttons = append(buttons, prevBtn)
-	}
-
-	if nextPage.IsValid {
-		nextBtn, err := card.PageButton(">", rewardType, nextPage.Page)
+		btn, err := card.PageButton(page.Caption, rewardType, page.Page.Page)
 		if err != nil {
-			return nil, fmt.Errorf("next button: %w", err)
+			return nil, fmt.Errorf("page button: %w", err)
 		}
 
-		buttons = append(buttons, nextBtn)
+		buttons = append(buttons, btn)
 	}
 
 	return buttons, nil
