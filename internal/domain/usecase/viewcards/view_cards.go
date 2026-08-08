@@ -38,9 +38,9 @@ type Notifier interface {
 		count int,
 		page int,
 		maxPage int,
+		firstPage card.CardPage,
 		previousPage card.CardPage,
 		nextPage card.CardPage,
-		firstPage card.CardPage,
 		lastPage card.CardPage,
 	) error
 }

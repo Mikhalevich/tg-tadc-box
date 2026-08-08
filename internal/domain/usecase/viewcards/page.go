@@ -55,8 +55,8 @@ func (v *ViewCards) Page(
 		cardByPos.Count,
 		page,
 		maxPage,
-		makeCardPage(page-1, maxPage),
 		makeFirstPage(page),
+		makeCardPage(page-1, maxPage),
 		makeCardPage(page+1, maxPage),
 		makeLastPage(page, maxPage),
 	); err != nil {
