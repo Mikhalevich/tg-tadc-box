@@ -23,10 +23,10 @@ func (v *ViewCards) Total(
 		return fmt.Errorf("get reward count by type: %w", err)
 	}
 
-	if err := v.notifier.ShowCollectedTotalInfo(
+	if err := v.notifier.ShowCardPageTotal(
 		ctx,
 		chatID,
-		makeCollectedCardsInfo(profile.Profile.Cards.CardsCount(), totalRewardCount),
+		makeCardPageTotal(profile.Profile.Cards.CardsCount(), totalRewardCount),
 		profile.Profile.Cards.ViewCostOfAbstractionDuplicatesAll(),
 	); err != nil {
 		return fmt.Errorf("show collected total info: %w", err)
@@ -35,8 +35,8 @@ func (v *ViewCards) Total(
 	return nil
 }
 
-func makeCollectedCardsInfo(collected, total map[reward.RewardType]int) []card.CollectedCardInfo {
-	info := []card.CollectedCardInfo{
+func makeCardPageTotal(collected, total map[reward.RewardType]int) []card.CardPageTotal {
+	info := []card.CardPageTotal{
 		{
 			Type: reward.RewardTypeCommon,
 		},

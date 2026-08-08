@@ -24,20 +24,24 @@ type RewardProvider interface {
 
 type Notifier interface {
 	NoCollectedCards(ctx context.Context, chatID msginfo.ChatID) error
-	ShowCollectedTotalInfo(
+	ShowCardPageTotal(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-		info []card.CollectedCardInfo,
+		info []card.CardPageTotal,
 		abstractDuplicatesAmount gloink.Amount,
 	) error
-	ShowCollectedReward(
+	ShowCardPage(
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		messageID msginfo.MessageID,
 		rew reward.Reward,
 		count int,
-		previousPage card.CollectedCardsPage,
-		nextPage card.CollectedCardsPage,
+		page int,
+		maxPage int,
+		firstPage card.CardPage,
+		previousPage card.CardPage,
+		nextPage card.CardPage,
+		lastPage card.CardPage,
 	) error
 }
 

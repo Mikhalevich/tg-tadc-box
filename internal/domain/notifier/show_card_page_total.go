@@ -11,13 +11,13 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (n *Notifier) ShowCollectedTotalInfo(
+func (n *Notifier) ShowCardPageTotal(
 	ctx context.Context,
 	chatID msginfo.ChatID,
-	infos []card.CollectedCardInfo,
+	infos []card.CardPageTotal,
 	abstractDuplicatesAmount gloink.Amount,
 ) error {
-	buttons, err := makeCollectedTotalInfoButtons(infos, abstractDuplicatesAmount)
+	buttons, err := makeCardPageTotalButtons(infos, abstractDuplicatesAmount)
 	if err != nil {
 		return fmt.Errorf("make collected total info buttons: %w", err)
 	}
@@ -27,7 +27,7 @@ func (n *Notifier) ShowCollectedTotalInfo(
 		msginfo.Message{
 			ChatID:  chatID,
 			Type:    msginfo.MessageTypeMarkdown,
-			Text:    makeCollectedTotalInfoMsg(infos),
+			Text:    makeCardPageTotalMsg(infos),
 			Buttons: buttons,
 		},
 	); err != nil {
@@ -37,7 +37,7 @@ func (n *Notifier) ShowCollectedTotalInfo(
 	return nil
 }
 
-func makeCollectedTotalInfoMsg(infos []card.CollectedCardInfo) string {
+func makeCardPageTotalMsg(infos []card.CardPageTotal) string {
 	lines := make([]string, 0, len(infos))
 
 	for _, info := range infos {
@@ -49,7 +49,7 @@ func makeCollectedTotalInfoMsg(infos []card.CollectedCardInfo) string {
 }
 
 func calculateButtonsCount(
-	infos []card.CollectedCardInfo,
+	infos []card.CardPageTotal,
 	abstractDuplicatesAmount gloink.Amount,
 ) int {
 	if abstractDuplicatesAmount > 0 {
@@ -59,8 +59,8 @@ func calculateButtonsCount(
 	return len(infos)
 }
 
-func makeCollectedTotalInfoButtons(
-	infos []card.CollectedCardInfo,
+func makeCardPageTotalButtons(
+	infos []card.CardPageTotal,
 	abstractDuplicatesAmount gloink.Amount,
 ) ([]button.ButtonRow, error) {
 	buttons := make([]button.ButtonRow, 0,
