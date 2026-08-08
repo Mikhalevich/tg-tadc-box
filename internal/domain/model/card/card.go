@@ -25,12 +25,12 @@ type Card struct {
 	UpdatedAt time.Time
 }
 
-type CollectedCardsPage struct {
+type CardPage struct {
 	Page    int
 	IsValid bool
 }
 
-type CollectedCardInfo struct {
+type CardPageTotal struct {
 	Type      reward.RewardType
 	Collected int
 	Total     int

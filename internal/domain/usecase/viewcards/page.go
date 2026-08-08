@@ -53,8 +53,8 @@ func (v *ViewCards) Page(
 		messageID,
 		collectedReward,
 		cardByPos.Count,
-		pageInfo(page-1, maxPos),
-		pageInfo(page+1, maxPos),
+		makeCardPage(page-1, maxPos),
+		makeCardPage(page+1, maxPos),
 	); err != nil {
 		return fmt.Errorf("show collected card: %w", err)
 	}
@@ -62,12 +62,12 @@ func (v *ViewCards) Page(
 	return nil
 }
 
-func pageInfo(page, maxPage int) card.CollectedCardsPage {
+func makeCardPage(page, maxPage int) card.CardPage {
 	if page < 1 || page > maxPage {
-		return card.CollectedCardsPage{}
+		return card.CardPage{}
 	}
 
-	return card.CollectedCardsPage{
+	return card.CardPage{
 		Page:    page,
 		IsValid: true,
 	}

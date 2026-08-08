@@ -16,15 +16,15 @@ func (n *Notifier) ShowCollectedReward(
 	messageID msginfo.MessageID,
 	rew reward.Reward,
 	count int,
-	previousPage card.CollectedCardsPage,
-	nextPage card.CollectedCardsPage,
+	previousPage card.CardPage,
+	nextPage card.CardPage,
 ) error {
 	payload, err := n.imageProvider.Reward(ctx, rew)
 	if err != nil {
 		return fmt.Errorf("receive image payload: %w", err)
 	}
 
-	buttons, err := makeCollectedCardsButtons(rew.Type, previousPage, nextPage)
+	buttons, err := makeCardPageButtons(rew.Type, previousPage, nextPage)
 	if err != nil {
 		return fmt.Errorf("make cards buttons: %w", err)
 	}
@@ -49,10 +49,10 @@ func (n *Notifier) ShowCollectedReward(
 	return nil
 }
 
-func makeCollectedCardsButtons(
+func makeCardPageButtons(
 	rewardType reward.RewardType,
-	previousPage card.CollectedCardsPage,
-	nextPage card.CollectedCardsPage,
+	previousPage card.CardPage,
+	nextPage card.CardPage,
 ) (button.ButtonRow, error) {
 	var buttons button.ButtonRow
 

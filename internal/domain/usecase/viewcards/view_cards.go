@@ -27,7 +27,7 @@ type Notifier interface {
 	ShowCollectedTotalInfo(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-		info []card.CollectedCardInfo,
+		info []card.CardPageTotal,
 		abstractDuplicatesAmount gloink.Amount,
 	) error
 	ShowCollectedReward(
@@ -36,8 +36,8 @@ type Notifier interface {
 		messageID msginfo.MessageID,
 		rew reward.Reward,
 		count int,
-		previousPage card.CollectedCardsPage,
-		nextPage card.CollectedCardsPage,
+		previousPage card.CardPage,
+		nextPage card.CardPage,
 	) error
 }
 
