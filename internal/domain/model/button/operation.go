@@ -9,7 +9,8 @@ const (
 	OperationAbstractDuplicatesAll Operation = "AbstractDuplicatesAll"
 	OperationBuyBox                Operation = "BuyBox"
 	OperationShop                  Operation = "Shop"
-	OperationGetCommonBox          Operation = "OperationGetCommonBox"
+	OperationGetCommonBox          Operation = "GetCommonBox"
+	OperationLike                  Operation = "Like"
 )
 
 func (o Operation) String() string {

@@ -9,6 +9,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/like"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 )
@@ -166,6 +167,30 @@ func (t *TGHandler) cbShop(
 		msginfo.ChatIDFromInt64(msg.ChatID),
 	); err != nil {
 		return fmt.Errorf("view boxes: %w", err)
+	}
+
+	return nil
+}
+
+func (t *TGHandler) cbLikeReward(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
+	payload, err := button.GetPayload[like.LikeButtonPayload](*btn)
+	if err != nil {
+		return fmt.Errorf("get like button payload: %w", err)
+	}
+
+	if err := t.likeProcessor.Like(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+		msginfo.MessageIDFromInt(msg.MessageID),
+		payload.BoxID,
+		payload.RewardID,
+		payload.Type,
+	); err != nil {
+		return fmt.Errorf("process like: %w", err)
 	}
 
 	return nil

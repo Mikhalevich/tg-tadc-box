@@ -6,6 +6,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/app/tgbot"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/like"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
@@ -22,7 +23,7 @@ type BoxProcessor interface {
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		messageID msginfo.MessageID,
-		id int,
+		id box.ID,
 	) error
 }
 
@@ -56,6 +57,17 @@ type Shop interface {
 	) error
 }
 
+type LikeProcessor interface {
+	Like(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		messageID msginfo.MessageID,
+		boxID box.ID,
+		rewardID reward.ID,
+		likeType like.Type,
+	) error
+}
+
 type Notifier interface {
 	Welcome(ctx context.Context, chatID msginfo.ChatID) error
 }
@@ -71,6 +83,7 @@ type TGHandler struct {
 	cardViewer     CardViewer
 	cardAbstracter CardAbstracter
 	shop           Shop
+	likeProcessor  LikeProcessor
 	notifier       Notifier
 	errorNotifier  ErrorNotifier
 }
@@ -81,6 +94,7 @@ func New(
 	cardViewer CardViewer,
 	cardAbstracter CardAbstracter,
 	shop Shop,
+	likeProcessor LikeProcessor,
 	notifier Notifier,
 	errorNotifier ErrorNotifier,
 ) *TGHandler {
@@ -90,6 +104,7 @@ func New(
 		cardViewer:     cardViewer,
 		cardAbstracter: cardAbstracter,
 		shop:           shop,
+		likeProcessor:  likeProcessor,
 		notifier:       notifier,
 		errorNotifier:  errorNotifier,
 	}
@@ -108,5 +123,6 @@ func (t *TGHandler) registerCBHandlers() {
 		button.OperationAbstractDuplicatesAll: t.cbAbstractDuplicatedAll,
 		button.OperationBuyBox:                t.cbBuyBox,
 		button.OperationShop:                  t.cbShop,
+		button.OperationLike:                  t.cbLikeReward,
 	}
 }

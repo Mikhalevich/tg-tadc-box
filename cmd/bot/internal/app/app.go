@@ -18,6 +18,7 @@ func Start(
 	cardViewer tghandler.CardViewer,
 	cardAbstracter tghandler.CardAbstracter,
 	shop tghandler.Shop,
+	likeProcessor tghandler.LikeProcessor,
 	notifier tghandler.Notifier,
 	errorNotifier tghandler.ErrorNotifier,
 ) error {
@@ -28,6 +29,7 @@ func Start(
 			cardViewer,
 			cardAbstracter,
 			shop,
+			likeProcessor,
 			notifier,
 			errorNotifier,
 		)

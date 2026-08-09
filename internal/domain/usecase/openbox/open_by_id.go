@@ -16,7 +16,7 @@ func (o *OpenBox) OpenByID(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	messageID msginfo.MessageID,
-	boxID int,
+	boxID box.ID,
 ) error {
 	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
 		profile, err := o.playerProvider.GetPlayerByChatID(ctx, chatID)
@@ -50,6 +50,7 @@ func (o *OpenBox) OpenByID(
 			messageID,
 			receivedReward,
 			readyBox,
+			true,
 		); err != nil {
 			return fmt.Errorf("show reward: %w", err)
 		}
