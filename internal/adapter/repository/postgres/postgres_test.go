@@ -87,7 +87,11 @@ func (s *PostgresSuit) cleanup() {
 		"button",
 		"outbox_messages",
 	} {
-		sqlx.MustExecContext(ctx, trx.ExtContext(ctx), "DELETE FROM "+table)
+		sqlx.MustExecContext(
+			ctx,
+			trx.ExtContext(ctx),
+			fmt.Sprintf("DELETE FROM %s", table),
+		)
 	}
 }
 
