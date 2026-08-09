@@ -39,6 +39,7 @@ func (s *PostgresSuit) TestInsertLike() {
 		s.Require().Equal(rwdID.Int(), dbLike.RewardID)
 		s.Require().Equal(like.TypeLike.String(), dbLike.Type)
 		s.Require().WithinDuration(createdAt, dbLike.CreatedAt, time.Second)
+
 		s.Require().Equal(1, s.countLikes(ctx))
 	})
 
@@ -62,6 +63,7 @@ func (s *PostgresSuit) TestInsertLike() {
 
 		dbLike := s.getLikeByBoxID(ctx, boxID)
 		s.Require().Equal(like.TypeDislike.String(), dbLike.Type)
+
 		s.Require().Equal(1, s.countLikes(ctx))
 	})
 
