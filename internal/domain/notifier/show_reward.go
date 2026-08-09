@@ -73,7 +73,7 @@ func makeShowRewardButtons(
 
 	likeBtn, err := like.LikeButton("👍", boxID, rewardID, like.TypeLike)
 	if err != nil {
-		return nil, fmt.Errorf("crate like button: %w", err)
+		return nil, fmt.Errorf("create like button: %w", err)
 	}
 
 	dislikeBtn, err := like.LikeButton("👎", boxID, rewardID, like.TypeDislike)

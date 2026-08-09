@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/likereward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/readybox"
 )
@@ -14,6 +15,7 @@ var (
 	_ openbox.Repository            = (*Postgres)(nil)
 	_ readybox.Repository           = (*Postgres)(nil)
 	_ rewardgenerator.RewardsGetter = (*Postgres)(nil)
+	_ likereward.Repository         = (*Postgres)(nil)
 )
 
 type Driver interface {

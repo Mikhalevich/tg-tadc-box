@@ -77,7 +77,22 @@ func (s *PostgresSuit) cleanup() {
 		trx = s.pgDB.Transactor()
 	)
 
-	sqlx.MustExecContext(ctx, trx.ExtContext(ctx), "DELETE FROM outbox_messages")
+	for _, table := range []string{
+		"likes",
+		"received_reward",
+		"collected_cards",
+		"box",
+		"reward",
+		"player",
+		"button",
+		"outbox_messages",
+	} {
+		sqlx.MustExecContext(
+			ctx,
+			trx.ExtContext(ctx),
+			fmt.Sprintf("DELETE FROM %s", table),
+		)
+	}
 }
 
 func connectToDatabase(ctx context.Context, t *testing.T, driverName string) (*sql.DB, func() error, error) {

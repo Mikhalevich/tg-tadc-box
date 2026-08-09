@@ -14,6 +14,7 @@ CREATE TABLE likes(
     type like_type NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
 
+    CONSTRAINT likes_box_id_fk FOREIGN KEY(box_id) REFERENCES box(id),
     CONSTRAINT likes_reward_id_fk FOREIGN KEY(reward_id) REFERENCES reward(id)
 
 );
