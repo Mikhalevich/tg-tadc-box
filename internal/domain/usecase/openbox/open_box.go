@@ -13,7 +13,7 @@ import (
 type Repository interface {
 	GetBoxesByStatus(ctx context.Context, chatID msginfo.ChatID, statuses ...box.Status) ([]box.Box, error)
 	InsertBox(ctx context.Context, b box.Box) (int, error)
-	GetBoxByID(ctx context.Context, id int) (box.Box, error)
+	GetBoxByID(ctx context.Context, id box.ID) (box.Box, error)
 	UpdateBox(ctx context.Context, b box.Box) error
 	InsertReceivedReward(
 		ctx context.Context,
@@ -52,6 +52,7 @@ type Notifier interface {
 		messageID msginfo.MessageID,
 		receivedReward reward.Reward,
 		openingBox box.Box,
+		withLikeButtons bool,
 	) error
 	ShowInProgressBoxes(
 		ctx context.Context,

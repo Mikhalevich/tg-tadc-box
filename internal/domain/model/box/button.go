@@ -7,10 +7,10 @@ import (
 )
 
 type OpenBoxButtonPayload struct {
-	ID int
+	ID ID
 }
 
-func OpenBoxButton(boxID int) (button.Button, error) {
+func OpenBoxButton(boxID ID) (button.Button, error) {
 	btn, err := button.CreateButton(
 		"Open",
 		button.OperationOpenBox,

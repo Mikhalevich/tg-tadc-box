@@ -26,6 +26,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/playerprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/abstractcard"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/likereward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/shop"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/viewcards"
@@ -102,6 +103,12 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			boxProcessor,
 			outboxNotifier,
 		)
+		likeReward = likereward.New(
+			pgDB.Transactor(),
+			pgDB,
+			outboxNotifier,
+			timeProvider,
+		)
 	)
 
 	if err := app.Start(
@@ -112,6 +119,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		cardViewer,
 		cardAbstracter,
 		shop,
+		likeReward,
 		outboxNotifier,
 		outboxNotifier,
 	); err != nil {

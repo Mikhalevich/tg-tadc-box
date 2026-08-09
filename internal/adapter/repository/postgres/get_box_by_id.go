@@ -15,7 +15,7 @@ import (
 
 func (p *Postgres) GetBoxByID(
 	ctx context.Context,
-	boxID int,
+	boxID box.ID,
 ) (box.Box, error) {
 	var (
 		query = `
@@ -39,7 +39,13 @@ func (p *Postgres) GetBoxByID(
 		dbBox model.Box
 	)
 
-	if err := sqlx.GetContext(ctx, p.transactor.ExtContext(ctx), &dbBox, query, boxID); err != nil {
+	if err := sqlx.GetContext(
+		ctx,
+		p.transactor.ExtContext(ctx),
+		&dbBox,
+		query,
+		boxID.Int(),
+	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return box.Box{}, perror.NotFound("box not found")
 		}
