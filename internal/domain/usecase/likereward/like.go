@@ -7,6 +7,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/like"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
@@ -34,6 +35,10 @@ func (lr *LikeReward) Like(
 		likeBox, err := lr.repo.GetBoxByID(ctx, boxID)
 		if err != nil {
 			return fmt.Errorf("get box by id: %w", err)
+		}
+
+		if likeBox.ChatID != chatID {
+			return perror.InvalidParam("invalid user for box")
 		}
 
 		rwd, err := lr.repo.GetRewardByID(ctx, rewardID)
