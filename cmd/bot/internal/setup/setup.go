@@ -61,7 +61,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		return fmt.Errorf("convert box wait period: %w", err)
 	}
 
-	abstractionCosts, err := convertAbstractionCost(cfg.AbstractionCosts)
+	abstractionCosts, err := convertAbstractionCosts(cfg.AbstractionCosts)
 	if err != nil {
 		return fmt.Errorf("convert abstraction costs: %w", err)
 	}
@@ -243,7 +243,7 @@ func convertBonusBoxAttempts(
 	return bonusBoxAttempts, nil
 }
 
-func convertAbstractionCost(
+func convertAbstractionCosts(
 	cfgCosts map[string]int,
 ) (map[reward.RewardType]gloink.Amount, error) {
 	costs := make(map[reward.RewardType]gloink.Amount, len(cfgCosts))
