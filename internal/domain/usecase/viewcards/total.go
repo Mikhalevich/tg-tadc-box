@@ -27,7 +27,7 @@ func (v *ViewCards) Total(
 		ctx,
 		chatID,
 		makeCardPageTotal(profile.Profile.Cards.CardsCount(), totalRewardCount),
-		profile.Profile.Cards.ViewCostOfAbstractionDuplicatesAll(),
+		profile.Profile.Cards.ViewCostOfAbstractionDuplicatesAll(v.abstractionCosts),
 	); err != nil {
 		return fmt.Errorf("show collected total info: %w", err)
 	}

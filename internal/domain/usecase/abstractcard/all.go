@@ -17,7 +17,7 @@ func (ac *AbstractCard) All(
 			return fmt.Errorf("get player by chat id: %w", err)
 		}
 
-		abstractedGloinksAmount := profile.Profile.AbstractDuplicatesAll()
+		abstractedGloinksAmount := profile.Profile.AbstractDuplicatesAll(ac.abstractionCosts)
 
 		if err := ac.playerProvider.UpdatePlayer(ctx, profile); err != nil {
 			return fmt.Errorf("update player: %w", err)

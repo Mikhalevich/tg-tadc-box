@@ -7,16 +7,6 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
-var (
-	//nolint:gochecknoglobals,mnd
-	abstractionGloinksCosts = map[reward.RewardType]gloink.Amount{
-		reward.RewardTypeCommon:    1,
-		reward.RewardTypeRare:      5,
-		reward.RewardTypeEpic:      25,
-		reward.RewardTypeLegendary: 100,
-	}
-)
-
 type Card struct {
 	RewardID  reward.ID
 	Count     int
@@ -95,23 +85,28 @@ func findCardIdxByRewardID(cards []Card, rewardID reward.ID) int {
 
 // AbstractDuplicatesAll remove all duplicates from cards
 // returns gloinks amount of abstracted cards.
-func (cc *CardsCollected) AbstractDuplicatesAll() gloink.Amount {
-	return cc.processAbstractionDuplicatesAll(removeDuplicates)
+func (cc *CardsCollected) AbstractDuplicatesAll(
+	abstractionCosts map[reward.RewardType]gloink.Amount,
+) gloink.Amount {
+	return cc.processAbstractionDuplicatesAll(abstractionCosts, removeDuplicates)
 }
 
 // ViewCostOfAbstractionDuplicatesAll view possible gloinks amount
 // if doing AbstractDuplicatesAll function.
-func (cc *CardsCollected) ViewCostOfAbstractionDuplicatesAll() gloink.Amount {
-	return cc.processAbstractionDuplicatesAll(countDuplicates)
+func (cc *CardsCollected) ViewCostOfAbstractionDuplicatesAll(
+	abstractionCosts map[reward.RewardType]gloink.Amount,
+) gloink.Amount {
+	return cc.processAbstractionDuplicatesAll(abstractionCosts, countDuplicates)
 }
 
 func (cc *CardsCollected) processAbstractionDuplicatesAll(
+	abstractionCosts map[reward.RewardType]gloink.Amount,
 	processorFn func(cards []Card) int,
 ) gloink.Amount {
 	var gloinksAmount gloink.Amount
 	for rewardType, cards := range cc.CardsByType {
 		count := processorFn(cards)
-		gloinksAmount += abstractionGloinksCosts[rewardType].Multiply(count)
+		gloinksAmount += abstractionCosts[rewardType].Multiply(count)
 	}
 
 	return gloinksAmount
