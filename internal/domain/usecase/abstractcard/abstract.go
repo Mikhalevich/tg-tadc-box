@@ -43,7 +43,7 @@ func (ac *AbstractCard) Abstract(
 			profile.Profile.Wallet,
 			abstractedGloinksAmount,
 		); err != nil {
-			return fmt.Errorf("show gloiks wallet after abstraction")
+			return fmt.Errorf("show gloinks wallet after abstraction: %w", err)
 		}
 
 		return nil

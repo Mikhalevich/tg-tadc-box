@@ -102,6 +102,11 @@ func makeCardPageCommandButtons(
 		return nil, fmt.Errorf("abstract one button: %w", err)
 	}
 
+	//nolint:mnd
+	if count == 2 {
+		return button.Row(backBtn, abstractOneBtn), nil
+	}
+
 	abstractAllBtn, err := card.AbstractCardButton(
 		fmt.Sprintf("Abstract %d", count-1),
 		rewardType, page, count-1)

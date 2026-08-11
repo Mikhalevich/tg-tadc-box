@@ -96,13 +96,17 @@ func (cc *CardsCollected) AbstractByPos(
 	count int,
 	abstractionCosts map[reward.RewardType]gloink.Amount,
 ) (gloink.Amount, error) {
+	if count <= 0 {
+		return 0, perror.InvalidParam("invalid count")
+	}
+
 	cardRef, err := cc.cardByPosRef(rewardType, pos)
 	if err != nil {
 		return 0, fmt.Errorf("card by pos ref: %w", err)
 	}
 
 	if cardRef.Count <= count {
-		return 0, perror.InvalidParam("Not enaught cards to abstract")
+		return 0, perror.InvalidParam("not enough cards to abstract")
 	}
 
 	cardRef.Count -= count
@@ -166,10 +170,14 @@ func countDuplicates(cards []Card) int {
 }
 
 func (cc *CardsCollected) cardByPosRef(rewardType reward.RewardType, pos int) (*Card, error) {
+	if pos <= 0 {
+		return nil, perror.InvalidParam("invalid card position")
+	}
+
 	cards := cc.CardsByType[rewardType]
 
 	if len(cards) < pos {
-		return nil, perror.InvalidParam("Position out of range")
+		return nil, perror.InvalidParam("position out of range")
 	}
 
 	return &cards[pos-1], nil

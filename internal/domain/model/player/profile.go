@@ -38,7 +38,7 @@ func (p *Profile) AbstractByPos(
 		abstractionCosts,
 	)
 	if err != nil {
-		return 0, fmt.Errorf("abstact by pos: %w", err)
+		return 0, fmt.Errorf("abstract by pos: %w", err)
 	}
 
 	p.Wallet.GloinksAmount += gloinksAmount

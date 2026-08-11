@@ -143,7 +143,7 @@ func (t *TGHandler) cbAbstractCard(
 ) error {
 	payload, err := button.GetPayload[card.AbstractCardPayload](*btn)
 	if err != nil {
-		return fmt.Errorf("get like button payload: %w", err)
+		return fmt.Errorf("get abstract card payload: %w", err)
 	}
 
 	if err := t.cardAbstracter.Abstract(
