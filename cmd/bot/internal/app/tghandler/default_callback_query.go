@@ -136,6 +136,30 @@ func (t *TGHandler) cbAbstractDuplicatedAll(
 	return nil
 }
 
+func (t *TGHandler) cbAbstractCard(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
+	payload, err := button.GetPayload[card.AbstractCardPayload](*btn)
+	if err != nil {
+		return fmt.Errorf("get like button payload: %w", err)
+	}
+
+	if err := t.cardAbstracter.Abstract(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+		msginfo.MessageIDFromInt(msg.MessageID),
+		payload.Type,
+		payload.Pos,
+		payload.Count,
+	); err != nil {
+		return fmt.Errorf("abstract card: %w", err)
+	}
+
+	return nil
+}
+
 func (t *TGHandler) cbBuyBox(
 	ctx context.Context,
 	msg tgbot.BotMessage,

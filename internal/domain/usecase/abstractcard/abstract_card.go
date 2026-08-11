@@ -9,6 +9,10 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
+type Transactor interface {
+	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
+}
+
 type PlayerProvider interface {
 	GetPlayerByChatID(
 		ctx context.Context,
@@ -17,8 +21,14 @@ type PlayerProvider interface {
 	UpdatePlayer(ctx context.Context, usr player.Player) error
 }
 
-type Transactor interface {
-	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
+type PageProvider interface {
+	Page(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		messageID msginfo.MessageID,
+		rewardType reward.RewardType,
+		page int,
+	) error
 }
 
 type Notifier interface {
@@ -32,21 +42,24 @@ type Notifier interface {
 
 type AbstractCard struct {
 	abstractionCosts map[reward.RewardType]gloink.Amount
-	playerProvider   PlayerProvider
 	transactor       Transactor
+	playerProvider   PlayerProvider
+	pageProvider     PageProvider
 	notifier         Notifier
 }
 
 func New(
 	abstractionCosts map[reward.RewardType]gloink.Amount,
-	playerProvider PlayerProvider,
 	transactor Transactor,
+	playerProvider PlayerProvider,
+	pageProvider PageProvider,
 	notifier Notifier,
 ) *AbstractCard {
 	return &AbstractCard{
 		abstractionCosts: abstractionCosts,
-		playerProvider:   playerProvider,
 		transactor:       transactor,
+		playerProvider:   playerProvider,
+		pageProvider:     pageProvider,
 		notifier:         notifier,
 	}
 }

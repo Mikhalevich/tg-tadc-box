@@ -40,7 +40,10 @@ func (v *ViewCards) Page(
 		return perror.InvalidParam("invalid page")
 	}
 
-	cardByPos := profile.Profile.Cards.CardByPos(rewardType, page)
+	cardByPos, err := profile.Profile.Cards.CardByPos(rewardType, page)
+	if err != nil {
+		return fmt.Errorf("get card by pos: %w", err)
+	}
 
 	collectedReward, err := v.rewardProvider.GetRewardByID(ctx, cardByPos.RewardID)
 	if err != nil {

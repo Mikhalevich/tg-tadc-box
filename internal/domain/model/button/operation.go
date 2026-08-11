@@ -7,6 +7,7 @@ const (
 	OperationCardPage              Operation = "CardPage"
 	OperationCardTotal             Operation = "CardTotal"
 	OperationAbstractDuplicatesAll Operation = "AbstractDuplicatesAll"
+	OperationAbstractCard          Operation = "AbstractCard"
 	OperationBuyBox                Operation = "BuyBox"
 	OperationShop                  Operation = "Shop"
 	OperationGetCommonBox          Operation = "GetCommonBox"

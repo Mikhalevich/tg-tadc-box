@@ -1,9 +1,11 @@
 package player
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
@@ -69,8 +71,13 @@ func (cc *CardsCollected) CardsMaxPos(rewardType reward.RewardType) int {
 	return len(cc.CardsByType[rewardType])
 }
 
-func (cc *CardsCollected) CardByPos(rewardType reward.RewardType, pos int) Card {
-	return cc.CardsByType[rewardType][pos-1]
+func (cc *CardsCollected) CardByPos(rewardType reward.RewardType, pos int) (Card, error) {
+	cardRef, err := cc.cardByPosRef(rewardType, pos)
+	if err != nil {
+		return Card{}, fmt.Errorf("card by pos ref: %w", err)
+	}
+
+	return *cardRef, nil
 }
 
 func findCardIdxByRewardID(cards []Card, rewardID reward.ID) int {
@@ -81,6 +88,26 @@ func findCardIdxByRewardID(cards []Card, rewardID reward.ID) int {
 	}
 
 	return -1
+}
+
+func (cc *CardsCollected) AbstractByPos(
+	rewardType reward.RewardType,
+	pos int,
+	count int,
+	abstractionCosts map[reward.RewardType]gloink.Amount,
+) (gloink.Amount, error) {
+	cardRef, err := cc.cardByPosRef(rewardType, pos)
+	if err != nil {
+		return 0, fmt.Errorf("card by pos ref: %w", err)
+	}
+
+	if cardRef.Count <= count {
+		return 0, perror.InvalidParam("Not enaught cards to abstract")
+	}
+
+	cardRef.Count -= count
+
+	return abstractionCosts[rewardType].Multiply(count), nil
 }
 
 // AbstractDuplicatesAll remove all duplicates from cards
@@ -136,4 +163,14 @@ func countDuplicates(cards []Card) int {
 	}
 
 	return duplicatesCount
+}
+
+func (cc *CardsCollected) cardByPosRef(rewardType reward.RewardType, pos int) (*Card, error) {
+	cards := cc.CardsByType[rewardType]
+
+	if len(cards) < pos {
+		return nil, perror.InvalidParam("Position out of range")
+	}
+
+	return &cards[pos-1], nil
 }

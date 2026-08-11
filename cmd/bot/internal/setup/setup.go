@@ -100,8 +100,9 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		)
 		cardAbstracter = abstractcard.New(
 			abstractionCosts,
-			playerProvider,
 			pgDB.Transactor(),
+			playerProvider,
+			cardViewer,
 			outboxNotifier,
 		)
 		shop = shop.New(

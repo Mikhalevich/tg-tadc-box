@@ -1,6 +1,8 @@
 package player
 
 import (
+	"fmt"
+
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
@@ -21,6 +23,27 @@ func (p *Profile) AbstractDuplicatesAll(
 	p.Wallet.GloinksAmount += gloinksAmount
 
 	return gloinksAmount
+}
+
+func (p *Profile) AbstractByPos(
+	rewardType reward.RewardType,
+	pos int,
+	count int,
+	abstractionCosts map[reward.RewardType]gloink.Amount,
+) (gloink.Amount, error) {
+	gloinksAmount, err := p.Cards.AbstractByPos(
+		rewardType,
+		pos,
+		count,
+		abstractionCosts,
+	)
+	if err != nil {
+		return 0, fmt.Errorf("abstact by pos: %w", err)
+	}
+
+	p.Wallet.GloinksAmount += gloinksAmount
+
+	return gloinksAmount, nil
 }
 
 func (p *Profile) IsNoOpenCommonBoxes() bool {

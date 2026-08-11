@@ -10,6 +10,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
+//nolint:funlen
 func (n *Notifier) ShowCardPage(
 	ctx context.Context,
 	chatID msginfo.ChatID,
@@ -28,7 +29,7 @@ func (n *Notifier) ShowCardPage(
 		return fmt.Errorf("receive image payload: %w", err)
 	}
 
-	buttons, err := makeCardPageButtons(
+	navigationButtons, err := makeCardPageNavigationButtons(
 		rew.Type,
 		[]cardPageWithCaption{
 			{
@@ -53,6 +54,11 @@ func (n *Notifier) ShowCardPage(
 		return fmt.Errorf("make cards buttons: %w", err)
 	}
 
+	cmdButtons, err := makeCardPageCommandButtons(rew.Type, page, count)
+	if err != nil {
+		return fmt.Errorf("make card page command buttons: %w", err)
+	}
+
 	if err := n.sender.SendMessage(
 		ctx,
 		msginfo.Message{
@@ -62,8 +68,8 @@ func (n *Notifier) ShowCardPage(
 			Payload:    payload,
 			Text:       fmt.Sprintf("%d/%d x%d", page, maxPage, count),
 			Buttons: []button.ButtonRow{
-				button.Row(card.TotalButton("Back")),
-				buttons,
+				cmdButtons,
+				navigationButtons,
 			},
 		},
 	); err != nil {
@@ -78,7 +84,35 @@ type cardPageWithCaption struct {
 	Caption string
 }
 
-func makeCardPageButtons(
+func makeCardPageCommandButtons(
+	rewardType reward.RewardType,
+	page int,
+	count int,
+) (button.ButtonRow, error) {
+	backBtn := card.TotalButton("Back")
+
+	if count <= 1 {
+		return button.Row(backBtn), nil
+	}
+
+	abstractOneBtn, err := card.AbstractCardButton(
+		"Abstract 1",
+		rewardType, page, 1)
+	if err != nil {
+		return nil, fmt.Errorf("abstract one button: %w", err)
+	}
+
+	abstractAllBtn, err := card.AbstractCardButton(
+		fmt.Sprintf("Abstract %d", count-1),
+		rewardType, page, count-1)
+	if err != nil {
+		return nil, fmt.Errorf("abstract all: %w", err)
+	}
+
+	return button.Row(backBtn, abstractOneBtn, abstractAllBtn), nil
+}
+
+func makeCardPageNavigationButtons(
 	rewardType reward.RewardType,
 	pages []cardPageWithCaption,
 ) (button.ButtonRow, error) {
