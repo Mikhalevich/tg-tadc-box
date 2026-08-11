@@ -43,6 +43,14 @@ type CardViewer interface {
 
 type CardAbstracter interface {
 	All(ctx context.Context, chatID msginfo.ChatID) error
+	Abstract(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		messageID msginfo.MessageID,
+		rewardType reward.RewardType,
+		pos int,
+		count int,
+	) error
 }
 
 type Shop interface {
@@ -121,6 +129,7 @@ func (t *TGHandler) registerCBHandlers() {
 		button.OperationCardPage:              t.cbCollectedCardPage,
 		button.OperationCardTotal:             t.cbCollectedCardTotalPage,
 		button.OperationAbstractDuplicatesAll: t.cbAbstractDuplicatedAll,
+		button.OperationAbstractCard:          t.cbAbstractCard,
 		button.OperationBuyBox:                t.cbBuyBox,
 		button.OperationShop:                  t.cbShop,
 		button.OperationLike:                  t.cbLikeReward,

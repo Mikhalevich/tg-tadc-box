@@ -13,6 +13,7 @@ type Config struct {
 	BoxCosts         map[string]BoxCost          `yaml:"box_costs" required:"true"`
 	BoxWaitPeriod    map[string]time.Duration    `yaml:"box_wait_period" required:"true"`
 	BonusBoxAttempts map[string]int              `yaml:"bonus_box_attempts" required:"true"`
+	AbstractionCosts map[string]int              `yaml:"abstraction_costs" required:"true"`
 }
 
 func (c *Config) Level() string {

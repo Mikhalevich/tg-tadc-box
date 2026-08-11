@@ -48,3 +48,8 @@ data:
       common: 10
       rare: 10
       epic: 10
+    abstraction_costs:
+      common: 1
+      rare: 5
+      epic: 25
+      legendary: 100

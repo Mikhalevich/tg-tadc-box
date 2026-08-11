@@ -1,20 +1,12 @@
 package player
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
-)
-
-var (
-	//nolint:gochecknoglobals,mnd
-	abstractionGloinksCosts = map[reward.RewardType]gloink.Amount{
-		reward.RewardTypeCommon:    1,
-		reward.RewardTypeRare:      5,
-		reward.RewardTypeEpic:      25,
-		reward.RewardTypeLegendary: 100,
-	}
 )
 
 type Card struct {
@@ -79,8 +71,13 @@ func (cc *CardsCollected) CardsMaxPos(rewardType reward.RewardType) int {
 	return len(cc.CardsByType[rewardType])
 }
 
-func (cc *CardsCollected) CardByPos(rewardType reward.RewardType, pos int) Card {
-	return cc.CardsByType[rewardType][pos-1]
+func (cc *CardsCollected) CardByPos(rewardType reward.RewardType, pos int) (Card, error) {
+	cardRef, err := cc.cardByPosRef(rewardType, pos)
+	if err != nil {
+		return Card{}, fmt.Errorf("card by pos ref: %w", err)
+	}
+
+	return *cardRef, nil
 }
 
 func findCardIdxByRewardID(cards []Card, rewardID reward.ID) int {
@@ -93,25 +90,54 @@ func findCardIdxByRewardID(cards []Card, rewardID reward.ID) int {
 	return -1
 }
 
+func (cc *CardsCollected) AbstractByPos(
+	rewardType reward.RewardType,
+	pos int,
+	count int,
+	abstractionCosts map[reward.RewardType]gloink.Amount,
+) (gloink.Amount, error) {
+	if count <= 0 {
+		return 0, perror.InvalidParam("invalid count")
+	}
+
+	cardRef, err := cc.cardByPosRef(rewardType, pos)
+	if err != nil {
+		return 0, fmt.Errorf("card by pos ref: %w", err)
+	}
+
+	if cardRef.Count <= count {
+		return 0, perror.InvalidParam("not enough cards to abstract")
+	}
+
+	cardRef.Count -= count
+
+	return abstractionCosts[rewardType].Multiply(count), nil
+}
+
 // AbstractDuplicatesAll remove all duplicates from cards
 // returns gloinks amount of abstracted cards.
-func (cc *CardsCollected) AbstractDuplicatesAll() gloink.Amount {
-	return cc.processAbstractionDuplicatesAll(removeDuplicates)
+func (cc *CardsCollected) AbstractDuplicatesAll(
+	abstractionCosts map[reward.RewardType]gloink.Amount,
+) gloink.Amount {
+	return cc.processAbstractionDuplicatesAll(abstractionCosts, removeDuplicates)
 }
 
 // ViewCostOfAbstractionDuplicatesAll view possible gloinks amount
 // if doing AbstractDuplicatesAll function.
-func (cc *CardsCollected) ViewCostOfAbstractionDuplicatesAll() gloink.Amount {
-	return cc.processAbstractionDuplicatesAll(countDuplicates)
+func (cc *CardsCollected) ViewCostOfAbstractionDuplicatesAll(
+	abstractionCosts map[reward.RewardType]gloink.Amount,
+) gloink.Amount {
+	return cc.processAbstractionDuplicatesAll(abstractionCosts, countDuplicates)
 }
 
 func (cc *CardsCollected) processAbstractionDuplicatesAll(
+	abstractionCosts map[reward.RewardType]gloink.Amount,
 	processorFn func(cards []Card) int,
 ) gloink.Amount {
 	var gloinksAmount gloink.Amount
 	for rewardType, cards := range cc.CardsByType {
 		count := processorFn(cards)
-		gloinksAmount += abstractionGloinksCosts[rewardType].Multiply(count)
+		gloinksAmount += abstractionCosts[rewardType].Multiply(count)
 	}
 
 	return gloinksAmount
@@ -141,4 +167,18 @@ func countDuplicates(cards []Card) int {
 	}
 
 	return duplicatesCount
+}
+
+func (cc *CardsCollected) cardByPosRef(rewardType reward.RewardType, pos int) (*Card, error) {
+	if pos <= 0 {
+		return nil, perror.InvalidParam("invalid card position")
+	}
+
+	cards := cc.CardsByType[rewardType]
+
+	if len(cards) < pos {
+		return nil, perror.InvalidParam("position out of range")
+	}
+
+	return &cards[pos-1], nil
 }

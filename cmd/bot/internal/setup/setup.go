@@ -21,6 +21,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/playerprovider"
@@ -60,6 +61,11 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		return fmt.Errorf("convert box wait period: %w", err)
 	}
 
+	abstractionCosts, err := convertAbstractionCosts(cfg.AbstractionCosts)
+	if err != nil {
+		return fmt.Errorf("convert abstraction costs: %w", err)
+	}
+
 	var (
 		msgSender       = messagesender.New(botAPI)
 		msgProcessor    = messageprocessor.New(msgSender, msgSender, pgDB)
@@ -87,13 +93,16 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			imageprovider.New(),
 		)
 		cardViewer = viewcards.New(
+			abstractionCosts,
 			playerProvider,
 			pgDB,
 			directNotifier,
 		)
 		cardAbstracter = abstractcard.New(
-			playerProvider,
+			abstractionCosts,
 			pgDB.Transactor(),
+			playerProvider,
+			cardViewer,
 			outboxNotifier,
 		)
 		shop = shop.New(
@@ -233,4 +242,21 @@ func convertBonusBoxAttempts(
 	}
 
 	return bonusBoxAttempts, nil
+}
+
+func convertAbstractionCosts(
+	cfgCosts map[string]int,
+) (map[reward.RewardType]gloink.Amount, error) {
+	costs := make(map[reward.RewardType]gloink.Amount, len(cfgCosts))
+
+	for rawRewardType, rawAmount := range cfgCosts {
+		rewardType, err := reward.TypeFromString(rawRewardType)
+		if err != nil {
+			return nil, fmt.Errorf("convert reward type: %w", err)
+		}
+
+		costs[rewardType] = gloink.AmountFromInt(rawAmount)
+	}
+
+	return costs, nil
 }

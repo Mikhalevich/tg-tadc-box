@@ -6,7 +6,12 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
+
+type Transactor interface {
+	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
+}
 
 type PlayerProvider interface {
 	GetPlayerByChatID(
@@ -16,8 +21,14 @@ type PlayerProvider interface {
 	UpdatePlayer(ctx context.Context, usr player.Player) error
 }
 
-type Transactor interface {
-	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
+type PageProvider interface {
+	Page(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		messageID msginfo.MessageID,
+		rewardType reward.RewardType,
+		page int,
+	) error
 }
 
 type Notifier interface {
@@ -30,19 +41,25 @@ type Notifier interface {
 }
 
 type AbstractCard struct {
-	playerProvider PlayerProvider
-	transactor     Transactor
-	notifier       Notifier
+	abstractionCosts map[reward.RewardType]gloink.Amount
+	transactor       Transactor
+	playerProvider   PlayerProvider
+	pageProvider     PageProvider
+	notifier         Notifier
 }
 
 func New(
-	playerProvider PlayerProvider,
+	abstractionCosts map[reward.RewardType]gloink.Amount,
 	transactor Transactor,
+	playerProvider PlayerProvider,
+	pageProvider PageProvider,
 	notifier Notifier,
 ) *AbstractCard {
 	return &AbstractCard{
-		playerProvider: playerProvider,
-		transactor:     transactor,
-		notifier:       notifier,
+		abstractionCosts: abstractionCosts,
+		transactor:       transactor,
+		playerProvider:   playerProvider,
+		pageProvider:     pageProvider,
+		notifier:         notifier,
 	}
 }

@@ -42,3 +42,8 @@ bonus_box_attempts:
   common: 3
   rare: 3
   epic: 3
+abstraction_costs:
+  common: 1
+  rare: 5
+  epic: 25
+  legendary: 100

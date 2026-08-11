@@ -44,3 +44,33 @@ func AbstractDuplicatesAllButton(caption string) button.Button {
 		false,
 	)
 }
+
+type AbstractCardPayload struct {
+	Type  reward.RewardType
+	Pos   int
+	Count int
+}
+
+func AbstractCardButton(
+	caption string,
+	rewardType reward.RewardType,
+	pos int,
+	count int,
+) (button.Button, error) {
+	btn, err := button.CreateButton(
+		caption,
+		button.OperationAbstractCard,
+		false,
+		AbstractCardPayload{
+			Type:  rewardType,
+			Pos:   pos,
+			Count: count,
+		},
+	)
+
+	if err != nil {
+		return button.Button{}, fmt.Errorf("create button: %w", err)
+	}
+
+	return btn, nil
+}

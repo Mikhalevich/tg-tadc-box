@@ -1,6 +1,7 @@
 package reward
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -15,6 +16,18 @@ const (
 
 func (rt RewardType) String() string {
 	return string(rt)
+}
+
+func TypeFromString(raw string) (RewardType, error) {
+	switch raw {
+	case RewardTypeCommon.String(),
+		RewardTypeRare.String(),
+		RewardTypeEpic.String(),
+		RewardTypeLegendary.String():
+		return RewardType(raw), nil
+	}
+
+	return RewardTypeCommon, fmt.Errorf("invalid string reward type: %q", raw)
 }
 
 type ID int

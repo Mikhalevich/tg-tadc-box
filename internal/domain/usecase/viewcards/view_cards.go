@@ -46,19 +46,22 @@ type Notifier interface {
 }
 
 type ViewCards struct {
-	playerProvider PlayerProvider
-	rewardProvider RewardProvider
-	notifier       Notifier
+	abstractionCosts map[reward.RewardType]gloink.Amount
+	playerProvider   PlayerProvider
+	rewardProvider   RewardProvider
+	notifier         Notifier
 }
 
 func New(
+	abstractionCosts map[reward.RewardType]gloink.Amount,
 	playerProvider PlayerProvider,
 	rewardProvider RewardProvider,
 	notifier Notifier,
 ) *ViewCards {
 	return &ViewCards{
-		playerProvider: playerProvider,
-		rewardProvider: rewardProvider,
-		notifier:       notifier,
+		abstractionCosts: abstractionCosts,
+		playerProvider:   playerProvider,
+		rewardProvider:   rewardProvider,
+		notifier:         notifier,
 	}
 }
