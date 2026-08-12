@@ -127,3 +127,17 @@ func SortBoxByType(boxes []Box) {
 		return a.Type.Compare(b.Type)
 	})
 }
+
+func ToMapByType(boxes []Box) map[Type]Box {
+	if len(boxes) == 0 {
+		return nil
+	}
+
+	boxesMap := make(map[Type]Box, len(boxes))
+
+	for _, b := range boxes {
+		boxesMap[b.Type] = b
+	}
+
+	return boxesMap
+}

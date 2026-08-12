@@ -28,10 +28,14 @@ type BoxScheduler interface {
 		boxType box.Type,
 		isImmediate bool,
 	) (bool, error)
-	ShowInProgressBoxes(
+}
+
+type BoxProvider interface {
+	GetBoxesByStatus(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-	) error
+		statuses ...box.Status,
+	) ([]box.Box, error)
 }
 
 type Notifier interface {
@@ -40,6 +44,7 @@ type Notifier interface {
 		chatID msginfo.ChatID,
 		wallet player.Wallet,
 		costs []gloink.BoxCost,
+		inProgressBoxes map[box.Type]box.Box,
 	) error
 }
 
@@ -48,6 +53,7 @@ type Shop struct {
 	transactor     Transactor
 	playerProvider PlayerProvider
 	boxScheduler   BoxScheduler
+	boxProvider    BoxProvider
 	notifier       Notifier
 }
 
@@ -56,6 +62,7 @@ func New(
 	transactor Transactor,
 	playerProvider PlayerProvider,
 	boxScheduler BoxScheduler,
+	boxProvider BoxProvider,
 	notifier Notifier,
 ) *Shop {
 	return &Shop{
@@ -63,6 +70,7 @@ func New(
 		transactor:     transactor,
 		playerProvider: playerProvider,
 		boxScheduler:   boxScheduler,
+		boxProvider:    boxProvider,
 		notifier:       notifier,
 	}
 }
