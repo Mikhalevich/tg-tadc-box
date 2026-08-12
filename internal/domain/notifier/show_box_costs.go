@@ -16,11 +16,17 @@ func (n *Notifier) ShowBoxCosts(
 	chatID msginfo.ChatID,
 	wallet player.Wallet,
 	costs []gloink.BoxCost,
+	inProgressBoxes map[box.Type]box.Box,
 ) error {
 	var buttonRows []button.ButtonRow
 	for _, cost := range costs {
+		_, isBoxAlreadyInProgress := inProgressBoxes[cost.Type]
+
 		btn, err := gloink.BuyBoxButton(
-			makeMessageForBoxAmount(cost.Type, cost.Amount),
+			messageBoxAlreadyInProgress(
+				messageForBoxAmount(cost.Type, cost.Amount),
+				isBoxAlreadyInProgress,
+			),
 			cost.Type,
 		)
 		if err != nil {
@@ -45,10 +51,25 @@ func (n *Notifier) ShowBoxCosts(
 	return nil
 }
 
-func makeMessageForBoxAmount(boxType box.Type, amount gloink.Amount) string {
+func messageForBoxAmount(
+	boxType box.Type,
+	amount gloink.Amount,
+) string {
 	if amount.Int() == 0 {
+		//nolint:goconst
 		return "Free"
 	}
 
 	return fmt.Sprintf("%s %d gloinks", boxType.String(), amount.Int())
+}
+
+func messageBoxAlreadyInProgress(
+	msg string,
+	isInProgress bool,
+) string {
+	if !isInProgress {
+		return msg
+	}
+
+	return fmt.Sprintf("%s (⌛️)", msg)
 }

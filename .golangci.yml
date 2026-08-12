@@ -40,6 +40,10 @@ linters:
       - linters:
           - dupl
           - funlen
+          - gocyclo
+          - cyclop
+          - varnamelen
+          - goconst
         path: _test\.go
       - linters:
           - dupl

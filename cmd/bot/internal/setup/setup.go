@@ -110,6 +110,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			pgDB.Transactor(),
 			playerProvider,
 			boxProcessor,
+			pgDB,
 			outboxNotifier,
 		)
 		likeReward = likereward.New(
