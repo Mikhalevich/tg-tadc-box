@@ -56,6 +56,7 @@ func messageForBoxAmount(
 	amount gloink.Amount,
 ) string {
 	if amount.Int() == 0 {
+		//nolint:goconst
 		return "Free"
 	}
 
