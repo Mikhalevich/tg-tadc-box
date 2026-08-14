@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.dbmigration.name }}-cm
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-10"
+data:
+  dbconfig.yml: |
+    development:
+      dialect: postgres
+      datasource: {{ .Values.postgres.connStr }}
+      dir: script/db/migrations
+      table: migrations

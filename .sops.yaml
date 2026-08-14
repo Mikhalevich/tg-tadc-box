@@ -1,5 +1,5 @@
 creation_rules:
-  - path_regex: script/k8s/do-helm/.*\.yaml$
+  - path_regex: script/k8s/do-helm-app/.*\.yaml$
     age:
     - age12g7vcvqa7t5zm98ez0w66ecx040wqu2kw552cgrxqg0ry2mw299q64sxgc
   - path_regex: script/k8s/minikube-helm/.*\.yaml$

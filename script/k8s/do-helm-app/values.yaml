@@ -1,0 +1,28 @@
+dbmigration:
+  name: "sqlmigrate"
+  image:
+    repository: "registry.digitalocean.com/tadc-box-registry/sqlmigrate"
+    tag: "0.1.0"
+
+bot:
+  enabled: true
+  bot:
+    token: "telegram bot api token"
+    webhook_token: "webhook secret token"
+  postgres:
+    connStr: "pg connection string"
+
+outboxpoller:
+  enabled: true
+  bot:
+    token: "telegram bot api token"
+  postgres:
+    connStr: "pg connection string"
+
+poller:
+  enabled: true
+  postgres:
+    connStr: "pg connection string"
+
+postgres:
+    connStr: "pg connection string"

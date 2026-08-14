@@ -1,0 +1,42 @@
+# Default values for bot.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 3
+
+image:
+  repository: "registry.digitalocean.com/tadc-box-registry/bot"
+  tag: "0.1.0"
+
+ports:
+- name: http
+  containerPort: 80
+  protocol: TCP
+
+service:
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-type: "REGIONAL"
+    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    service.beta.kubernetes.io/do-loadbalancer-certificate-id: "4fdc83d8-d611-4779-b9c8-2a8db7a38a84"
+    service.beta.kubernetes.io/do-loadbalancer-disable-lets-encrypt-dns-records: "true"
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 443
+    targetPort: 80
+    protocol: TCP
+
+resources:
+  requests:
+    memory: "32Mi"
+    cpu: "50m"
+  limits:
+    memory: "128Mi"
+    cpu: "200m"
+
+bot:
+  token: "telegram bot api token"
+  webhook_token: "webhook secret token"
+
+postgres:
+  connStr: "pg connection string"
