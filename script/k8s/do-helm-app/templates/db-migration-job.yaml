@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Chart.Name }}-dbmigration"
+  annotations:
+    # Forces Helm to run this job before installing or upgrading the rest of the chart
+    "helm.sh/hook": pre-install,pre-upgrade
+    # Higher weights run later; a negative or low weight ensures it triggers early
+    "helm.sh/hook-weight": "-5"
+    # Automatically cleans up the job pod after a successful run
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: db-migration
+          image: "{{ .Values.dbmigration.image.repository }}:{{ .Values.dbmigration.image.tag }}"
+          volumeMounts:
+          - name: dbmigration-config-volume
+            mountPath: /app/config
+      volumes:
+      - name: dbmigration-config-volume
+        configMap:
+          name: {{ .Chart.Name }}-{{ .Values.dbmigration.name }}-cm

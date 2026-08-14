@@ -11,7 +11,7 @@ GOPRIVATE = GOPRIVATE=github.com/Mikhalevich/
 LINTER_NAME := golangci-lint
 LINTER_VERSION := v2.12.2
 
-APP_TAG := 0.3.0
+APP_TAG := 0.5.2
 
 .PHONY: all build test bench compose-up compose-down load-test-data vendor install-linter \
 lint fmt tools-update generate load-assets \
@@ -91,16 +91,16 @@ generate-helm-secrets:
 	age-keygen -o ~/.config/sops/age/keys.txt
 
 do-helm-load-images:
-	./script/k8s/do-helm/load_images.sh ${APP_TAG}
+	./script/k8s/do-helm-app/scripts/load_images.sh ${APP_TAG}
 
 do-helm-decrypt-secrets:
-	./script/k8s/do-helm/decrypt_secrets.sh
+	./script/k8s/do-helm-app/scripts/decrypt_secrets.sh
 
 do-helm-encrypt-secrets:
-	./script/k8s/do-helm/encrypt_secrets.sh
+	./script/k8s/do-helm-app/scripts/encrypt_secrets.sh
 
 do-helm-install:
-	./script/k8s/do-helm/install.sh ${APP_TAG}
+	./script/k8s/do-helm-app/scripts/install.sh ${APP_TAG}
 
 do-helm-uninstall:
-	./script/k8s/do-helm/uninstall.sh
+	./script/k8s/do-helm-app/scripts/uninstall.sh
