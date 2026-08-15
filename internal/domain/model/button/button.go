@@ -93,6 +93,16 @@ func CreateButtonWithoutPayload(
 	}
 }
 
+func CreateNoOperationButton(
+	caption string,
+) Button {
+	return Button{
+		ID:        IDFromString(OperationNoOperation.String()),
+		Caption:   caption,
+		Operation: OperationNoOperation,
+	}
+}
+
 func generateID() string {
 	return uuid.NewString()
 }

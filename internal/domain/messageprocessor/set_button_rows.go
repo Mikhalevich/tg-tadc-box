@@ -17,10 +17,6 @@ func (m *MessageProcessor) SetButtonRows(
 
 	inlineButtonRows := make([]button.InlineKeyboardButtonRow, 0, len(rows))
 
-	if err := m.buttonRepository.SetButtonRows(ctx, rows...); err != nil {
-		return nil, fmt.Errorf("set button rows: %w", err)
-	}
-
 	for _, row := range rows {
 		buttonRow := make([]button.InlineKeyboardButton, 0, len(row))
 
@@ -36,5 +32,40 @@ func (m *MessageProcessor) SetButtonRows(
 		}
 	}
 
+	rows = filterNoOperation(rows)
+
+	if len(rows) > 0 {
+		if err := m.buttonRepository.SetButtonRows(ctx, rows...); err != nil {
+			return nil, fmt.Errorf("set button rows: %w", err)
+		}
+	}
+
 	return inlineButtonRows, nil
+}
+
+func filterNoOperation(rows []button.ButtonRow) []button.ButtonRow {
+	for rowIdx := len(rows) - 1; rowIdx >= 0; rowIdx-- {
+		var (
+			row    = rows[rowIdx]
+			rowLen = len(row)
+		)
+
+		for elemIdx := len(row) - 1; elemIdx >= 0; elemIdx-- {
+			if row[elemIdx].Operation.IsNoOperation() {
+				row = append(row[0:elemIdx], row[elemIdx+1:]...)
+			}
+		}
+
+		if len(row) == rowLen {
+			continue
+		}
+
+		if len(row) == 0 {
+			rows = append(rows[:rowIdx], rows[rowIdx+1:]...)
+		} else {
+			rows[rowIdx] = row
+		}
+	}
+
+	return rows
 }

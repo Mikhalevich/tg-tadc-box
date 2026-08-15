@@ -15,7 +15,7 @@ import (
 )
 
 func (t *TGHandler) DefaultCallbackQuery(ctx context.Context, msg tgbot.BotMessage, sender tgbot.MessageSender) error {
-	if msg.Data == "" {
+	if msg.Data == "" || msg.Data == button.OperationNoOperation.String() {
 		return nil
 	}
 

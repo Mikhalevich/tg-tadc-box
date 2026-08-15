@@ -32,7 +32,7 @@ func (s *Shop) ViewBoxes(
 		chatID,
 		plr.Profile.Wallet,
 		s.boxCosts,
-		box.ToMapByType(inProgressBoxes),
+		box.ToInProgressBoxMapByType(inProgressBoxes, s.timeProvider.Now()),
 	); err != nil {
 		return fmt.Errorf("show box costs: %w", err)
 	}

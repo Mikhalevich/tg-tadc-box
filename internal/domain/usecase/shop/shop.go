@@ -2,6 +2,7 @@ package shop
 
 import (
 	"context"
+	"time"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
@@ -44,8 +45,12 @@ type Notifier interface {
 		chatID msginfo.ChatID,
 		wallet player.Wallet,
 		costs []gloink.BoxCost,
-		inProgressBoxes map[box.Type]box.Box,
+		inProgressBoxes map[box.Type]box.InProgressBox,
 	) error
+}
+
+type TimeProvider interface {
+	Now() time.Time
 }
 
 type Shop struct {
@@ -55,6 +60,7 @@ type Shop struct {
 	boxScheduler   BoxScheduler
 	boxProvider    BoxProvider
 	notifier       Notifier
+	timeProvider   TimeProvider
 }
 
 func New(
@@ -64,6 +70,7 @@ func New(
 	boxScheduler BoxScheduler,
 	boxProvider BoxProvider,
 	notifier Notifier,
+	timeProvider TimeProvider,
 ) *Shop {
 	return &Shop{
 		boxCosts:       boxCosts,
@@ -72,5 +79,6 @@ func New(
 		boxScheduler:   boxScheduler,
 		boxProvider:    boxProvider,
 		notifier:       notifier,
+		timeProvider:   timeProvider,
 	}
 }
