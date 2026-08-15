@@ -11,6 +11,7 @@ import (
 func (s *Shop) ViewBoxes(
 	ctx context.Context,
 	chatID msginfo.ChatID,
+	messageID msginfo.MessageID,
 ) error {
 	plr, err := s.playerProvider.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
@@ -30,6 +31,7 @@ func (s *Shop) ViewBoxes(
 	if err := s.notifier.ShowBoxCosts(
 		ctx,
 		chatID,
+		messageID,
 		plr.Profile.Wallet,
 		s.boxCosts,
 		box.ToInProgressBoxMapByType(inProgressBoxes, s.timeProvider.Now()),

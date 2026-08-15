@@ -34,7 +34,7 @@ func (n *Notifier) ShowReward(
 		msginfo.Message{
 			ChatID:     chatID,
 			ReplyMsgID: messageID,
-			Type:       msginfo.MessageTypeEditPNG,
+			Type:       msginfo.MessageTypePNG,
 			Text:       makeBonusRewardDescription(openingBox.Meta),
 			Payload:    payload,
 			Buttons:    buttons,

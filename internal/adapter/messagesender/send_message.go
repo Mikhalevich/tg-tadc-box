@@ -11,12 +11,27 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
+//nolint:funlen
 func (m *messageSender) SendMessage(
 	ctx context.Context,
 	msg msginfo.SenderMessage,
 ) error {
 	switch msg.Type {
 	case msginfo.MessageTypePlain, msginfo.MessageTypeMarkdown:
+		if msg.ReplyMsgID.IsValid() {
+			if _, err := m.bot.EditMessageText(ctx, &bot.EditMessageTextParams{
+				ChatID:      msg.ChatID.Int64(),
+				MessageID:   msg.ReplyMsgID.Int(),
+				Text:        msg.Text,
+				ParseMode:   textParseMode(msg.Type),
+				ReplyMarkup: makeButtonsMarkup(msg.Buttons...),
+			}); err != nil {
+				return fmt.Errorf("edit message text: %w", err)
+			}
+
+			break
+		}
+
 		if _, err := m.bot.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID:          msg.ChatID.Int64(),
 			Text:            msg.Text,
@@ -27,18 +42,25 @@ func (m *messageSender) SendMessage(
 			return fmt.Errorf("send text message: %w", err)
 		}
 
-	case msginfo.MessageTypeEditMarkdown:
-		if _, err := m.bot.EditMessageText(ctx, &bot.EditMessageTextParams{
-			ChatID:      msg.ChatID.Int64(),
-			MessageID:   msg.ReplyMsgID.Int(),
-			Text:        msg.Text,
-			ParseMode:   models.ParseModeMarkdown,
-			ReplyMarkup: makeButtonsMarkup(msg.Buttons...),
-		}); err != nil {
-			return fmt.Errorf("edit message text: %w", err)
+	case msginfo.MessageTypePNG:
+		if msg.ReplyMsgID.IsValid() {
+			if _, err := m.bot.EditMessageMedia(ctx, &bot.EditMessageMediaParams{
+				ChatID:    msg.ChatID.Int64(),
+				MessageID: msg.ReplyMsgID.Int(),
+				Media: &models.InputMediaPhoto{
+					Media:           "attach://filename",
+					Caption:         msg.Text,
+					ParseMode:       models.ParseModeMarkdown,
+					MediaAttachment: bytes.NewReader(msg.Payload),
+				},
+				ReplyMarkup: makeButtonsMarkup(msg.Buttons...),
+			}); err != nil {
+				return fmt.Errorf("edit media: %w", err)
+			}
+
+			break
 		}
 
-	case msginfo.MessageTypePNG:
 		if _, err := m.bot.SendPhoto(ctx, &bot.SendPhotoParams{
 			ChatID: msg.ChatID.Int64(),
 			Photo: &models.InputFileUpload{
@@ -49,21 +71,6 @@ func (m *messageSender) SendMessage(
 			ReplyMarkup: makeButtonsMarkup(msg.Buttons...),
 		}); err != nil {
 			return fmt.Errorf("send photo: %w", err)
-		}
-
-	case msginfo.MessageTypeEditPNG:
-		if _, err := m.bot.EditMessageMedia(ctx, &bot.EditMessageMediaParams{
-			ChatID:    msg.ChatID.Int64(),
-			MessageID: msg.ReplyMsgID.Int(),
-			Media: &models.InputMediaPhoto{
-				Media:           "attach://filename",
-				Caption:         msg.Text,
-				ParseMode:       models.ParseModeMarkdown,
-				MediaAttachment: bytes.NewReader(msg.Payload),
-			},
-			ReplyMarkup: makeButtonsMarkup(msg.Buttons...),
-		}); err != nil {
-			return fmt.Errorf("edit media: %w", err)
 		}
 
 	default:

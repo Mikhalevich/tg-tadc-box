@@ -15,7 +15,7 @@ import (
 )
 
 func (t *TGHandler) DefaultCallbackQuery(ctx context.Context, msg tgbot.BotMessage, sender tgbot.MessageSender) error {
-	if msg.Data == "" || msg.Data == button.OperationNoOperation.String() {
+	if msg.Data == "" {
 		return nil
 	}
 
@@ -189,6 +189,7 @@ func (t *TGHandler) cbShop(
 	if err := t.shop.ViewBoxes(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
+		msginfo.MessageIDFromInt(msg.MessageID),
 	); err != nil {
 		return fmt.Errorf("view boxes: %w", err)
 	}

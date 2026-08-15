@@ -43,6 +43,7 @@ type Notifier interface {
 	ShowBoxCosts(
 		ctx context.Context,
 		chatID msginfo.ChatID,
+		messageID msginfo.MessageID,
 		wallet player.Wallet,
 		costs []gloink.BoxCost,
 		inProgressBoxes map[box.Type]box.InProgressBox,

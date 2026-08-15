@@ -3,7 +3,6 @@ package button
 type Operation string
 
 const (
-	OperationNoOperation           Operation = "NoOperation"
 	OperationOpenBox               Operation = "OpenBox"
 	OperationCardPage              Operation = "CardPage"
 	OperationCardTotal             Operation = "CardTotal"
@@ -17,8 +16,4 @@ const (
 
 func (o Operation) String() string {
 	return string(o)
-}
-
-func (o Operation) IsNoOperation() bool {
-	return o == OperationNoOperation
 }

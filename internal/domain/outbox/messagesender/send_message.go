@@ -12,8 +12,7 @@ func (m *MessageSender) SendMessage(
 	ctx context.Context,
 	msg msginfo.Message,
 ) error {
-	if msg.Type == msginfo.MessageTypePNG ||
-		msg.Type == msginfo.MessageTypeEditPNG {
+	if msg.Type == msginfo.MessageTypePNG {
 		payload, err := m.loadPayload(ctx, msg.Payload)
 		if err != nil {
 			return fmt.Errorf("load payload: %w", err)

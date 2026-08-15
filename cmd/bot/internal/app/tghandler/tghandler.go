@@ -57,6 +57,7 @@ type Shop interface {
 	ViewBoxes(
 		ctx context.Context,
 		chatID msginfo.ChatID,
+		messageID msginfo.MessageID,
 	) error
 	BuyBox(
 		ctx context.Context,

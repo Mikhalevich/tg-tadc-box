@@ -12,6 +12,10 @@ func (m MessageID) Int() int {
 	return int(m)
 }
 
+func (m MessageID) IsValid() bool {
+	return m != 0
+}
+
 func MessageIDFromInt(id int) MessageID {
 	return MessageID(id)
 }
@@ -32,8 +36,6 @@ const (
 	MessageTypePlain MessageType = iota + 1
 	MessageTypeMarkdown
 	MessageTypePNG
-	MessageTypeEditMarkdown
-	MessageTypeEditPNG
 )
 
 func (mt MessageType) Int() int {
