@@ -15,7 +15,6 @@ import (
 func (n *Notifier) ShowBoxCosts(
 	ctx context.Context,
 	chatID msginfo.ChatID,
-	messageID msginfo.MessageID,
 	wallet player.Wallet,
 	costs []gloink.BoxCost,
 	inProgressBoxes map[box.Type]box.InProgressBox,
@@ -28,11 +27,10 @@ func (n *Notifier) ShowBoxCosts(
 	if err := n.sender.SendMessage(
 		ctx,
 		msginfo.Message{
-			ChatID:     chatID,
-			ReplyMsgID: messageID,
-			Type:       msginfo.MessageTypeMarkdown,
-			Text:       fmt.Sprintf("Gloinks available *%d*", wallet.GloinksAmount.Int()),
-			Buttons:    buttons,
+			ChatID:  chatID,
+			Type:    msginfo.MessageTypeMarkdown,
+			Text:    fmt.Sprintf("Gloinks available *%d*", wallet.GloinksAmount.Int()),
+			Buttons: buttons,
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)
@@ -68,6 +66,7 @@ func (n *Notifier) createBoxCostButton(
 	if isInProgress {
 		return box.ShopButton(
 			n.messageBoxAlreadyInProgress(cost.Type, availableAfter),
+			true,
 		), nil
 	}
 

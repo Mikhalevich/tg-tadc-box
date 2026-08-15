@@ -116,6 +116,10 @@ type Box struct {
 	Meta                Meta
 }
 
+func (b Box) IsValid() bool {
+	return b.ID.Int() != 0
+}
+
 func (b Box) IsStatus(statuses ...Status) bool {
 	return slices.Contains(statuses, b.Status)
 }

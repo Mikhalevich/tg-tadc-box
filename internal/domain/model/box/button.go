@@ -35,10 +35,10 @@ func GetCommonBoxButton(caption string) button.Button {
 	)
 }
 
-func ShopButton(caption string) button.Button {
+func ShopButton(caption string, isDelete bool) button.Button {
 	return button.CreateButtonWithoutPayload(
 		caption,
 		button.OperationShop,
-		false,
+		isDelete,
 	)
 }

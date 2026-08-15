@@ -51,7 +51,7 @@ func (t *TGHandler) cbGetCommonBox(
 	msg tgbot.BotMessage,
 	btn *button.Button,
 ) error {
-	if err := t.boxProcessor.OpenCommonBox(
+	if err := t.shop.BuyCommonBox(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
 	); err != nil {
@@ -71,7 +71,7 @@ func (t *TGHandler) cbOpenBox(
 		return fmt.Errorf("get open box payload: %w", err)
 	}
 
-	if err := t.boxProcessor.OpenByID(
+	if err := t.boxOpener.OpenByID(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
 		msginfo.MessageIDFromInt(msg.MessageID),
@@ -189,7 +189,6 @@ func (t *TGHandler) cbShop(
 	if err := t.shop.ViewBoxes(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
-		msginfo.MessageIDFromInt(msg.MessageID),
 	); err != nil {
 		return fmt.Errorf("view boxes: %w", err)
 	}

@@ -17,8 +17,7 @@ type ButtonProvider interface {
 	GetButton(ctx context.Context, id button.ID) (*button.Button, error)
 }
 
-type BoxProcessor interface {
-	OpenCommonBox(ctx context.Context, chatID msginfo.ChatID) error
+type BoxOpener interface {
 	OpenByID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
@@ -57,12 +56,15 @@ type Shop interface {
 	ViewBoxes(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-		messageID msginfo.MessageID,
 	) error
 	BuyBox(
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		boxType box.Type,
+	) error
+	BuyCommonBox(
+		ctx context.Context,
+		chatID msginfo.ChatID,
 	) error
 }
 
@@ -88,7 +90,7 @@ type ErrorNotifier interface {
 type TGHandler struct {
 	cbHanlers      map[button.Operation]cbHandler
 	buttonProvider ButtonProvider
-	boxProcessor   BoxProcessor
+	boxOpener      BoxOpener
 	cardViewer     CardViewer
 	cardAbstracter CardAbstracter
 	shop           Shop
@@ -99,7 +101,7 @@ type TGHandler struct {
 
 func New(
 	buttonProvider ButtonProvider,
-	boxProcessor BoxProcessor,
+	boxOpener BoxOpener,
 	cardViewer CardViewer,
 	cardAbstracter CardAbstracter,
 	shop Shop,
@@ -109,7 +111,7 @@ func New(
 ) *TGHandler {
 	tgh := &TGHandler{
 		buttonProvider: buttonProvider,
-		boxProcessor:   boxProcessor,
+		boxOpener:      boxOpener,
 		cardViewer:     cardViewer,
 		cardAbstracter: cardAbstracter,
 		shop:           shop,

@@ -23,12 +23,12 @@ type PlayerProvider interface {
 }
 
 type BoxScheduler interface {
-	ScheduleBox(
+	ScheduleInProgress(
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		boxType box.Type,
 		isImmediate bool,
-	) (bool, error)
+	) (box.Box, error)
 }
 
 type BoxProvider interface {
@@ -43,11 +43,11 @@ type Notifier interface {
 	ShowBoxCosts(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-		messageID msginfo.MessageID,
 		wallet player.Wallet,
 		costs []gloink.BoxCost,
 		inProgressBoxes map[box.Type]box.InProgressBox,
 	) error
+	ShowReadyToOpenBox(ctx context.Context, domBox box.Box) error
 }
 
 type TimeProvider interface {

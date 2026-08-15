@@ -16,7 +16,6 @@ func (t *TGHandler) Shop(
 	if err := t.shop.ViewBoxes(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
-		msginfo.MessageIDFromInt(0),
 	); err != nil {
 		return fmt.Errorf("shop: %w", err)
 	}

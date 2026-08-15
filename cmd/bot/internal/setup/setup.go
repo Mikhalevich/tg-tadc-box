@@ -29,6 +29,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/abstractcard"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/likereward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/schedulebox"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/shop"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/viewcards"
 )
@@ -77,13 +78,19 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		)
 		timeProvider   = timeprovider.New()
 		playerProvider = playerprovider.New(pgDB, timeProvider)
-		boxProcessor   = openbox.New(
+		boxScheduler   = schedulebox.New(
 			boxWaitPeriod,
+			pgDB.Transactor(),
+			pgDB,
+			timeProvider,
+		)
+		boxOpener = openbox.New(
 			bonusBoxAttempts,
 			pgDB,
 			pgDB.Transactor(),
 			playerProvider,
 			rewardgenerator.New(pgDB, boxRewardPercent),
+			boxScheduler,
 			outboxNotifier,
 			timeProvider,
 		)
@@ -105,11 +112,11 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			cardViewer,
 			outboxNotifier,
 		)
-		shop = shop.New(
+		shopBox = shop.New(
 			convertBoxCosts(cfg.BoxCosts),
 			pgDB.Transactor(),
 			playerProvider,
-			boxProcessor,
+			boxScheduler,
 			pgDB,
 			outboxNotifier,
 			timeProvider,
@@ -126,10 +133,10 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		ctx,
 		cfg.Bot,
 		msgProcessor,
-		boxProcessor,
+		boxOpener,
 		cardViewer,
 		cardAbstracter,
-		shop,
+		shopBox,
 		likeReward,
 		outboxNotifier,
 		outboxNotifier,

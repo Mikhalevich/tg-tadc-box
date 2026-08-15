@@ -17,38 +17,12 @@ func (s *Shop) BuyBox(
 	boxType box.Type,
 ) error {
 	if err := s.transactor.Transaction(ctx, func(ctx context.Context) error {
-		plr, err := s.playerProvider.GetPlayerByChatID(ctx, chatID)
-		if err != nil {
-			return fmt.Errorf("get player by chat_id: %w", err)
-		}
-
-		amount, err := s.findBoxCost(boxType)
-		if err != nil {
-			return fmt.Errorf("find box cost: %w", err)
-		}
-
-		if !amount.IsFree() {
-			if err := plr.Profile.Wallet.DecreaseGloinks(amount); err != nil {
-				return fmt.Errorf("decrease gloinks: %w", err)
-			}
-		}
-
-		isScheduled, err := s.boxScheduler.ScheduleBox(
+		if err := s.processBuyBox(
 			ctx,
 			chatID,
 			boxType,
-			isImmediate(boxType, plr),
-		)
-		if err != nil {
-			return fmt.Errorf("schedule box: %w", err)
-		}
-
-		if !isScheduled || amount.IsFree() {
-			return nil
-		}
-
-		if err := s.playerProvider.UpdatePlayer(ctx, plr); err != nil {
-			return fmt.Errorf("update player: %w", err)
+		); err != nil {
+			return fmt.Errorf("process buy box: %w", err)
 		}
 
 		return nil
@@ -59,7 +33,85 @@ func (s *Shop) BuyBox(
 	return nil
 }
 
-func isImmediate(boxType box.Type, plr player.Player) bool {
+func (s *Shop) processBuyBox(
+	ctx context.Context,
+	chatID msginfo.ChatID,
+	boxType box.Type,
+) error {
+	plr, err := s.playerProvider.GetPlayerByChatID(ctx, chatID)
+	if err != nil {
+		return fmt.Errorf("get player by chat_id: %w", err)
+	}
+
+	amount, err := s.findBoxCost(boxType)
+	if err != nil {
+		return fmt.Errorf("find box cost: %w", err)
+	}
+
+	if !amount.IsFree() {
+		if err := plr.Profile.Wallet.DecreaseGloinks(amount); err != nil {
+			return fmt.Errorf("decrease gloinks: %w", err)
+		}
+	}
+
+	isImmediate := isImmediateOpen(boxType, plr)
+
+	scheduledBox, err := s.boxScheduler.ScheduleInProgress(
+		ctx,
+		chatID,
+		boxType,
+		isImmediate,
+	)
+	if err != nil {
+		return fmt.Errorf("schedule box: %w", err)
+	}
+
+	if scheduledBox.IsValid() && !amount.IsFree() {
+		if err := s.playerProvider.UpdatePlayer(ctx, plr); err != nil {
+			return fmt.Errorf("update player: %w", err)
+		}
+	}
+
+	if err := s.showBuyBoxNotification(
+		ctx,
+		plr,
+		scheduledBox,
+		isImmediate,
+	); err != nil {
+		return fmt.Errorf("show buy box notification: %w", err)
+	}
+
+	return nil
+}
+
+func (s *Shop) showBuyBoxNotification(
+	ctx context.Context,
+	plr player.Player,
+	scheduledBox box.Box,
+	isImmediate bool,
+) error {
+	if scheduledBox.IsValid() && isImmediate {
+		if err := s.notifier.ShowReadyToOpenBox(
+			ctx,
+			scheduledBox,
+		); err != nil {
+			return fmt.Errorf("show ready to open box: %w", err)
+		}
+
+		return nil
+	}
+
+	if err := s.showPlayerBoxes(
+		ctx,
+		plr,
+	); err != nil {
+		return fmt.Errorf("show boxes: %w", err)
+	}
+
+	return nil
+}
+
+func isImmediateOpen(boxType box.Type, plr player.Player) bool {
 	if boxType != box.TypeCommon {
 		return false
 	}
