@@ -90,7 +90,7 @@ func messageForBoxAmount(
 		return "Free"
 	}
 
-	return fmt.Sprintf("%s %d gloinks", boxType.String(), amount.Int())
+	return fmt.Sprintf("%s %d gloinks", boxType.Pretty(), amount.Int())
 }
 
 func (n *Notifier) messageBoxAlreadyInProgress(
