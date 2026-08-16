@@ -9,7 +9,7 @@ import (
 )
 
 // ScheduleInProgressOrPending create a new box in InProgress or Pending status
-// returns is created box and error.
+// returns created box and error.
 func (s *ScheduleBox) ScheduleInProgressOrPending(
 	ctx context.Context,
 	chatID msginfo.ChatID,
