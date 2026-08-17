@@ -1,9 +1,10 @@
 package box_test
 
 import (
-	"reflect"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
@@ -133,9 +134,7 @@ func TestToInProgressBoxMapByType(t *testing.T) {
 
 			got := box.ToInProgressBoxMapByType(tt.boxes, tt.now)
 
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToInProgressBoxMapByType() = %v, want %v", got, tt.want)
-			}
+			require.Equal(t, tt.want, got)
 		})
 	}
 }
