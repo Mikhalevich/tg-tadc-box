@@ -24,6 +24,7 @@ func LikeButton(
 		caption,
 		button.OperationLike,
 		false,
+		button.StyleDefault,
 		LikeButtonPayload{
 			BoxID:    boxID,
 			RewardID: rewardID,

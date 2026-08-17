@@ -23,6 +23,7 @@ type Button struct {
 	Caption              string
 	Operation            Operation
 	IsDeleteAfterProcess bool
+	Style                Style
 	Payload              []byte
 }
 
@@ -64,6 +65,7 @@ func CreateButton[P any](
 	caption string,
 	operation Operation,
 	isDelete bool,
+	style Style,
 	payload P,
 ) (Button, error) {
 	payloadBytes, err := gobEncodePayload(payload)
@@ -76,6 +78,7 @@ func CreateButton[P any](
 		Caption:              caption,
 		Operation:            operation,
 		IsDeleteAfterProcess: isDelete,
+		Style:                style,
 		Payload:              payloadBytes,
 	}, nil
 }
@@ -84,12 +87,14 @@ func CreateButtonWithoutPayload(
 	caption string,
 	operation Operation,
 	isDelete bool,
+	style Style,
 ) Button {
 	return Button{
 		ID:                   IDFromString(generateID()),
 		Caption:              caption,
 		Operation:            operation,
 		IsDeleteAfterProcess: isDelete,
+		Style:                style,
 	}
 }
 

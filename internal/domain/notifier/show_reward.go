@@ -34,7 +34,7 @@ func (n *Notifier) ShowReward(
 		msginfo.Message{
 			ChatID:     chatID,
 			ReplyMsgID: messageID,
-			Type:       msginfo.MessageTypeEditPNG,
+			Type:       msginfo.MessageTypePNG,
 			Text:       makeBonusRewardDescription(openingBox.Meta),
 			Payload:    payload,
 			Buttons:    buttons,
@@ -63,7 +63,7 @@ func makeShowRewardButtons(
 	boxID box.ID,
 	rewardID reward.ID,
 ) ([]button.ButtonRow, error) {
-	shopBtn := box.ShopButton("Get next box")
+	shopBtn := box.ShopButton("Get box")
 
 	if !withLikeButtons {
 		return []button.ButtonRow{
@@ -78,7 +78,7 @@ func makeShowRewardButtons(
 
 	dislikeBtn, err := like.LikeButton("👎", boxID, rewardID, like.TypeDislike)
 	if err != nil {
-		return nil, fmt.Errorf("crate dislike button: %w", err)
+		return nil, fmt.Errorf("create dislike button: %w", err)
 	}
 
 	return []button.ButtonRow{

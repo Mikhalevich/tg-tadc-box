@@ -22,7 +22,8 @@ func (n *Notifier) ShowInProgressBoxes(
 		if inProgressBox.AvailableAfter > 0 {
 			msgLine := fmt.Sprintf("*%s* box will be available after *%s*",
 				inProgressBox.Box.Type.String(),
-				n.escaper.EscapeMarkdown(inProgressBox.AvailableAfter.Truncate(time.Second).String()))
+				n.parseDuration(inProgressBox.AvailableAfter),
+			)
 
 			inProgressBoxMsgLines = append(inProgressBoxMsgLines, msgLine)
 
@@ -96,4 +97,8 @@ func makeBonusBoxDescription(meta box.Meta) string {
 		meta.BonusBox.Attempts,
 		meta.BonusBox.Type.String(),
 	)
+}
+
+func (n *Notifier) parseDuration(d time.Duration) string {
+	return n.escaper.EscapeMarkdown(d.Truncate(time.Second).String())
 }

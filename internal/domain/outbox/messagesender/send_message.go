@@ -12,8 +12,7 @@ func (m *MessageSender) SendMessage(
 	ctx context.Context,
 	msg msginfo.Message,
 ) error {
-	if msg.Type == msginfo.MessageTypePNG ||
-		msg.Type == msginfo.MessageTypeEditPNG {
+	if msg.Type == msginfo.MessageTypePNG {
 		payload, err := m.loadPayload(ctx, msg.Payload)
 		if err != nil {
 			return fmt.Errorf("load payload: %w", err)
@@ -53,5 +52,5 @@ func (m *MessageSender) loadPayload(ctx context.Context, payload []byte) ([]byte
 		return image, nil
 	}
 
-	return nil, fmt.Errorf("invaliad type %v", imgPayload.Type)
+	return nil, fmt.Errorf("invalid type %v", imgPayload.Type)
 }

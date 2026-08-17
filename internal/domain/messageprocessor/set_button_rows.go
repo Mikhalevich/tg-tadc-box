@@ -15,11 +15,11 @@ func (m *MessageProcessor) SetButtonRows(
 		return nil, nil
 	}
 
-	inlineButtonRows := make([]button.InlineKeyboardButtonRow, 0, len(rows))
-
 	if err := m.buttonRepository.SetButtonRows(ctx, rows...); err != nil {
 		return nil, fmt.Errorf("set button rows: %w", err)
 	}
+
+	inlineButtonRows := make([]button.InlineKeyboardButtonRow, 0, len(rows))
 
 	for _, row := range rows {
 		buttonRow := make([]button.InlineKeyboardButton, 0, len(row))
@@ -28,6 +28,7 @@ func (m *MessageProcessor) SetButtonRows(
 			buttonRow = append(buttonRow, button.InlineKeyboardButton{
 				ID:      btn.ID,
 				Caption: btn.Caption,
+				Style:   btn.Style,
 			})
 		}
 

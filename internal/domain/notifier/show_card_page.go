@@ -64,7 +64,7 @@ func (n *Notifier) ShowCardPage(
 		msginfo.Message{
 			ChatID:     chatID,
 			ReplyMsgID: messageID,
-			Type:       msginfo.MessageTypeEditPNG,
+			Type:       msginfo.MessageTypePNG,
 			Payload:    payload,
 			Text:       fmt.Sprintf("%d/%d x%d", page, maxPage, count),
 			Buttons: []button.ButtonRow{

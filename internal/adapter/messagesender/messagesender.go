@@ -37,6 +37,7 @@ func makeButtonsMarkup(rows ...button.InlineKeyboardButtonRow) models.ReplyMarku
 			buttonRow = append(buttonRow, models.InlineKeyboardButton{
 				Text:         b.Caption,
 				CallbackData: b.ID.String(),
+				Style:        b.Style.String(),
 			})
 		}
 

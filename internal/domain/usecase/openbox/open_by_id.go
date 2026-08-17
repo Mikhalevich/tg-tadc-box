@@ -29,14 +29,10 @@ func (o *OpenBox) OpenByID(
 			return fmt.Errorf("get box by id: %w", err)
 		}
 
-		if err := isInProgress(readyBox.Status); err != nil {
-			return fmt.Errorf("can be opened: %w", err)
-		}
-
 		now := o.timeProvider.Now()
 
-		if readyBox.AvailableAt.After(now) {
-			return perror.InvalidParam("box is not ready yet")
+		if err := isBoxReadyToOpen(readyBox, now); err != nil {
+			return fmt.Errorf("check box is ready for open: %w", err)
 		}
 
 		receivedReward, err := o.openBox(ctx, profile, readyBox, now)
@@ -55,38 +51,18 @@ func (o *OpenBox) OpenByID(
 			return fmt.Errorf("show reward: %w", err)
 		}
 
-		if err := o.schedulePendingBoxIfAvailable(
+		if err := o.boxScheduler.ActivatePending(
 			ctx,
 			chatID,
 			readyBox.Type,
 			now,
 		); err != nil {
-			return fmt.Errorf("schedule pending box if available: %w", err)
+			return fmt.Errorf("activate pending: %w", err)
 		}
 
 		return nil
 	}); err != nil {
 		return fmt.Errorf("transaction: %w", err)
-	}
-
-	return nil
-}
-
-func (o *OpenBox) schedulePendingBoxIfAvailable(
-	ctx context.Context,
-	chatID msginfo.ChatID,
-	boxType box.Type,
-	now time.Time,
-) error {
-	if err := o.repo.ChangeFirstBoxStatusByType(
-		ctx,
-		chatID,
-		boxType,
-		box.StatusInProgress,
-		box.StatusPending,
-		now.Add(o.boxWaitPeriod[boxType]),
-	); err != nil {
-		return fmt.Errorf("change first box status by type: %w", err)
 	}
 
 	return nil
@@ -186,7 +162,7 @@ func (o *OpenBox) assignBonusBoxIfAvailable(
 		return nil
 	}
 
-	if err := o.scheduleBonusBox(
+	bonusBox, err := o.boxScheduler.ScheduleInProgressOrPending(
 		ctx,
 		plr.ChatID,
 		bonusBoxType,
@@ -197,46 +173,15 @@ func (o *OpenBox) assignBonusBoxIfAvailable(
 				Attempts: count,
 			},
 		},
-	); err != nil {
-		return fmt.Errorf("schedule bonus box: %w", err)
-	}
-
-	return nil
-}
-
-func (o *OpenBox) scheduleBonusBox(
-	ctx context.Context,
-	chatID msginfo.ChatID,
-	boxType box.Type,
-	meta box.Meta,
-) error {
-	inProgressBoxes, err := o.repo.GetBoxesByStatus(ctx, chatID, box.StatusInProgress)
-	if err != nil {
-		return fmt.Errorf("get in_progress boxes: %w", err)
-	}
-
-	boxStatus := box.StatusInProgress
-
-	if len(filterBoxes(inProgressBoxes, boxType)) != 0 {
-		boxStatus = box.StatusPending
-	}
-
-	newBox, err := o.scheduleBox(
-		ctx,
-		chatID,
-		boxType,
-		boxStatus,
-		o.timeProvider.Now(),
-		meta,
-		false,
 	)
+
 	if err != nil {
-		return fmt.Errorf("schedule box: %w", err)
+		return fmt.Errorf("schedule bonus box: %w", err)
 	}
 
 	if err := o.notifier.ShowBonusBox(
 		ctx,
-		newBox,
+		bonusBox,
 	); err != nil {
 		return fmt.Errorf("show bonus box: %w", err)
 	}

@@ -22,18 +22,21 @@ func (p *Postgres) SetButtonRows(
 				caption,
 				operation,
 				is_delete_message,
+				style,
 				payload
 			) VALUES (
 				:id,
 				:caption,
 				:operation,
 				:is_delete_message,
+				:style,
 				:payload
 			) ON CONFLICT(id)
 				DO UPDATE SET
 					caption = EXCLUDED.caption,
 					operation = EXCLUDED.operation,
 					is_delete_message = EXCLUDED.is_delete_message,
+					style = EXCLUDED.style,
 					payload = EXCLUDED.payload
 		`
 
@@ -48,7 +51,7 @@ func (p *Postgres) SetButtonRows(
 		ctx,
 		p.transactor.ExtContext(ctx),
 		query,
-		model.ToDBButtons(rows),
+		dbRows,
 	)
 	if err != nil {
 		return fmt.Errorf("insert buttons: %w", err)

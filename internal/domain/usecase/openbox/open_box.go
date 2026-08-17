@@ -11,21 +11,11 @@ import (
 )
 
 type Repository interface {
-	GetBoxesByStatus(ctx context.Context, chatID msginfo.ChatID, statuses ...box.Status) ([]box.Box, error)
-	InsertBox(ctx context.Context, b box.Box) (int, error)
 	GetBoxByID(ctx context.Context, id box.ID) (box.Box, error)
 	UpdateBox(ctx context.Context, b box.Box) error
 	InsertReceivedReward(
 		ctx context.Context,
 		rwd reward.ReceivedReward,
-	) error
-	ChangeFirstBoxStatusByType(
-		ctx context.Context,
-		chatID msginfo.ChatID,
-		boxType box.Type,
-		newStatus box.Status,
-		previousStatus box.Status,
-		availableAt time.Time,
 	) error
 }
 
@@ -45,6 +35,21 @@ type RewardGenerator interface {
 	Generate(ctx context.Context, boxType box.Type) (reward.Reward, error)
 }
 
+type BoxScheduler interface {
+	ScheduleInProgressOrPending(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		boxType box.Type,
+		meta box.Meta,
+	) (box.Box, error)
+	ActivatePending(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		boxType box.Type,
+		now time.Time,
+	) error
+}
+
 type Notifier interface {
 	ShowReward(
 		ctx context.Context,
@@ -54,12 +59,8 @@ type Notifier interface {
 		openingBox box.Box,
 		withLikeButtons bool,
 	) error
-	ShowInProgressBoxes(
-		ctx context.Context,
-		chatID msginfo.ChatID,
-		boxes []box.InProgressBox,
-	) error
 	ShowBonusBox(ctx context.Context, bonusBox box.Box) error
+	ShowReadyToOpenBox(ctx context.Context, domBox box.Box) error
 }
 
 type TimeProvider interface {
@@ -67,33 +68,33 @@ type TimeProvider interface {
 }
 
 type OpenBox struct {
-	boxWaitPeriod    map[box.Type]time.Duration
 	bonusBoxAttempts map[box.Type]int
 	repo             Repository
 	transactor       Transactor
 	playerProvider   PlayerProvider
 	rewardGenerator  RewardGenerator
+	boxScheduler     BoxScheduler
 	notifier         Notifier
 	timeProvider     TimeProvider
 }
 
 func New(
-	boxWaitPeriod map[box.Type]time.Duration,
 	bonusBoxAttempts map[box.Type]int,
 	repo Repository,
 	transactor Transactor,
 	playerProvider PlayerProvider,
 	rewardGenertor RewardGenerator,
+	boxScheduler BoxScheduler,
 	notifier Notifier,
 	timeProvider TimeProvider,
 ) *OpenBox {
 	return &OpenBox{
-		boxWaitPeriod:    boxWaitPeriod,
 		bonusBoxAttempts: bonusBoxAttempts,
 		repo:             repo,
 		transactor:       transactor,
 		playerProvider:   playerProvider,
 		rewardGenerator:  rewardGenertor,
+		boxScheduler:     boxScheduler,
 		notifier:         notifier,
 		timeProvider:     timeProvider,
 	}

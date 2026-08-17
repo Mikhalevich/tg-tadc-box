@@ -12,6 +12,7 @@ const (
 	OperationShop                  Operation = "Shop"
 	OperationGetCommonBox          Operation = "GetCommonBox"
 	OperationLike                  Operation = "Like"
+	OperationBoxReadyToOpen        Operation = "BoxReadyToOpen"
 )
 
 func (o Operation) String() string {

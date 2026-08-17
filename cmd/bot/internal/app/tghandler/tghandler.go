@@ -17,13 +17,17 @@ type ButtonProvider interface {
 	GetButton(ctx context.Context, id button.ID) (*button.Button, error)
 }
 
-type BoxProcessor interface {
-	OpenCommonBox(ctx context.Context, chatID msginfo.ChatID) error
+type BoxOpener interface {
 	OpenByID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		messageID msginfo.MessageID,
 		id box.ID,
+	) error
+	ShowReadyToOpenBox(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		boxID box.ID,
 	) error
 }
 
@@ -63,6 +67,10 @@ type Shop interface {
 		chatID msginfo.ChatID,
 		boxType box.Type,
 	) error
+	BuyCommonBox(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+	) error
 }
 
 type LikeProcessor interface {
@@ -87,7 +95,7 @@ type ErrorNotifier interface {
 type TGHandler struct {
 	cbHanlers      map[button.Operation]cbHandler
 	buttonProvider ButtonProvider
-	boxProcessor   BoxProcessor
+	boxOpener      BoxOpener
 	cardViewer     CardViewer
 	cardAbstracter CardAbstracter
 	shop           Shop
@@ -98,7 +106,7 @@ type TGHandler struct {
 
 func New(
 	buttonProvider ButtonProvider,
-	boxProcessor BoxProcessor,
+	boxOpener BoxOpener,
 	cardViewer CardViewer,
 	cardAbstracter CardAbstracter,
 	shop Shop,
@@ -108,7 +116,7 @@ func New(
 ) *TGHandler {
 	tgh := &TGHandler{
 		buttonProvider: buttonProvider,
-		boxProcessor:   boxProcessor,
+		boxOpener:      boxOpener,
 		cardViewer:     cardViewer,
 		cardAbstracter: cardAbstracter,
 		shop:           shop,
@@ -126,6 +134,7 @@ func (t *TGHandler) registerCBHandlers() {
 	t.cbHanlers = map[button.Operation]cbHandler{
 		button.OperationGetCommonBox:          t.cbGetCommonBox,
 		button.OperationOpenBox:               t.cbOpenBox,
+		button.OperationBoxReadyToOpen:        t.cbReadyToOpenBox,
 		button.OperationCardPage:              t.cbCollectedCardPage,
 		button.OperationCardTotal:             t.cbCollectedCardTotalPage,
 		button.OperationAbstractDuplicatesAll: t.cbAbstractDuplicatedAll,

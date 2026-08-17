@@ -5,6 +5,9 @@ import (
 	"slices"
 	"time"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
@@ -42,6 +45,10 @@ const (
 
 func (t Type) String() string {
 	return string(t)
+}
+
+func (t Type) Pretty() string {
+	return cases.Title(language.English).String(string(t))
 }
 
 func (t Type) Compare(other Type) int {
@@ -109,6 +116,10 @@ type Box struct {
 	Meta                Meta
 }
 
+func (b Box) IsValid() bool {
+	return b.ID.Int() != 0
+}
+
 func (b Box) IsStatus(statuses ...Status) bool {
 	return slices.Contains(statuses, b.Status)
 }
@@ -128,15 +139,18 @@ func SortBoxByType(boxes []Box) {
 	})
 }
 
-func ToMapByType(boxes []Box) map[Type]Box {
+func ToInProgressBoxMapByType(boxes []Box, now time.Time) map[Type]InProgressBox {
 	if len(boxes) == 0 {
 		return nil
 	}
 
-	boxesMap := make(map[Type]Box, len(boxes))
+	boxesMap := make(map[Type]InProgressBox, len(boxes))
 
 	for _, b := range boxes {
-		boxesMap[b.Type] = b
+		boxesMap[b.Type] = InProgressBox{
+			Box:            b,
+			AvailableAfter: b.AvailableAfter(now),
+		}
 	}
 
 	return boxesMap

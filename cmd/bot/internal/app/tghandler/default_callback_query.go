@@ -51,7 +51,7 @@ func (t *TGHandler) cbGetCommonBox(
 	msg tgbot.BotMessage,
 	btn *button.Button,
 ) error {
-	if err := t.boxProcessor.OpenCommonBox(
+	if err := t.shop.BuyCommonBox(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
 	); err != nil {
@@ -71,13 +71,34 @@ func (t *TGHandler) cbOpenBox(
 		return fmt.Errorf("get open box payload: %w", err)
 	}
 
-	if err := t.boxProcessor.OpenByID(
+	if err := t.boxOpener.OpenByID(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
 		msginfo.MessageIDFromInt(msg.MessageID),
 		payload.ID,
 	); err != nil {
 		return fmt.Errorf("open box by id: %w", err)
+	}
+
+	return nil
+}
+
+func (t *TGHandler) cbReadyToOpenBox(
+	ctx context.Context,
+	msg tgbot.BotMessage,
+	btn *button.Button,
+) error {
+	payload, err := button.GetPayload[box.ReadyToOpenButtonPayload](*btn)
+	if err != nil {
+		return fmt.Errorf("get ready to open box payload: %w", err)
+	}
+
+	if err := t.boxOpener.ShowReadyToOpenBox(
+		ctx,
+		msginfo.ChatIDFromInt64(msg.ChatID),
+		payload.ID,
+	); err != nil {
+		return fmt.Errorf("show ready to open box: %w", err)
 	}
 
 	return nil
