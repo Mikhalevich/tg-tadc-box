@@ -7,6 +7,7 @@ type Button struct {
 	Caption         string `db:"caption"`
 	Operation       string `db:"operation"`
 	IsDeleteMessage bool   `db:"is_delete_message"`
+	Style           string `db:"style"`
 	Payload         []byte `db:"payload"`
 }
 
@@ -16,6 +17,7 @@ func (b *Button) ToDomButton() *button.Button {
 		Caption:              b.Caption,
 		Operation:            button.Operation(b.Operation),
 		IsDeleteAfterProcess: b.IsDeleteMessage,
+		Style:                button.StyleFromString(b.Style),
 		Payload:              b.Payload,
 	}
 }
@@ -26,6 +28,7 @@ func toDBButton(domButton button.Button) Button {
 		Caption:         domButton.Caption,
 		Operation:       domButton.Operation.String(),
 		IsDeleteMessage: domButton.IsDeleteAfterProcess,
+		Style:           domButton.Style.String(),
 		Payload:         domButton.Payload,
 	}
 }

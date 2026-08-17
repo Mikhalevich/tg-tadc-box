@@ -15,6 +15,7 @@ func OpenBoxButton(boxID ID) (button.Button, error) {
 		"Open",
 		button.OperationOpenBox,
 		false,
+		button.StyleDefault,
 		OpenBoxButtonPayload{
 			ID: boxID,
 		},
@@ -32,13 +33,55 @@ func GetCommonBoxButton(caption string) button.Button {
 		caption,
 		button.OperationGetCommonBox,
 		true,
+		button.StyleDefault,
 	)
 }
 
-func ShopButton(caption string, isDelete bool) button.Button {
+func ShopButton(caption string) button.Button {
 	return button.CreateButtonWithoutPayload(
 		caption,
 		button.OperationShop,
-		isDelete,
+		false,
+		button.StyleDefault,
 	)
+}
+
+func CostButton(caption string) button.Button {
+	return button.CreateButtonWithoutPayload(
+		caption,
+		button.OperationShop,
+		true,
+		button.StyleDefault,
+	)
+}
+
+func InProgressButton(caption string) button.Button {
+	return button.CreateButtonWithoutPayload(
+		caption,
+		button.OperationShop,
+		true,
+		button.StyleDanger,
+	)
+}
+
+type ReadyToOpenButtonPayload struct {
+	ID ID
+}
+
+func ReadyToOpenButton(caption string, boxID ID) (button.Button, error) {
+	btn, err := button.CreateButton(
+		caption,
+		button.OperationBoxReadyToOpen,
+		true,
+		button.StyleSuccess,
+		ReadyToOpenButtonPayload{
+			ID: boxID,
+		},
+	)
+
+	if err != nil {
+		return button.Button{}, fmt.Errorf("create button: %w", err)
+	}
+
+	return btn, nil
 }

@@ -21,6 +21,7 @@ func (p *Postgres) GetButton(ctx context.Context, btnID button.ID) (*button.Butt
 				caption,
 				operation,
 				is_delete_message,
+				style,
 				payload
 			FROM
 				button

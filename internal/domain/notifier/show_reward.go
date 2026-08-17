@@ -63,7 +63,7 @@ func makeShowRewardButtons(
 	boxID box.ID,
 	rewardID reward.ID,
 ) ([]button.ButtonRow, error) {
-	shopBtn := box.ShopButton("Get box", false)
+	shopBtn := box.ShopButton("Get box")
 
 	if !withLikeButtons {
 		return []button.ButtonRow{

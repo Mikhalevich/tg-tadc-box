@@ -17,6 +17,7 @@ func PageButton(caption string, rewardType reward.RewardType, page int) (button.
 		caption,
 		button.OperationCardPage,
 		false,
+		button.StyleDefault,
 		PageButtonPayload{
 			Type: rewardType,
 			Page: page,
@@ -34,6 +35,7 @@ func TotalButton(caption string) button.Button {
 		caption,
 		button.OperationCardTotal,
 		true,
+		button.StyleDefault,
 	)
 }
 
@@ -42,6 +44,7 @@ func AbstractDuplicatesAllButton(caption string) button.Button {
 		caption,
 		button.OperationAbstractDuplicatesAll,
 		false,
+		button.StyleDefault,
 	)
 }
 
@@ -61,6 +64,7 @@ func AbstractCardButton(
 		caption,
 		button.OperationAbstractCard,
 		false,
+		button.StyleDefault,
 		AbstractCardPayload{
 			Type:  rewardType,
 			Pos:   pos,

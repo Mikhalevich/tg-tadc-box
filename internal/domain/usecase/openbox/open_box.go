@@ -60,6 +60,7 @@ type Notifier interface {
 		withLikeButtons bool,
 	) error
 	ShowBonusBox(ctx context.Context, bonusBox box.Box) error
+	ShowReadyToOpenBox(ctx context.Context, domBox box.Box) error
 }
 
 type TimeProvider interface {

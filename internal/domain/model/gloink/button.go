@@ -19,6 +19,7 @@ func BuyBoxButton(
 		caption,
 		button.OperationBuyBox,
 		true,
+		button.StyleDefault,
 		BuyBoxButtonPayload{
 			BoxType: boxType,
 		},

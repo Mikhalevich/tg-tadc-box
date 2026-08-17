@@ -29,14 +29,10 @@ func (o *OpenBox) OpenByID(
 			return fmt.Errorf("get box by id: %w", err)
 		}
 
-		if err := isInProgress(readyBox.Status); err != nil {
-			return fmt.Errorf("can be opened: %w", err)
-		}
-
 		now := o.timeProvider.Now()
 
-		if readyBox.AvailableAt.After(now) {
-			return perror.InvalidParam("box is not ready yet")
+		if err := isBoxReadyToOpen(readyBox, now); err != nil {
+			return fmt.Errorf("check box is ready for open: %w", err)
 		}
 
 		receivedReward, err := o.openBox(ctx, profile, readyBox, now)

@@ -24,6 +24,11 @@ type BoxOpener interface {
 		messageID msginfo.MessageID,
 		id box.ID,
 	) error
+	ShowReadyToOpenBox(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		boxID box.ID,
+	) error
 }
 
 type CardViewer interface {
@@ -129,6 +134,7 @@ func (t *TGHandler) registerCBHandlers() {
 	t.cbHanlers = map[button.Operation]cbHandler{
 		button.OperationGetCommonBox:          t.cbGetCommonBox,
 		button.OperationOpenBox:               t.cbOpenBox,
+		button.OperationBoxReadyToOpen:        t.cbReadyToOpenBox,
 		button.OperationCardPage:              t.cbCollectedCardPage,
 		button.OperationCardTotal:             t.cbCollectedCardTotalPage,
 		button.OperationAbstractDuplicatesAll: t.cbAbstractDuplicatedAll,

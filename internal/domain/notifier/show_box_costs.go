@@ -47,7 +47,7 @@ func (n *Notifier) makeBoxCostsButtons(
 	for _, cost := range costs {
 		inProgressBox, isBoxAlreadyInProgress := inProgressBoxes[cost.Type]
 
-		btn, err := n.createBoxCostButton(cost, isBoxAlreadyInProgress, inProgressBox.AvailableAfter)
+		btn, err := n.createBoxCostButton(cost, isBoxAlreadyInProgress, inProgressBox)
 		if err != nil {
 			return nil, fmt.Errorf("create button: %w", err)
 		}
@@ -61,17 +61,29 @@ func (n *Notifier) makeBoxCostsButtons(
 func (n *Notifier) createBoxCostButton(
 	cost gloink.BoxCost,
 	isInProgress bool,
-	availableAfter time.Duration,
+	inProgressBox box.InProgressBox,
 ) (button.Button, error) {
 	if isInProgress {
-		return box.ShopButton(
-			n.messageBoxAlreadyInProgress(cost.Type, availableAfter),
-			true,
-		), nil
+		if inProgressBox.AvailableAfter > 0 {
+			return box.InProgressButton(
+				n.msgBoxInProgress(cost.Type, inProgressBox.AvailableAfter),
+			), nil
+		}
+
+		readyToOpenBtn, err := box.ReadyToOpenButton(
+			msgBoxInProgress(cost.Type),
+			inProgressBox.Box.ID,
+		)
+
+		if err != nil {
+			return button.Button{}, fmt.Errorf("create ready to open button: %w", err)
+		}
+
+		return readyToOpenBtn, nil
 	}
 
 	buyButton, err := gloink.BuyBoxButton(
-		messageForBoxAmount(cost.Type, cost.Amount),
+		msgBoxCost(cost.Type, cost.Amount),
 		cost.Type,
 	)
 
@@ -82,7 +94,7 @@ func (n *Notifier) createBoxCostButton(
 	return buyButton, nil
 }
 
-func messageForBoxAmount(
+func msgBoxCost(
 	boxType box.Type,
 	amount gloink.Amount,
 ) string {
@@ -93,13 +105,13 @@ func messageForBoxAmount(
 	return fmt.Sprintf("%s %d gloinks", boxType.Pretty(), amount.Int())
 }
 
-func (n *Notifier) messageBoxAlreadyInProgress(
+func msgBoxInProgress(boxType box.Type) string {
+	return fmt.Sprintf("%s is ready", boxType.Pretty())
+}
+
+func (n *Notifier) msgBoxInProgress(
 	boxType box.Type,
 	availableAfter time.Duration,
 ) string {
-	if availableAfter > 0 {
-		return fmt.Sprintf("%s ⌛️ %s", boxType.Pretty(), n.parseDuration(availableAfter))
-	}
-
-	return fmt.Sprintf("%s is ready to open", boxType.Pretty())
+	return fmt.Sprintf("%s ⌛️ %s", boxType.Pretty(), n.parseDuration(availableAfter))
 }
