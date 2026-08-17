@@ -421,6 +421,90 @@ func TestCardsCollectedAbstractDuplicatesAll(t *testing.T) {
 	}
 }
 
+func TestProfileIsNoOpenCommonBoxes(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		openedBoxes player.OpenedBoxes
+		want        bool
+	}{
+		"no common boxes opened": {
+			openedBoxes: player.OpenedBoxes{
+				Common:    0,
+				Rare:      0,
+				Epic:      0,
+				Legendary: 0,
+			},
+			want: true,
+		},
+		"zero value opened boxes": {
+			openedBoxes: player.OpenedBoxes{},
+			want:        true,
+		},
+		"one common box opened": {
+			openedBoxes: player.OpenedBoxes{
+				Common: 1,
+			},
+			want: false,
+		},
+		"multiple common boxes opened": {
+			openedBoxes: player.OpenedBoxes{
+				Common: 5,
+			},
+			want: false,
+		},
+		"only rare boxes opened": {
+			openedBoxes: player.OpenedBoxes{
+				Rare: 3,
+			},
+			want: true,
+		},
+		"only epic boxes opened": {
+			openedBoxes: player.OpenedBoxes{
+				Epic: 2,
+			},
+			want: true,
+		},
+		"only legendary boxes opened": {
+			openedBoxes: player.OpenedBoxes{
+				Legendary: 4,
+			},
+			want: true,
+		},
+		"mixed non-common boxes opened": {
+			openedBoxes: player.OpenedBoxes{
+				Rare:      1,
+				Epic:      2,
+				Legendary: 3,
+			},
+			want: true,
+		},
+		"common and other boxes opened": {
+			openedBoxes: player.OpenedBoxes{
+				Common:    2,
+				Rare:      1,
+				Epic:      2,
+				Legendary: 3,
+			},
+			want: false,
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			profile := &player.Profile{
+				OpenedBoxes: tt.openedBoxes,
+			}
+
+			got := profile.IsNoOpenCommonBoxes()
+
+			require.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestProfileAbstractDuplicatesAll(t *testing.T) {
 	t.Parallel()
 
