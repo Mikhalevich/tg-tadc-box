@@ -285,3 +285,245 @@ func TestProfileAbstractByPos(t *testing.T) {
 		})
 	}
 }
+
+func TestCardsCollectedAbstractDuplicatesAll(t *testing.T) {
+	t.Parallel()
+
+	var (
+		now = time.Date(2026, 8, 17, 12, 0, 0, 0, time.UTC)
+
+		makeCard = func(id, count int) player.Card {
+			return player.Card{
+				RewardID:  reward.IDFromInt(id),
+				Count:     count,
+				CreatedAt: now,
+				UpdatedAt: now,
+			}
+		}
+
+		abstractionCosts = map[reward.RewardType]gloink.Amount{
+			reward.RewardTypeCommon:    gloink.AmountFromInt(10),
+			reward.RewardTypeRare:      gloink.AmountFromInt(20),
+			reward.RewardTypeEpic:      gloink.AmountFromInt(30),
+			reward.RewardTypeLegendary: gloink.AmountFromInt(40),
+		}
+	)
+
+	tests := map[string]struct {
+		cards      map[reward.RewardType][]player.Card
+		wantAmount gloink.Amount
+		cardsAfter map[reward.RewardType][]player.Card
+	}{
+		"no duplicates across all card types": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon:    {makeCard(1, 1), makeCard(2, 1)},
+				reward.RewardTypeRare:      {makeCard(3, 1)},
+				reward.RewardTypeEpic:      {makeCard(4, 1)},
+				reward.RewardTypeLegendary: {makeCard(5, 1)},
+			},
+			wantAmount: gloink.AmountFromInt(0),
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon:    {makeCard(1, 1), makeCard(2, 1)},
+				reward.RewardTypeRare:      {makeCard(3, 1)},
+				reward.RewardTypeEpic:      {makeCard(4, 1)},
+				reward.RewardTypeLegendary: {makeCard(5, 1)},
+			},
+		},
+		"single reward type with duplicates": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: {makeCard(1, 5)},
+			},
+			wantAmount: gloink.AmountFromInt(40), // 4 duplicates * 10 = 40
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: {makeCard(1, 1)},
+			},
+		},
+		"multiple cards in same type, some with duplicates": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: {makeCard(1, 1), makeCard(2, 3), makeCard(3, 1)},
+			},
+			wantAmount: gloink.AmountFromInt(20), // 2 duplicates * 10 = 20
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: {makeCard(1, 1), makeCard(2, 1), makeCard(3, 1)},
+			},
+		},
+		"multiple reward types with duplicates": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon:    {makeCard(1, 3)},
+				reward.RewardTypeRare:      {makeCard(2, 2)},
+				reward.RewardTypeEpic:      {makeCard(3, 4)},
+				reward.RewardTypeLegendary: {makeCard(4, 2)},
+			},
+			// 2 * 10 + 1 * 20 + 3 * 30 + 1 * 40 = 20 + 20 + 90 + 40 = 170
+			wantAmount: gloink.AmountFromInt(170),
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon:    {makeCard(1, 1)},
+				reward.RewardTypeRare:      {makeCard(2, 1)},
+				reward.RewardTypeEpic:      {makeCard(3, 1)},
+				reward.RewardTypeLegendary: {makeCard(4, 1)},
+			},
+		},
+		"empty cards": {
+			cards:      map[reward.RewardType][]player.Card{},
+			wantAmount: gloink.AmountFromInt(0),
+			cardsAfter: map[reward.RewardType][]player.Card{},
+		},
+		"nil cards map": {
+			cards:      nil,
+			wantAmount: gloink.AmountFromInt(0),
+			cardsAfter: nil,
+		},
+		"some reward types without cards": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: nil,
+				reward.RewardTypeRare:   {},
+			},
+			wantAmount: gloink.AmountFromInt(0),
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: nil,
+				reward.RewardTypeRare:   {},
+			},
+		},
+		"duplicates in multiple cards within same type": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: {makeCard(1, 5), makeCard(2, 2), makeCard(3, 3)},
+			},
+			// (4 + 1 + 2) * 10 = 70
+			wantAmount: gloink.AmountFromInt(70),
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: {makeCard(1, 1), makeCard(2, 1), makeCard(3, 1)},
+			},
+		},
+		"single card with no duplicates": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeLegendary: {makeCard(1, 1)},
+			},
+			wantAmount: gloink.AmountFromInt(0),
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeLegendary: {makeCard(1, 1)},
+			},
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			cards := player.CardsCollected{
+				CardsByType: tt.cards,
+			}
+
+			gotAmount := cards.AbstractDuplicatesAll(abstractionCosts)
+
+			require.Equal(t, tt.wantAmount, gotAmount)
+			require.Equal(t, tt.cardsAfter, cards.CardsByType)
+		})
+	}
+}
+
+func TestProfileAbstractDuplicatesAll(t *testing.T) {
+	t.Parallel()
+
+	var (
+		now = time.Date(2026, 8, 17, 12, 0, 0, 0, time.UTC)
+
+		makeCard = func(id, count int) player.Card {
+			return player.Card{
+				RewardID:  reward.IDFromInt(id),
+				Count:     count,
+				CreatedAt: now,
+				UpdatedAt: now,
+			}
+		}
+
+		abstractionCosts = map[reward.RewardType]gloink.Amount{
+			reward.RewardTypeCommon:    gloink.AmountFromInt(10),
+			reward.RewardTypeRare:      gloink.AmountFromInt(20),
+			reward.RewardTypeEpic:      gloink.AmountFromInt(30),
+			reward.RewardTypeLegendary: gloink.AmountFromInt(40),
+		}
+	)
+
+	tests := map[string]struct {
+		cards      map[reward.RewardType][]player.Card
+		wallet     gloink.Amount
+		wantAmount gloink.Amount
+		wantWallet gloink.Amount
+		cardsAfter map[reward.RewardType][]player.Card
+	}{
+		"no duplicates, wallet unchanged": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: {makeCard(1, 1)},
+			},
+			wallet:     gloink.AmountFromInt(100),
+			wantAmount: gloink.AmountFromInt(0),
+			wantWallet: gloink.AmountFromInt(100),
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: {makeCard(1, 1)},
+			},
+		},
+		"duplicates added to wallet": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: {makeCard(1, 5)},
+			},
+			wallet:     gloink.AmountFromInt(100),
+			wantAmount: gloink.AmountFromInt(40), // 4 duplicates * 10 = 40
+			wantWallet: gloink.AmountFromInt(140),
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon: {makeCard(1, 1)},
+			},
+		},
+		"zero wallet, duplicates added": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeRare: {makeCard(2, 3)},
+			},
+			wallet:     gloink.AmountFromInt(0),
+			wantAmount: gloink.AmountFromInt(40), // 2 duplicates * 20 = 40
+			wantWallet: gloink.AmountFromInt(40),
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeRare: {makeCard(2, 1)},
+			},
+		},
+		"multiple types with duplicates, wallet updated": {
+			cards: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon:    {makeCard(1, 3)},
+				reward.RewardTypeLegendary: {makeCard(2, 2)},
+			},
+			wallet:     gloink.AmountFromInt(50),
+			wantAmount: gloink.AmountFromInt(60), // 2*10 + 1*40 = 60
+			wantWallet: gloink.AmountFromInt(110),
+			cardsAfter: map[reward.RewardType][]player.Card{
+				reward.RewardTypeCommon:    {makeCard(1, 1)},
+				reward.RewardTypeLegendary: {makeCard(2, 1)},
+			},
+		},
+		"empty cards, wallet unchanged": {
+			cards:      map[reward.RewardType][]player.Card{},
+			wallet:     gloink.AmountFromInt(200),
+			wantAmount: gloink.AmountFromInt(0),
+			wantWallet: gloink.AmountFromInt(200),
+			cardsAfter: map[reward.RewardType][]player.Card{},
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			profile := &player.Profile{
+				Cards: player.CardsCollected{
+					CardsByType: tt.cards,
+				},
+				Wallet: player.Wallet{
+					GloinksAmount: tt.wallet,
+				},
+			}
+
+			gotAmount := profile.AbstractDuplicatesAll(abstractionCosts)
+
+			require.Equal(t, tt.wantAmount, gotAmount)
+			require.Equal(t, tt.wantWallet, profile.Wallet.GloinksAmount)
+			require.Equal(t, tt.cardsAfter, profile.Cards.CardsByType)
+		})
+	}
+}
