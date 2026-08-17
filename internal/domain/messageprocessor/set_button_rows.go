@@ -28,7 +28,7 @@ func (m *MessageProcessor) SetButtonRows(
 			buttonRow = append(buttonRow, button.InlineKeyboardButton{
 				ID:      btn.ID,
 				Caption: btn.Caption,
-				Style:   btn.Style.String(),
+				Style:   btn.Style,
 			})
 		}
 

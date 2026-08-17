@@ -3,7 +3,7 @@ package button
 type InlineKeyboardButton struct {
 	ID      ID
 	Caption string
-	Style   string
+	Style   Style
 }
 
 type InlineKeyboardButtonRow []InlineKeyboardButton

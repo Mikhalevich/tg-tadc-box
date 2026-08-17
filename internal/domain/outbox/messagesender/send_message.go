@@ -52,5 +52,5 @@ func (m *MessageSender) loadPayload(ctx context.Context, payload []byte) ([]byte
 		return image, nil
 	}
 
-	return nil, fmt.Errorf("invaliad type %v", imgPayload.Type)
+	return nil, fmt.Errorf("invalid type %v", imgPayload.Type)
 }

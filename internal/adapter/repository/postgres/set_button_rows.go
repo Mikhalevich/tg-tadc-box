@@ -51,7 +51,7 @@ func (p *Postgres) SetButtonRows(
 		ctx,
 		p.transactor.ExtContext(ctx),
 		query,
-		model.ToDBButtons(rows),
+		dbRows,
 	)
 	if err != nil {
 		return fmt.Errorf("insert buttons: %w", err)
