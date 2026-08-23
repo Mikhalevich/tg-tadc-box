@@ -1,4 +1,4 @@
-package messageprocessor
+package messagesvc
 
 import (
 	"context"
@@ -28,7 +28,7 @@ type ButtonRepository interface {
 	SetButtonRows(ctx context.Context, rows ...button.ButtonRow) error
 }
 
-type MessageProcessor struct {
+type Service struct {
 	sender           Sender
 	escaper          MarkdownEscaper
 	buttonRepository ButtonRepository
@@ -38,8 +38,8 @@ func New(
 	sender Sender,
 	escaper MarkdownEscaper,
 	buttonRepository ButtonRepository,
-) *MessageProcessor {
-	return &MessageProcessor{
+) *Service {
+	return &Service{
 		sender:           sender,
 		escaper:          escaper,
 		buttonRepository: buttonRepository,

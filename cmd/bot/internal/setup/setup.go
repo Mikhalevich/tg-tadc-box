@@ -18,10 +18,10 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/driver"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/transaction"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/timeprovider"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/messagesvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/notificationsvc"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/service/outbox/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/playersvc"
@@ -69,7 +69,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 
 	var (
 		msgSender                 = messagesender.New(botAPI)
-		msgProcessor              = messageprocessor.New(msgSender, msgSender, pgDB)
+		messageService            = messagesvc.New(msgSender, msgSender, pgDB)
 		markdownEscaper           = markdownescaper.New()
 		outboxNotificationService = notificationsvc.New(
 			pgDB,
@@ -95,7 +95,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			timeProvider,
 		)
 		notificationService = notificationsvc.New(
-			msgProcessor,
+			messageService,
 			markdownEscaper,
 			imageprovider.New(),
 		)
@@ -132,7 +132,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 	if err := app.Start(
 		ctx,
 		cfg.Bot,
-		msgProcessor,
+		messageService,
 		boxOpener,
 		cardViewer,
 		cardAbstracter,

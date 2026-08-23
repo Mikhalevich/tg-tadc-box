@@ -1,4 +1,4 @@
-package messageprocessor
+package messagesvc
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 )
 
-func (m *MessageProcessor) SetButtonRows(
+func (s *Service) SetButtonRows(
 	ctx context.Context,
 	rows ...button.ButtonRow,
 ) ([]button.InlineKeyboardButtonRow, error) {
@@ -15,7 +15,7 @@ func (m *MessageProcessor) SetButtonRows(
 		return nil, nil
 	}
 
-	if err := m.buttonRepository.SetButtonRows(ctx, rows...); err != nil {
+	if err := s.buttonRepository.SetButtonRows(ctx, rows...); err != nil {
 		return nil, fmt.Errorf("set button rows: %w", err)
 	}
 

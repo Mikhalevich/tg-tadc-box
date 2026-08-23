@@ -4,13 +4,13 @@ import (
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/messagesvc"
 )
 
 var (
-	_ messageprocessor.Sender          = (*messageSender)(nil)
-	_ messageprocessor.MarkdownEscaper = (*messageSender)(nil)
+	_ messagesvc.Sender          = (*messageSender)(nil)
+	_ messagesvc.MarkdownEscaper = (*messageSender)(nil)
 )
 
 type messageSender struct {

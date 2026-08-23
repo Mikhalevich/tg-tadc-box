@@ -1,4 +1,4 @@
-package messageprocessor
+package messagesvc
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (m *MessageProcessor) DeleteMessage(
+func (s *Service) DeleteMessage(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	messageID msginfo.MessageID,
@@ -16,7 +16,7 @@ func (m *MessageProcessor) DeleteMessage(
 		return nil
 	}
 
-	if err := m.sender.DeleteMessage(ctx, chatID, messageID); err != nil {
+	if err := s.sender.DeleteMessage(ctx, chatID, messageID); err != nil {
 		return fmt.Errorf("delete message: %w", err)
 	}
 
