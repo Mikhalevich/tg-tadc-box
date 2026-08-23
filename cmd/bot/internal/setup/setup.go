@@ -24,8 +24,8 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/imageprovider"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/playerprovider"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/rewardgenerator"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/playersvc"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/rewardsvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/abstractcard"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/likereward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
@@ -76,9 +76,9 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			markdownEscaper,
 			outboximageprovider.New(),
 		)
-		timeProvider   = timeprovider.New()
-		playerProvider = playerprovider.New(pgDB, timeProvider)
-		boxScheduler   = schedulebox.New(
+		timeProvider  = timeprovider.New()
+		playerService = playersvc.New(pgDB, timeProvider)
+		boxScheduler  = schedulebox.New(
 			boxWaitPeriod,
 			pgDB.Transactor(),
 			pgDB,
@@ -88,8 +88,8 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			bonusBoxAttempts,
 			pgDB,
 			pgDB.Transactor(),
-			playerProvider,
-			rewardgenerator.New(pgDB, boxRewardPercent),
+			playerService,
+			rewardsvc.New(boxRewardPercent, pgDB),
 			boxScheduler,
 			outboxNotifier,
 			timeProvider,
@@ -101,21 +101,21 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		)
 		cardViewer = viewcards.New(
 			abstractionCosts,
-			playerProvider,
+			playerService,
 			pgDB,
 			directNotifier,
 		)
 		cardAbstracter = abstractcard.New(
 			abstractionCosts,
 			pgDB.Transactor(),
-			playerProvider,
+			playerService,
 			cardViewer,
 			outboxNotifier,
 		)
 		shopBox = shop.New(
 			convertBoxCosts(cfg.BoxCosts),
 			pgDB.Transactor(),
-			playerProvider,
+			playerService,
 			boxScheduler,
 			pgDB,
 			outboxNotifier,
@@ -172,8 +172,8 @@ func MakePostgres(cfg config.Postgres) (*postgres.Postgres, func(), error) {
 
 func convertBoxRewardPercent(
 	cfgRewards map[string]config.BoxRewardPercent,
-) (map[box.Type]rewardgenerator.RewardPercent, error) {
-	rewards := make(map[box.Type]rewardgenerator.RewardPercent, len(cfgRewards))
+) (map[box.Type]rewardsvc.RewardPercent, error) {
+	rewards := make(map[box.Type]rewardsvc.RewardPercent, len(cfgRewards))
 
 	for strType, percents := range cfgRewards {
 		boxType, err := box.TypeFromString(strType)
@@ -181,7 +181,7 @@ func convertBoxRewardPercent(
 			return nil, fmt.Errorf("convert box type: %w", err)
 		}
 
-		rewards[boxType] = rewardgenerator.RewardPercent{
+		rewards[boxType] = rewardsvc.RewardPercent{
 			Legendary: percents.Legendary,
 			Epic:      percents.Epic,
 			Rare:      percents.Rare,

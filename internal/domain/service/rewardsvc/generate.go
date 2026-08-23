@@ -1,4 +1,4 @@
-package rewardgenerator
+package rewardsvc
 
 import (
 	"context"
@@ -9,55 +9,27 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
-type RewardPercent struct {
-	Rare      int
-	Epic      int
-	Legendary int
-}
-
-type RewardsGetter interface {
-	GetRewardsByType(
-		ctx context.Context,
-		rewardType reward.RewardType,
-	) ([]reward.Reward, error)
-}
-
-type RewardGenerator struct {
-	rewardsGetter RewardsGetter
-	rewardPercent map[box.Type]RewardPercent
-}
-
-func New(
-	rewardsGetter RewardsGetter,
-	rewardPercent map[box.Type]RewardPercent,
-) RewardGenerator {
-	return RewardGenerator{
-		rewardsGetter: rewardsGetter,
-		rewardPercent: rewardPercent,
-	}
-}
-
-func (r RewardGenerator) Generate(
+func (s *Service) Generate(
 	ctx context.Context,
 	boxType box.Type,
 ) (reward.Reward, error) {
-	rewardPercent, ok := r.rewardPercent[boxType]
+	rewardPercent, ok := s.rewardPercent[boxType]
 	if !ok {
 		return reward.Reward{}, fmt.Errorf("no such box reward %q", boxType.String())
 	}
 
 	rewardType := pickRewardType(rewardPercent)
 
-	rewards, err := r.rewardsGetter.GetRewardsByType(ctx, rewardType)
+	rewards, err := s.repo.GetRewardsByType(ctx, rewardType)
 	if err != nil {
-		return reward.Reward{}, fmt.Errorf("get all rewards: %w", err)
+		return reward.Reward{}, fmt.Errorf("get rewards by type: %w", err)
 	}
 
 	if len(rewards) == 0 {
 		return reward.Reward{}, fmt.Errorf("no rewards by type %q", rewardType.String())
 	}
 
-	return pickReward(rewards), nil
+	return pickRandomReward(rewards), nil
 }
 
 func percent() int {
@@ -82,7 +54,7 @@ func pickRewardType(rewardPercent RewardPercent) reward.RewardType {
 	return reward.RewardTypeCommon
 }
 
-func pickReward(
+func pickRandomReward(
 	rewards []reward.Reward,
 ) reward.Reward {
 	//nolint:gosec

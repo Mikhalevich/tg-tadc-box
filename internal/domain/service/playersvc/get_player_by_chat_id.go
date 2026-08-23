@@ -1,4 +1,4 @@
-package playerprovider
+package playersvc
 
 import (
 	"context"
@@ -17,17 +17,17 @@ const (
 
 // GetPlayerByChatID get existing or create a new player
 // returns player and error.
-func (p *PlayerProvider) GetPlayerByChatID(
+func (s *Service) GetPlayerByChatID(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) (player.Player, error) {
-	plr, err := p.repo.GetPlayerByChatID(ctx, chatID)
+	plr, err := s.repo.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
 		if !perror.IsType(err, perror.TypeNotFound) {
 			return player.Player{}, fmt.Errorf("get player by chat id: %w", err)
 		}
 
-		plr, err := p.createPlayer(ctx, chatID, p.timeProvider.Now())
+		plr, err := s.createPlayer(ctx, chatID, s.timeProvider.Now())
 		if err != nil {
 			return player.Player{}, fmt.Errorf("create player: %w", err)
 		}
@@ -38,7 +38,7 @@ func (p *PlayerProvider) GetPlayerByChatID(
 	return plr, nil
 }
 
-func (p *PlayerProvider) createPlayer(
+func (s *Service) createPlayer(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	createdAt time.Time,
@@ -54,7 +54,7 @@ func (p *PlayerProvider) createPlayer(
 		ProfileUpdatedAt: createdAt,
 	}
 
-	id, err := p.repo.InsertPlayer(ctx, plr)
+	id, err := s.repo.InsertPlayer(ctx, plr)
 	if err != nil {
 		return player.Player{}, fmt.Errorf("insert player: %w", err)
 	}

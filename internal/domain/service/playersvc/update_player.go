@@ -1,4 +1,4 @@
-package playerprovider
+package playersvc
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 )
 
-func (p *PlayerProvider) UpdatePlayer(
+func (s *Service) UpdatePlayer(
 	ctx context.Context,
 	usr player.Player,
 ) error {
-	if err := p.repo.UpdatePlayer(ctx, usr); err != nil {
+	if err := s.repo.UpdatePlayer(ctx, usr); err != nil {
 		return fmt.Errorf("repo update player: %w", err)
 	}
 

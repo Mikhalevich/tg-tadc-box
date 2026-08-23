@@ -1,4 +1,4 @@
-package playerprovider
+package playersvc
 
 import (
 	"context"
@@ -21,7 +21,7 @@ type TimeProvider interface {
 	Now() time.Time
 }
 
-type PlayerProvider struct {
+type Service struct {
 	repo         Repository
 	timeProvider TimeProvider
 }
@@ -29,8 +29,8 @@ type PlayerProvider struct {
 func New(
 	repo Repository,
 	timeProvider TimeProvider,
-) *PlayerProvider {
-	return &PlayerProvider{
+) *Service {
+	return &Service{
 		repo:         repo,
 		timeProvider: timeProvider,
 	}
