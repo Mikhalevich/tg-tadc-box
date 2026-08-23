@@ -1,4 +1,4 @@
-package schedulebox
+package boxsvc
 
 import (
 	"context"
@@ -9,29 +9,30 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-// ScheduleInProgress create a new box in InProgress status
+// ScheduleInProgressOrPending create a new box in InProgress or Pending status
 // returns created box and error.
-func (s *ScheduleBox) ScheduleInProgress(
+func (s *Service) ScheduleInProgressOrPending(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	boxType box.Type,
-	isImmediate bool,
+	createdAt time.Time,
+	meta box.Meta,
 ) (box.Box, error) {
 	var (
 		newBox box.Box
 		err    error
 	)
-
 	if err := s.transactor.Transaction(ctx, func(ctx context.Context) error {
-		newBox, err = s.processScheduleInProgressBox(
+		newBox, err = s.processScheduleInProgressOrPendingBox(
 			ctx,
 			chatID,
 			boxType,
-			isImmediate,
+			createdAt,
+			meta,
 		)
 
 		if err != nil {
-			return fmt.Errorf("process schedule box: %w", err)
+			return fmt.Errorf("process schedule in progress or pending box: %w", err)
 		}
 
 		return nil
@@ -42,33 +43,33 @@ func (s *ScheduleBox) ScheduleInProgress(
 	return newBox, nil
 }
 
-// processScheduleBox schedule box
-// returns is sheduled flag and error.
-func (s *ScheduleBox) processScheduleInProgressBox(
+func (s *Service) processScheduleInProgressOrPendingBox(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	boxType box.Type,
-	isImmediate bool,
+	createdAt time.Time,
+	meta box.Meta,
 ) (box.Box, error) {
 	inProgressBoxes, err := s.repo.GetBoxesByStatus(ctx, chatID, box.StatusInProgress)
 	if err != nil {
 		return box.Box{}, fmt.Errorf("get in_progress boxes: %w", err)
 	}
 
+	boxStatus := box.StatusInProgress
+
 	if len(filterBoxes(inProgressBoxes, boxType)) > 0 {
-		return box.Box{}, nil
+		boxStatus = box.StatusPending
 	}
 
 	newBox, err := s.scheduleBox(
 		ctx,
 		chatID,
 		boxType,
-		box.StatusInProgress,
-		s.timeProvider.Now(),
-		box.Meta{},
-		isImmediate,
+		boxStatus,
+		createdAt,
+		meta,
+		false,
 	)
-
 	if err != nil {
 		return box.Box{}, fmt.Errorf("schedule box: %w", err)
 	}
@@ -88,7 +89,7 @@ func filterBoxes(boxes []box.Box, boxType box.Type) []box.Box {
 	return filtered
 }
 
-func (s *ScheduleBox) scheduleBox(
+func (s *Service) scheduleBox(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	boxType box.Type,
@@ -116,7 +117,7 @@ func (s *ScheduleBox) scheduleBox(
 	return newBox, nil
 }
 
-func (s *ScheduleBox) createBox(
+func (s *Service) createBox(
 	chatID msginfo.ChatID,
 	createdAt time.Time,
 	boxType box.Type,

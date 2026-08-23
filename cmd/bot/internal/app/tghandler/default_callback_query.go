@@ -71,7 +71,7 @@ func (t *TGHandler) cbOpenBox(
 		return fmt.Errorf("get open box payload: %w", err)
 	}
 
-	if err := t.boxOpener.OpenByID(
+	if err := t.boxOpenByID.OpenByID(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
 		msginfo.MessageIDFromInt(msg.MessageID),
@@ -93,7 +93,7 @@ func (t *TGHandler) cbReadyToOpenBox(
 		return fmt.Errorf("get ready to open box payload: %w", err)
 	}
 
-	if err := t.boxOpener.ShowReadyToOpenBox(
+	if err := t.boxShowReady.ShowReadyToOpenBox(
 		ctx,
 		msginfo.ChatIDFromInt64(msg.ChatID),
 		payload.ID,

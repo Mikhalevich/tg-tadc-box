@@ -1,4 +1,4 @@
-package schedulebox
+package boxsvc
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
 type Transactor interface {
@@ -13,8 +14,18 @@ type Transactor interface {
 }
 
 type Repository interface {
-	GetBoxesByStatus(ctx context.Context, chatID msginfo.ChatID, statuses ...box.Status) ([]box.Box, error)
-	InsertBox(ctx context.Context, b box.Box) (int, error)
+	GetBoxByID(ctx context.Context, id box.ID) (box.Box, error)
+	CompleteBox(
+		ctx context.Context,
+		boxID box.ID,
+		status box.Status,
+		completedAt time.Time,
+	) error
+	UpdateBox(ctx context.Context, b box.Box) error
+	InsertReceivedReward(
+		ctx context.Context,
+		rwd reward.ReceivedReward,
+	) error
 	ChangeFirstBoxStatusByType(
 		ctx context.Context,
 		chatID msginfo.ChatID,
@@ -23,29 +34,24 @@ type Repository interface {
 		previousStatus box.Status,
 		availableAt time.Time,
 	) error
+	GetBoxesByStatus(ctx context.Context, chatID msginfo.ChatID, statuses ...box.Status) ([]box.Box, error)
+	InsertBox(ctx context.Context, b box.Box) (int, error)
 }
 
-type TimeProvider interface {
-	Now() time.Time
-}
-
-type ScheduleBox struct {
+type Service struct {
 	boxWaitPeriod map[box.Type]time.Duration
 	transactor    Transactor
 	repo          Repository
-	timeProvider  TimeProvider
 }
 
 func New(
 	boxWaitPeriod map[box.Type]time.Duration,
 	transactor Transactor,
 	repo Repository,
-	timeProvider TimeProvider,
-) *ScheduleBox {
-	return &ScheduleBox{
+) *Service {
+	return &Service{
 		boxWaitPeriod: boxWaitPeriod,
 		transactor:    transactor,
 		repo:          repo,
-		timeProvider:  timeProvider,
 	}
 }

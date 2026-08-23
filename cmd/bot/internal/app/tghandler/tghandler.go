@@ -17,13 +17,16 @@ type ButtonProvider interface {
 	GetButton(ctx context.Context, id button.ID) (*button.Button, error)
 }
 
-type BoxOpener interface {
+type BoxOpenByID interface {
 	OpenByID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		messageID msginfo.MessageID,
 		id box.ID,
 	) error
+}
+
+type BoxShowReadyToOpen interface {
 	ShowReadyToOpenBox(
 		ctx context.Context,
 		chatID msginfo.ChatID,
@@ -95,7 +98,8 @@ type ErrorNotifier interface {
 type TGHandler struct {
 	cbHanlers      map[button.Operation]cbHandler
 	buttonProvider ButtonProvider
-	boxOpener      BoxOpener
+	boxOpenByID    BoxOpenByID
+	boxShowReady   BoxShowReadyToOpen
 	cardViewer     CardViewer
 	cardAbstracter CardAbstracter
 	shop           Shop
@@ -106,7 +110,8 @@ type TGHandler struct {
 
 func New(
 	buttonProvider ButtonProvider,
-	boxOpener BoxOpener,
+	boxOpenByID BoxOpenByID,
+	boxShowReady BoxShowReadyToOpen,
 	cardViewer CardViewer,
 	cardAbstracter CardAbstracter,
 	shop Shop,
@@ -116,7 +121,8 @@ func New(
 ) *TGHandler {
 	tgh := &TGHandler{
 		buttonProvider: buttonProvider,
-		boxOpener:      boxOpener,
+		boxOpenByID:    boxOpenByID,
+		boxShowReady:   boxShowReady,
 		cardViewer:     cardViewer,
 		cardAbstracter: cardAbstracter,
 		shop:           shop,

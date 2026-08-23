@@ -22,11 +22,12 @@ type PlayerProvider interface {
 	UpdatePlayer(ctx context.Context, plr player.Player) error
 }
 
-type BoxScheduler interface {
+type BoxService interface {
 	ScheduleInProgress(
 		ctx context.Context,
 		chatID msginfo.ChatID,
 		boxType box.Type,
+		createdAt time.Time,
 		isImmediate bool,
 	) (box.Box, error)
 }
@@ -58,7 +59,7 @@ type Shop struct {
 	boxCosts       []gloink.BoxCost
 	transactor     Transactor
 	playerProvider PlayerProvider
-	boxScheduler   BoxScheduler
+	boxService     BoxService
 	boxProvider    BoxProvider
 	notifier       Notifier
 	timeProvider   TimeProvider
@@ -68,7 +69,7 @@ func New(
 	boxCosts []gloink.BoxCost,
 	transactor Transactor,
 	playerProvider PlayerProvider,
-	boxScheduler BoxScheduler,
+	boxService BoxService,
 	boxProvider BoxProvider,
 	notifier Notifier,
 	timeProvider TimeProvider,
@@ -77,7 +78,7 @@ func New(
 		boxCosts:       boxCosts,
 		transactor:     transactor,
 		playerProvider: playerProvider,
-		boxScheduler:   boxScheduler,
+		boxService:     boxService,
 		boxProvider:    boxProvider,
 		notifier:       notifier,
 		timeProvider:   timeProvider,

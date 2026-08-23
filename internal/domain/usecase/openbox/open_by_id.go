@@ -7,7 +7,6 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
@@ -19,19 +18,19 @@ func (o *OpenBox) OpenByID(
 	boxID box.ID,
 ) error {
 	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
-		profile, err := o.playerProvider.GetPlayerByChatID(ctx, chatID)
+		profile, err := o.playerService.GetPlayerByChatID(ctx, chatID)
 		if err != nil {
 			return fmt.Errorf("get user by chat_id: %w", err)
 		}
 
-		readyBox, err := o.repo.GetBoxByID(ctx, boxID)
+		readyBox, err := o.boxService.GetBoxByID(ctx, boxID)
 		if err != nil {
 			return fmt.Errorf("get box by id: %w", err)
 		}
 
 		now := o.timeProvider.Now()
 
-		if err := isBoxReadyToOpen(readyBox, now); err != nil {
+		if err := readyBox.IsReadyToOpen(now); err != nil {
 			return fmt.Errorf("check box is ready for open: %w", err)
 		}
 
@@ -51,7 +50,7 @@ func (o *OpenBox) OpenByID(
 			return fmt.Errorf("show reward: %w", err)
 		}
 
-		if err := o.boxScheduler.ActivatePending(
+		if err := o.boxService.ActivatePending(
 			ctx,
 			chatID,
 			readyBox.Type,
@@ -74,49 +73,26 @@ func (o *OpenBox) openBox(
 	readyBox box.Box,
 	completedAt time.Time,
 ) (reward.Reward, error) {
-	readyBox.Status = box.StatusOpened
-	readyBox.CompletedAt = completedAt
-
-	if err := o.repo.UpdateBox(ctx, readyBox); err != nil {
-		return reward.Reward{}, fmt.Errorf("update box: %w", err)
-	}
-
-	receivedReward, err := o.rewardGenerator.Generate(ctx, readyBox.Type)
+	receivedReward, err := o.rewardService.Generate(ctx, readyBox.Type)
 	if err != nil {
 		return reward.Reward{}, fmt.Errorf("generate reward: %w", err)
 	}
 
-	if err := o.repo.InsertReceivedReward(ctx, reward.ReceivedReward{
-		ChatID:    profile.ChatID,
-		RewardID:  receivedReward.ID,
-		BoxID:     readyBox.ID,
-		CreatedAt: completedAt,
-	}); err != nil {
-		return reward.Reward{}, fmt.Errorf("insert received reward: %w", err)
+	if err := o.boxService.OpenBox(
+		ctx,
+		profile.ChatID,
+		readyBox.ID,
+		receivedReward.ID,
+		completedAt,
+	); err != nil {
+		return reward.Reward{}, fmt.Errorf("open box: %w", err)
 	}
 
-	if err := o.markRewardInUserProfile(ctx, profile, receivedReward, readyBox.Type); err != nil {
+	if err := o.markRewardInUserProfile(ctx, profile, receivedReward, readyBox.Type, completedAt); err != nil {
 		return reward.Reward{}, fmt.Errorf("mark opened box in user profile: %w", err)
 	}
 
 	return receivedReward, nil
-}
-
-func isInProgress(status box.Status) error {
-	switch status {
-	case box.StatusPending:
-		return perror.InvalidStatus("your box is in pending status")
-
-	case box.StatusOpened:
-		return perror.InvalidStatus("box already opened")
-
-	case box.StatusCanceled:
-		return perror.InvalidStatus("box already canceled")
-
-	case box.StatusInProgress:
-	}
-
-	return nil
 }
 
 func (o *OpenBox) markRewardInUserProfile(
@@ -124,12 +100,13 @@ func (o *OpenBox) markRewardInUserProfile(
 	plr player.Player,
 	rwd reward.Reward,
 	boxType box.Type,
+	createdAt time.Time,
 ) error {
 	plr.Profile.Cards.AddReward(rwd.Type, rwd.ID, rwd.CreatedAt)
 
 	plr.Profile.OpenedBoxes.Add(boxType)
 
-	if err := o.playerProvider.UpdatePlayer(ctx, plr); err != nil {
+	if err := o.playerService.UpdatePlayer(ctx, plr); err != nil {
 		return fmt.Errorf("update player: %w", err)
 	}
 
@@ -137,6 +114,7 @@ func (o *OpenBox) markRewardInUserProfile(
 		ctx,
 		plr,
 		boxType,
+		createdAt,
 	); err != nil {
 		return fmt.Errorf("assign free box if available: %w", err)
 	}
@@ -148,6 +126,7 @@ func (o *OpenBox) assignBonusBoxIfAvailable(
 	ctx context.Context,
 	plr player.Player,
 	openedBoxType box.Type,
+	createdAt time.Time,
 ) error {
 	count, ok := o.bonusBoxAttempts[openedBoxType]
 	if !ok {
@@ -162,10 +141,11 @@ func (o *OpenBox) assignBonusBoxIfAvailable(
 		return nil
 	}
 
-	bonusBox, err := o.boxScheduler.ScheduleInProgressOrPending(
+	bonusBox, err := o.boxService.ScheduleInProgressOrPending(
 		ctx,
 		plr.ChatID,
 		bonusBoxType,
+		createdAt,
 		box.Meta{
 			BonusBox: box.BonusBox{
 				IsValid:  true,

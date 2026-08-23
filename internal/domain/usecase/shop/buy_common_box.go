@@ -20,10 +20,11 @@ func (s *Shop) BuyCommonBox(
 
 		isImmediate := isImmediateOpen(box.TypeCommon, plr)
 
-		scheduledBox, err := s.boxScheduler.ScheduleInProgress(
+		scheduledBox, err := s.boxService.ScheduleInProgress(
 			ctx,
 			chatID,
 			box.TypeCommon,
+			s.timeProvider.Now(),
 			isImmediate,
 		)
 

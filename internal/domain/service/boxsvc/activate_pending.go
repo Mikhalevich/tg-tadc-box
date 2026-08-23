@@ -1,4 +1,4 @@
-package schedulebox
+package boxsvc
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (s *ScheduleBox) ActivatePending(
+func (s *Service) ActivatePending(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	boxType box.Type,

@@ -10,20 +10,35 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
-type Repository interface {
-	GetBoxByID(ctx context.Context, id box.ID) (box.Box, error)
-	UpdateBox(ctx context.Context, b box.Box) error
-	InsertReceivedReward(
-		ctx context.Context,
-		rwd reward.ReceivedReward,
-	) error
-}
-
 type Transactor interface {
 	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
 }
 
-type PlayerProvider interface {
+type BoxService interface {
+	GetBoxByID(ctx context.Context, id box.ID) (box.Box, error)
+	OpenBox(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		boxID box.ID,
+		receivedRewardID reward.ID,
+		completedAt time.Time,
+	) error
+	ActivatePending(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		boxType box.Type,
+		now time.Time,
+	) error
+	ScheduleInProgressOrPending(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+		boxType box.Type,
+		createdAt time.Time,
+		meta box.Meta,
+	) (box.Box, error)
+}
+
+type PlayerService interface {
 	GetPlayerByChatID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
@@ -31,23 +46,8 @@ type PlayerProvider interface {
 	UpdatePlayer(ctx context.Context, usr player.Player) error
 }
 
-type RewardGenerator interface {
+type RewardService interface {
 	Generate(ctx context.Context, boxType box.Type) (reward.Reward, error)
-}
-
-type BoxScheduler interface {
-	ScheduleInProgressOrPending(
-		ctx context.Context,
-		chatID msginfo.ChatID,
-		boxType box.Type,
-		meta box.Meta,
-	) (box.Box, error)
-	ActivatePending(
-		ctx context.Context,
-		chatID msginfo.ChatID,
-		boxType box.Type,
-		now time.Time,
-	) error
 }
 
 type Notifier interface {
@@ -59,8 +59,10 @@ type Notifier interface {
 		openingBox box.Box,
 		withLikeButtons bool,
 	) error
-	ShowBonusBox(ctx context.Context, bonusBox box.Box) error
-	ShowReadyToOpenBox(ctx context.Context, domBox box.Box) error
+	ShowBonusBox(
+		ctx context.Context,
+		bonusBox box.Box,
+	) error
 }
 
 type TimeProvider interface {
@@ -69,32 +71,29 @@ type TimeProvider interface {
 
 type OpenBox struct {
 	bonusBoxAttempts map[box.Type]int
-	repo             Repository
 	transactor       Transactor
-	playerProvider   PlayerProvider
-	rewardGenerator  RewardGenerator
-	boxScheduler     BoxScheduler
+	boxService       BoxService
+	playerService    PlayerService
+	rewardService    RewardService
 	notifier         Notifier
 	timeProvider     TimeProvider
 }
 
 func New(
 	bonusBoxAttempts map[box.Type]int,
-	repo Repository,
 	transactor Transactor,
-	playerProvider PlayerProvider,
-	rewardGenertor RewardGenerator,
-	boxScheduler BoxScheduler,
+	boxService BoxService,
+	playerService PlayerService,
+	rewardService RewardService,
 	notifier Notifier,
 	timeProvider TimeProvider,
 ) *OpenBox {
 	return &OpenBox{
 		bonusBoxAttempts: bonusBoxAttempts,
-		repo:             repo,
 		transactor:       transactor,
-		playerProvider:   playerProvider,
-		rewardGenerator:  rewardGenertor,
-		boxScheduler:     boxScheduler,
+		boxService:       boxService,
+		playerService:    playerService,
+		rewardService:    rewardService,
 		notifier:         notifier,
 		timeProvider:     timeProvider,
 	}

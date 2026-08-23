@@ -9,6 +9,7 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 )
 
 type ID int
@@ -126,6 +127,35 @@ func (b Box) IsStatus(statuses ...Status) bool {
 
 func (b Box) AvailableAfter(now time.Time) time.Duration {
 	return b.AvailableAt.Sub(now)
+}
+
+func (b Box) IsInProgress() error {
+	switch b.Status {
+	case StatusPending:
+		return perror.InvalidStatus("your box is in pending status")
+
+	case StatusOpened:
+		return perror.InvalidStatus("box already opened")
+
+	case StatusCanceled:
+		return perror.InvalidStatus("box already canceled")
+
+	case StatusInProgress:
+	}
+
+	return nil
+}
+
+func (b Box) IsReadyToOpen(now time.Time) error {
+	if err := b.IsInProgress(); err != nil {
+		return fmt.Errorf("not is in_progress status: %w", err)
+	}
+
+	if b.AvailableAt.After(now) {
+		return perror.InvalidParam("box is not ready yet")
+	}
+
+	return nil
 }
 
 type InProgressBox struct {

@@ -7,12 +7,10 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/rewardsvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/likereward"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/readybox"
 )
 
 var (
-	_ openbox.Repository    = (*Postgres)(nil)
 	_ readybox.Repository   = (*Postgres)(nil)
 	_ rewardsvc.Repository  = (*Postgres)(nil)
 	_ likereward.Repository = (*Postgres)(nil)
