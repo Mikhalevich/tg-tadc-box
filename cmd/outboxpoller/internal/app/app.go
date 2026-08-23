@@ -9,7 +9,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/infra/logger"
 )
 
-type OutboxProcessor interface {
+type OutboxService interface {
 	ProcessMessage(
 		ctx context.Context,
 		batchSize int,
@@ -18,14 +18,14 @@ type OutboxProcessor interface {
 }
 
 type App struct {
-	outboxProcessor OutboxProcessor
+	outboxService OutboxService
 }
 
 func New(
-	outboxProcessor OutboxProcessor,
+	outboxService OutboxService,
 ) *App {
 	return &App{
-		outboxProcessor: outboxProcessor,
+		outboxService: outboxService,
 	}
 }
 
@@ -42,7 +42,7 @@ func (a *App) Run(
 		outboxProcessorCfg.Interval,
 		&wgr,
 		func(ctx context.Context) error {
-			return a.outboxProcessor.ProcessMessage(
+			return a.outboxService.ProcessMessage(
 				ctx,
 				outboxProcessorCfg.BatchSize,
 				outboxProcessorCfg.MaxRetryCount,

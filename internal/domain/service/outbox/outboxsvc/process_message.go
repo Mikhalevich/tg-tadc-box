@@ -1,4 +1,4 @@
-package outboxprocessor
+package outboxsvc
 
 import (
 	"context"
@@ -8,23 +8,23 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/infra/logger"
 )
 
-func (o *OutboxProcessor) ProcessMessage(
+func (s *Service) ProcessMessage(
 	ctx context.Context,
 	batchSize int,
 	maxRetryCount int,
 ) error {
-	now := o.timeProvider.Now()
+	now := s.timeProvider.Now()
 
-	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
-		msgs, err := o.repository.OutboxSelectForDispatchMessages(ctx, now, batchSize)
+	if err := s.transactor.Transaction(ctx, func(ctx context.Context) error {
+		msgs, err := s.repo.OutboxSelectForDispatchMessages(ctx, now, batchSize)
 		if err != nil {
 			return fmt.Errorf("select outbox messages: %w", err)
 		}
 
-		results := o.sendMessages(ctx, msgs, maxRetryCount)
+		results := s.sendMessages(ctx, msgs, maxRetryCount)
 
 		if len(results.DispatchedIDs) > 0 {
-			if err := o.repository.OutboxUpdateStatus(
+			if err := s.repo.OutboxUpdateStatus(
 				ctx,
 				results.DispatchedIDs,
 				outboxmsg.StatusDispatched,
@@ -35,7 +35,7 @@ func (o *OutboxProcessor) ProcessMessage(
 		}
 
 		if len(results.CanceledIDs) > 0 {
-			if err := o.repository.OutboxUpdateStatus(
+			if err := s.repo.OutboxUpdateStatus(
 				ctx,
 				results.CanceledIDs,
 				outboxmsg.StatusCanceled,
@@ -46,7 +46,7 @@ func (o *OutboxProcessor) ProcessMessage(
 		}
 
 		if len(results.IncrementRetryCountIDs) > 0 {
-			if err := o.repository.OutboxIncrementRetryCount(
+			if err := s.repo.OutboxIncrementRetryCount(
 				ctx,
 				results.IncrementRetryCountIDs,
 				now,
@@ -69,7 +69,7 @@ type sendResults struct {
 	IncrementRetryCountIDs []int
 }
 
-func (o *OutboxProcessor) sendMessages(
+func (s *Service) sendMessages(
 	ctx context.Context,
 	msgs []outboxmsg.Message,
 	maxRetryCount int,
@@ -79,7 +79,7 @@ func (o *OutboxProcessor) sendMessages(
 	}
 
 	for _, msg := range msgs {
-		if err := o.sender.SendMessage(ctx, msg.Message); err != nil {
+		if err := s.sender.SendMessage(ctx, msg.Message); err != nil {
 			processAndLogSendError(ctx, err, msg, maxRetryCount, &results)
 
 			continue

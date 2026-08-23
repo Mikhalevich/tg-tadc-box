@@ -17,8 +17,8 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/transaction"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/timeprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
-	outboxmsgsender "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/messagesender"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/outboxprocessor"
+	outboxmsgsender "github.com/Mikhalevich/tg-tadc-box/internal/domain/service/outbox/messagesender"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/outbox/outboxsvc"
 )
 
 func StartWorker(ctx context.Context, cfg config.Config) error {
@@ -39,16 +39,16 @@ func StartWorker(ctx context.Context, cfg config.Config) error {
 		messageProcessor = messageprocessor.New(messageSender, messageSender, pgDB)
 		imageProvider    = imageprovider.New()
 		timeProvider     = timeprovider.New()
-		outboxProcessor  = outboxprocessor.New(
-			pgDB,
+		outboxService    = outboxsvc.New(
 			pgDB.Transactor(),
+			pgDB,
 			outboxmsgsender.New(messageProcessor, imageProvider),
 			timeProvider,
 		)
 	)
 
 	app.New(
-		outboxProcessor,
+		outboxService,
 	).Run(
 		ctx,
 		cfg.Worker,
