@@ -21,6 +21,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/boxsvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/messagesvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/notificationsvc"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/service/outbox/imageprovider"
@@ -29,8 +30,8 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/abstractcard"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/likereward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/schedulebox"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/shop"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/showreadybox"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/viewcards"
 )
 
@@ -76,28 +77,31 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			markdownEscaper,
 			outboximageprovider.New(),
 		)
-		timeProvider  = timeprovider.New()
-		playerService = playersvc.New(pgDB, timeProvider)
-		boxScheduler  = schedulebox.New(
-			boxWaitPeriod,
-			pgDB.Transactor(),
-			pgDB,
-			timeProvider,
-		)
-		boxOpener = openbox.New(
-			bonusBoxAttempts,
-			pgDB,
-			pgDB.Transactor(),
-			playerService,
-			rewardsvc.New(boxRewardPercent, pgDB),
-			boxScheduler,
-			outboxNotificationService,
-			timeProvider,
-		)
 		notificationService = notificationsvc.New(
 			messageService,
 			markdownEscaper,
 			imageprovider.New(),
+		)
+		timeProvider  = timeprovider.New()
+		playerService = playersvc.New(pgDB, timeProvider)
+		boxService    = boxsvc.New(
+			boxWaitPeriod,
+			pgDB.Transactor(),
+			pgDB,
+		)
+		boxOpenUsecase = openbox.New(
+			bonusBoxAttempts,
+			pgDB.Transactor(),
+			boxService,
+			playerService,
+			rewardsvc.New(boxRewardPercent, pgDB),
+			outboxNotificationService,
+			timeProvider,
+		)
+		boxShowReadyUsecase = showreadybox.New(
+			pgDB,
+			notificationService,
+			timeProvider,
 		)
 		cardViewer = viewcards.New(
 			abstractionCosts,
@@ -116,7 +120,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			convertBoxCosts(cfg.BoxCosts),
 			pgDB.Transactor(),
 			playerService,
-			boxScheduler,
+			boxService,
 			pgDB,
 			outboxNotificationService,
 			timeProvider,
@@ -133,7 +137,8 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		ctx,
 		cfg.Bot,
 		messageService,
-		boxOpener,
+		boxOpenUsecase,
+		boxShowReadyUsecase,
 		cardViewer,
 		cardAbstracter,
 		shopBox,

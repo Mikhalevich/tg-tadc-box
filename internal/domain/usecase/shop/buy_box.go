@@ -56,10 +56,11 @@ func (s *Shop) processBuyBox(
 
 	isImmediate := isImmediateOpen(boxType, plr)
 
-	scheduledBox, err := s.boxScheduler.ScheduleInProgress(
+	scheduledBox, err := s.boxService.ScheduleInProgress(
 		ctx,
 		chatID,
 		boxType,
+		s.timeProvider.Now(),
 		isImmediate,
 	)
 	if err != nil {

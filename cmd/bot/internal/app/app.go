@@ -14,7 +14,8 @@ func Start(
 	ctx context.Context,
 	botCfg config.Bot,
 	buttonProvider tghandler.ButtonProvider,
-	boxOpener tghandler.BoxOpener,
+	boxOpenByID tghandler.BoxOpenByID,
+	boxShowReady tghandler.BoxShowReadyToOpen,
 	cardViewer tghandler.CardViewer,
 	cardAbstracter tghandler.CardAbstracter,
 	shop tghandler.Shop,
@@ -25,7 +26,8 @@ func Start(
 	var (
 		botHandler = tghandler.New(
 			buttonProvider,
-			boxOpener,
+			boxOpenByID,
+			boxShowReady,
 			cardViewer,
 			cardAbstracter,
 			shop,
