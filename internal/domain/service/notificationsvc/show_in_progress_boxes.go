@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (n *Notifier) ShowInProgressBoxes(
+func (s *Service) ShowInProgressBoxes(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	boxes []box.InProgressBox,
@@ -22,7 +22,7 @@ func (n *Notifier) ShowInProgressBoxes(
 		if inProgressBox.AvailableAfter > 0 {
 			msgLine := fmt.Sprintf("*%s* box will be available after *%s*",
 				inProgressBox.Box.Type.String(),
-				n.parseDuration(inProgressBox.AvailableAfter),
+				s.parseDuration(inProgressBox.AvailableAfter),
 			)
 
 			inProgressBoxMsgLines = append(inProgressBoxMsgLines, msgLine)
@@ -30,7 +30,7 @@ func (n *Notifier) ShowInProgressBoxes(
 			continue
 		}
 
-		if err := n.sendBoxIsAvailable(ctx, inProgressBox.Box); err != nil {
+		if err := s.sendBoxIsAvailable(ctx, inProgressBox.Box); err != nil {
 			return fmt.Errorf("send box is available: %w", err)
 		}
 	}
@@ -39,7 +39,7 @@ func (n *Notifier) ShowInProgressBoxes(
 		return nil
 	}
 
-	if err := n.sender.SendMessage(
+	if err := s.sender.SendMessage(
 		ctx,
 		msginfo.Message{
 			ChatID: chatID,
@@ -53,7 +53,7 @@ func (n *Notifier) ShowInProgressBoxes(
 	return nil
 }
 
-func (n *Notifier) sendBoxIsAvailable(
+func (s *Service) sendBoxIsAvailable(
 	ctx context.Context,
 	domBox box.Box,
 ) error {
@@ -62,12 +62,12 @@ func (n *Notifier) sendBoxIsAvailable(
 		return fmt.Errorf("open box button: %w", err)
 	}
 
-	payload, err := n.imageProvider.Chest(ctx, domBox.Type)
+	payload, err := s.imageProvider.Chest(ctx, domBox.Type)
 	if err != nil {
 		return fmt.Errorf("receive chest paylod: %w", err)
 	}
 
-	if err := n.sender.SendMessage(
+	if err := s.sender.SendMessage(
 		ctx,
 		msginfo.Message{
 			ChatID:  domBox.ChatID,
@@ -99,6 +99,6 @@ func makeBonusBoxDescription(meta box.Meta) string {
 	)
 }
 
-func (n *Notifier) parseDuration(d time.Duration) string {
-	return n.escaper.EscapeMarkdown(d.Truncate(time.Second).String())
+func (s *Service) parseDuration(d time.Duration) string {
+	return s.escaper.EscapeMarkdown(d.Truncate(time.Second).String())
 }

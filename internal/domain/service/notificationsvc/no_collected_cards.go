@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (n *Notifier) NoCollectedCards(
+func (s *Service) NoCollectedCards(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) error {
-	if err := n.sender.SendMessage(
+	if err := s.sender.SendMessage(
 		ctx,
 		msginfo.Message{
 			ChatID: chatID,

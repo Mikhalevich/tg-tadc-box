@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 )
 
-func (n *Notifier) ShowGloinksWalletAfterAbstraction(
+func (s *Service) ShowGloinksWalletAfterAbstraction(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	wallet player.Wallet,
@@ -22,7 +22,7 @@ Your gloinks amount is *%d*
 		msg = fmt.Sprintf(msgTemplate, abstractedAmount, wallet.GloinksAmount)
 	)
 
-	if err := n.sender.SendMessage(
+	if err := s.sender.SendMessage(
 		ctx,
 		msginfo.Message{
 			ChatID: chatID,

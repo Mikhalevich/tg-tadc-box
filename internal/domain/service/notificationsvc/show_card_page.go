@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 )
 
 //nolint:funlen
-func (n *Notifier) ShowCardPage(
+func (s *Service) ShowCardPage(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	messageID msginfo.MessageID,
@@ -24,7 +24,7 @@ func (n *Notifier) ShowCardPage(
 	nextPage card.CardPage,
 	lastPage card.CardPage,
 ) error {
-	payload, err := n.imageProvider.Reward(ctx, rew)
+	payload, err := s.imageProvider.Reward(ctx, rew)
 	if err != nil {
 		return fmt.Errorf("receive image payload: %w", err)
 	}
@@ -59,7 +59,7 @@ func (n *Notifier) ShowCardPage(
 		return fmt.Errorf("make card page command buttons: %w", err)
 	}
 
-	if err := n.sender.SendMessage(
+	if err := s.sender.SendMessage(
 		ctx,
 		msginfo.Message{
 			ChatID:     chatID,

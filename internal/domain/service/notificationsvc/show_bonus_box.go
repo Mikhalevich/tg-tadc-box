@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (n *Notifier) ShowBonusBox(
+func (s *Service) ShowBonusBox(
 	ctx context.Context,
 	bonusBox box.Box,
 ) error {
@@ -18,7 +18,7 @@ func (n *Notifier) ShowBonusBox(
 		bonusBox.Meta.BonusBox.Attempts,
 		bonusBox.Meta.BonusBox.Type.String(),
 	)
-	if err := n.sender.SendMessage(
+	if err := s.sender.SendMessage(
 		ctx,
 		msginfo.Message{
 			ChatID: bonusBox.ChatID,

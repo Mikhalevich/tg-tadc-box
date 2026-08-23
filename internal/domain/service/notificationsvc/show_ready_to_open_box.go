@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 )
 
-func (n *Notifier) ShowReadyToOpenBox(
+func (s *Service) ShowReadyToOpenBox(
 	ctx context.Context,
 	domBox box.Box,
 ) error {
-	if err := n.sendBoxIsAvailable(ctx, domBox); err != nil {
+	if err := s.sendBoxIsAvailable(ctx, domBox); err != nil {
 		return fmt.Errorf("send box is available: %w", err)
 	}
 

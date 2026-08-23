@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 )
 
-func (n *Notifier) ParseError(
+func (s *Service) ParseError(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	err error,
@@ -19,7 +19,7 @@ func (n *Notifier) ParseError(
 		return err
 	}
 
-	if err := n.sender.SendMessage(ctx, msginfo.Message{
+	if err := s.sender.SendMessage(ctx, msginfo.Message{
 		ChatID: chatID,
 		Text:   capitalizeFirst(pErr.Message),
 		Type:   msginfo.MessageTypePlain,

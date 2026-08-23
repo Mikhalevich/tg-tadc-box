@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -9,14 +9,14 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (n *Notifier) Welcome(
+func (s *Service) Welcome(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) error {
 	msg := `Welcome to the Amazing Digital Circus card collection bot.
 Click button to receive your first reward.
 `
-	if err := n.sender.SendMessage(
+	if err := s.sender.SendMessage(
 		ctx,
 		msginfo.Message{
 			ChatID: chatID,

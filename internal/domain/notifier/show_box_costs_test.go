@@ -1,2 +1,0 @@
-//nolint:testpackage
-package notifier

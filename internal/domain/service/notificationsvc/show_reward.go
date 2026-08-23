@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
-func (n *Notifier) ShowReward(
+func (s *Service) ShowReward(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	messageID msginfo.MessageID,
@@ -19,7 +19,7 @@ func (n *Notifier) ShowReward(
 	openingBox box.Box,
 	withLikeButtons bool,
 ) error {
-	payload, err := n.imageProvider.Reward(ctx, receivedReward)
+	payload, err := s.imageProvider.Reward(ctx, receivedReward)
 	if err != nil {
 		return fmt.Errorf("receive image paylod: %w", err)
 	}
@@ -29,7 +29,7 @@ func (n *Notifier) ShowReward(
 		return fmt.Errorf("make buttons: %w", err)
 	}
 
-	if err := n.sender.SendMessage(
+	if err := s.sender.SendMessage(
 		ctx,
 		msginfo.Message{
 			ChatID:     chatID,

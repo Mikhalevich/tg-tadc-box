@@ -22,8 +22,8 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/imageprovider"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/notificationsvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/playersvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/rewardsvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/abstractcard"
@@ -68,10 +68,10 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 	}
 
 	var (
-		msgSender       = messagesender.New(botAPI)
-		msgProcessor    = messageprocessor.New(msgSender, msgSender, pgDB)
-		markdownEscaper = markdownescaper.New()
-		outboxNotifier  = notifier.New(
+		msgSender                 = messagesender.New(botAPI)
+		msgProcessor              = messageprocessor.New(msgSender, msgSender, pgDB)
+		markdownEscaper           = markdownescaper.New()
+		outboxNotificationService = notificationsvc.New(
 			pgDB,
 			markdownEscaper,
 			outboximageprovider.New(),
@@ -91,10 +91,10 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			playerService,
 			rewardsvc.New(boxRewardPercent, pgDB),
 			boxScheduler,
-			outboxNotifier,
+			outboxNotificationService,
 			timeProvider,
 		)
-		directNotifier = notifier.New(
+		notificationService = notificationsvc.New(
 			msgProcessor,
 			markdownEscaper,
 			imageprovider.New(),
@@ -103,14 +103,14 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			abstractionCosts,
 			playerService,
 			pgDB,
-			directNotifier,
+			notificationService,
 		)
 		cardAbstracter = abstractcard.New(
 			abstractionCosts,
 			pgDB.Transactor(),
 			playerService,
 			cardViewer,
-			outboxNotifier,
+			notificationService,
 		)
 		shopBox = shop.New(
 			convertBoxCosts(cfg.BoxCosts),
@@ -118,13 +118,13 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			playerService,
 			boxScheduler,
 			pgDB,
-			outboxNotifier,
+			outboxNotificationService,
 			timeProvider,
 		)
 		likeReward = likereward.New(
 			pgDB.Transactor(),
 			pgDB,
-			outboxNotifier,
+			outboxNotificationService,
 			timeProvider,
 		)
 	)
@@ -138,8 +138,8 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		cardAbstracter,
 		shopBox,
 		likeReward,
-		outboxNotifier,
-		outboxNotifier,
+		outboxNotificationService,
+		outboxNotificationService,
 	); err != nil {
 		return fmt.Errorf("app start: %w", err)
 	}

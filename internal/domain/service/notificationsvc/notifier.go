@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -6,11 +6,6 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
-)
-
-var (
-	_ openbox.Notifier = (*Notifier)(nil)
 )
 
 type Sender interface {
@@ -26,7 +21,7 @@ type ImageProvider interface {
 	Reward(ctx context.Context, rew reward.Reward) ([]byte, error)
 }
 
-type Notifier struct {
+type Service struct {
 	sender        Sender
 	escaper       MarkdownEscaper
 	imageProvider ImageProvider
@@ -36,8 +31,8 @@ func New(
 	sender Sender,
 	escaper MarkdownEscaper,
 	imageProvider ImageProvider,
-) *Notifier {
-	return &Notifier{
+) *Service {
+	return &Service{
 		sender:        sender,
 		escaper:       escaper,
 		imageProvider: imageProvider,

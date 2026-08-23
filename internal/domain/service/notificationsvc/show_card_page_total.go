@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 )
 
-func (n *Notifier) ShowCardPageTotal(
+func (s *Service) ShowCardPageTotal(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	infos []card.CardPageTotal,
@@ -22,7 +22,7 @@ func (n *Notifier) ShowCardPageTotal(
 		return fmt.Errorf("make collected total info buttons: %w", err)
 	}
 
-	if err := n.sender.SendMessage(
+	if err := s.sender.SendMessage(
 		ctx,
 		msginfo.Message{
 			ChatID:  chatID,

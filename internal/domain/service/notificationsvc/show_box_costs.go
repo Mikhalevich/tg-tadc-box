@@ -1,4 +1,4 @@
-package notifier
+package notificationsvc
 
 import (
 	"context"
@@ -12,19 +12,19 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 )
 
-func (n *Notifier) ShowBoxCosts(
+func (s *Service) ShowBoxCosts(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 	wallet player.Wallet,
 	costs []gloink.BoxCost,
 	inProgressBoxes map[box.Type]box.InProgressBox,
 ) error {
-	buttons, err := n.makeBoxCostsButtons(costs, inProgressBoxes)
+	buttons, err := s.makeBoxCostsButtons(costs, inProgressBoxes)
 	if err != nil {
 		return fmt.Errorf("make box costs buttons: %w", err)
 	}
 
-	if err := n.sender.SendMessage(
+	if err := s.sender.SendMessage(
 		ctx,
 		msginfo.Message{
 			ChatID:  chatID,
@@ -39,7 +39,7 @@ func (n *Notifier) ShowBoxCosts(
 	return nil
 }
 
-func (n *Notifier) makeBoxCostsButtons(
+func (s *Service) makeBoxCostsButtons(
 	costs []gloink.BoxCost,
 	inProgressBoxes map[box.Type]box.InProgressBox,
 ) ([]button.ButtonRow, error) {
@@ -47,7 +47,7 @@ func (n *Notifier) makeBoxCostsButtons(
 	for _, cost := range costs {
 		inProgressBox, isBoxAlreadyInProgress := inProgressBoxes[cost.Type]
 
-		btn, err := n.createBoxCostButton(cost, isBoxAlreadyInProgress, inProgressBox)
+		btn, err := s.createBoxCostButton(cost, isBoxAlreadyInProgress, inProgressBox)
 		if err != nil {
 			return nil, fmt.Errorf("create button: %w", err)
 		}
@@ -58,7 +58,7 @@ func (n *Notifier) makeBoxCostsButtons(
 	return buttonRows, nil
 }
 
-func (n *Notifier) createBoxCostButton(
+func (s *Service) createBoxCostButton(
 	cost gloink.BoxCost,
 	isInProgress bool,
 	inProgressBox box.InProgressBox,
@@ -66,7 +66,7 @@ func (n *Notifier) createBoxCostButton(
 	if isInProgress {
 		if inProgressBox.AvailableAfter > 0 {
 			return box.InProgressButton(
-				n.msgBoxInProgress(cost.Type, inProgressBox.AvailableAfter),
+				s.msgBoxInProgress(cost.Type, inProgressBox.AvailableAfter),
 			), nil
 		}
 
@@ -109,9 +109,9 @@ func msgBoxInProgress(boxType box.Type) string {
 	return fmt.Sprintf("%s is ready", boxType.Pretty())
 }
 
-func (n *Notifier) msgBoxInProgress(
+func (s *Service) msgBoxInProgress(
 	boxType box.Type,
 	availableAfter time.Duration,
 ) string {
-	return fmt.Sprintf("%s ⌛️ %s", boxType.Pretty(), n.parseDuration(availableAfter))
+	return fmt.Sprintf("%s ⌛️ %s", boxType.Pretty(), s.parseDuration(availableAfter))
 }
