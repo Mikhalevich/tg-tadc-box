@@ -16,9 +16,9 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/driver"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/transaction"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/timeprovider"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/messageprocessor"
-	outboxmsgsender "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/messagesender"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/outboxprocessor"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/messagesvc"
+	outboxmsgsender "github.com/Mikhalevich/tg-tadc-box/internal/domain/service/outbox/messagesender"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/outbox/outboxsvc"
 )
 
 func StartWorker(ctx context.Context, cfg config.Config) error {
@@ -35,20 +35,20 @@ func StartWorker(ctx context.Context, cfg config.Config) error {
 	defer dbCleanup()
 
 	var (
-		messageSender    = messagesender.New(botAPI)
-		messageProcessor = messageprocessor.New(messageSender, messageSender, pgDB)
-		imageProvider    = imageprovider.New()
-		timeProvider     = timeprovider.New()
-		outboxProcessor  = outboxprocessor.New(
-			pgDB,
+		messageSender  = messagesender.New(botAPI)
+		messageService = messagesvc.New(messageSender, messageSender, pgDB)
+		imageProvider  = imageprovider.New()
+		timeProvider   = timeprovider.New()
+		outboxService  = outboxsvc.New(
 			pgDB.Transactor(),
-			outboxmsgsender.New(messageProcessor, imageProvider),
+			pgDB,
+			outboxmsgsender.New(messageService, imageProvider),
 			timeProvider,
 		)
 	)
 
 	app.New(
-		outboxProcessor,
+		outboxService,
 	).Run(
 		ctx,
 		cfg.Worker,

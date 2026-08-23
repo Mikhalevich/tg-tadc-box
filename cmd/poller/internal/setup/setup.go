@@ -14,8 +14,8 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/driver"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/transaction"
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/timeprovider"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/notifier"
-	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/outbox/imageprovider"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/notificationsvc"
+	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/service/outbox/imageprovider"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/readybox"
 )
 
@@ -28,7 +28,7 @@ func StartWorker(ctx context.Context, cfg config.Config) error {
 	defer dbCleanup()
 
 	var (
-		notificationService = notifier.New(
+		notificationService = notificationsvc.New(
 			pgDB,
 			markdownescaper.New(),
 			outboximageprovider.New(),

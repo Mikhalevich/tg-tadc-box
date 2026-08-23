@@ -1,0 +1,42 @@
+package notificationsvc
+
+import (
+	"context"
+	"fmt"
+	"unicode"
+
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
+)
+
+func (s *Service) ParseError(
+	ctx context.Context,
+	chatID msginfo.ChatID,
+	err error,
+) error {
+	pErr, ok := perror.ParseError(err)
+	if !ok {
+		return err
+	}
+
+	if err := s.sender.SendMessage(ctx, msginfo.Message{
+		ChatID: chatID,
+		Text:   capitalizeFirst(pErr.Message),
+		Type:   msginfo.MessageTypePlain,
+	}); err != nil {
+		return fmt.Errorf("send message: %w", err)
+	}
+
+	return nil
+}
+
+func capitalizeFirst(s string) string {
+	if s == "" {
+		return s
+	}
+
+	runes := []rune(s)
+	runes[0] = unicode.ToUpper(runes[0])
+
+	return string(runes)
+}
