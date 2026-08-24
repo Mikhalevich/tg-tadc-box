@@ -22,6 +22,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/boxsvc"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/likesvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/messagesvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/notificationsvc"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/service/outbox/imageprovider"
@@ -93,6 +94,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			boxRewardPercent,
 			pgDB,
 		)
+		likeService    = likesvc.New(pgDB)
 		boxOpenUsecase = openbox.New(
 			bonusBoxAttempts,
 			pgDB.Transactor(),
@@ -131,7 +133,9 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		)
 		likeReward = likereward.New(
 			pgDB.Transactor(),
-			pgDB,
+			likeService,
+			boxService,
+			rewardService,
 			outboxNotificationService,
 			timeProvider,
 		)
