@@ -84,8 +84,13 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			imageprovider.New(),
 		)
 		timeProvider  = timeprovider.New()
-		playerService = playersvc.New(pgDB, timeProvider)
-		boxService    = boxsvc.New(
+		playerService = playersvc.New(
+			abstractionCosts,
+			pgDB.Transactor(),
+			pgDB,
+			timeProvider,
+		)
+		boxService = boxsvc.New(
 			boxWaitPeriod,
 			pgDB.Transactor(),
 			pgDB,
@@ -116,7 +121,6 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			notificationService,
 		)
 		cardAbstracter = abstractcard.New(
-			abstractionCosts,
 			pgDB.Transactor(),
 			playerService,
 			cardViewer,

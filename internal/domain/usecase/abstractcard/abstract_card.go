@@ -13,12 +13,18 @@ type Transactor interface {
 	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
 }
 
-type PlayerProvider interface {
-	GetPlayerByChatID(
+type PlayerService interface {
+	AbstractCard(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-	) (player.Player, error)
-	UpdatePlayer(ctx context.Context, usr player.Player) error
+		rewardType reward.RewardType,
+		pos int,
+		count int,
+	) (gloink.Amount, player.Wallet, error)
+	AbstractAllDuplicates(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+	) (gloink.Amount, player.Wallet, error)
 }
 
 type PageProvider interface {
@@ -41,25 +47,22 @@ type Notifier interface {
 }
 
 type AbstractCard struct {
-	abstractionCosts map[reward.RewardType]gloink.Amount
-	transactor       Transactor
-	playerProvider   PlayerProvider
-	pageProvider     PageProvider
-	notifier         Notifier
+	transactor    Transactor
+	playerService PlayerService
+	pageProvider  PageProvider
+	notifier      Notifier
 }
 
 func New(
-	abstractionCosts map[reward.RewardType]gloink.Amount,
 	transactor Transactor,
-	playerProvider PlayerProvider,
+	playerService PlayerService,
 	pageProvider PageProvider,
 	notifier Notifier,
 ) *AbstractCard {
 	return &AbstractCard{
-		abstractionCosts: abstractionCosts,
-		transactor:       transactor,
-		playerProvider:   playerProvider,
-		pageProvider:     pageProvider,
-		notifier:         notifier,
+		transactor:    transactor,
+		playerService: playerService,
+		pageProvider:  pageProvider,
+		notifier:      notifier,
 	}
 }
