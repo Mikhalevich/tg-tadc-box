@@ -115,7 +115,6 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			timeProvider,
 		)
 		cardViewer = viewcards.New(
-			abstractionCosts,
 			playerService,
 			rewardService,
 			notificationService,
