@@ -20,7 +20,7 @@ func (lr *LikeReward) Like(
 	likeType like.Type,
 ) error {
 	if err := lr.transactor.Transaction(ctx, func(ctx context.Context) error {
-		if err := lr.repo.InsertLike(
+		if err := lr.likeService.AddLike(
 			ctx,
 			like.Like{
 				BoxID:     boxID,
@@ -32,7 +32,7 @@ func (lr *LikeReward) Like(
 			return fmt.Errorf("insert like: %w", err)
 		}
 
-		likeBox, err := lr.repo.GetBoxByID(ctx, boxID)
+		likeBox, err := lr.boxService.GetBoxByID(ctx, boxID)
 		if err != nil {
 			return fmt.Errorf("get box by id: %w", err)
 		}
@@ -41,7 +41,7 @@ func (lr *LikeReward) Like(
 			return perror.InvalidParam("invalid user for box")
 		}
 
-		rwd, err := lr.repo.GetRewardByID(ctx, rewardID)
+		rwd, err := lr.rewardService.GetRewardByID(ctx, rewardID)
 		if err != nil {
 			return fmt.Errorf("get reward by id: %w", err)
 		}

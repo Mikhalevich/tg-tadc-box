@@ -4,9 +4,15 @@ import (
 	"context"
 	"time"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
+
+type Transactor interface {
+	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
+}
 
 type Repository interface {
 	GetPlayerByChatID(
@@ -22,16 +28,22 @@ type TimeProvider interface {
 }
 
 type Service struct {
-	repo         Repository
-	timeProvider TimeProvider
+	abstractionCosts map[reward.RewardType]gloink.Amount
+	transactor       Transactor
+	repo             Repository
+	timeProvider     TimeProvider
 }
 
 func New(
+	abstractionCosts map[reward.RewardType]gloink.Amount,
+	transactor Transactor,
 	repo Repository,
 	timeProvider TimeProvider,
 ) *Service {
 	return &Service{
-		repo:         repo,
-		timeProvider: timeProvider,
+		abstractionCosts: abstractionCosts,
+		transactor:       transactor,
+		repo:             repo,
+		timeProvider:     timeProvider,
 	}
 }

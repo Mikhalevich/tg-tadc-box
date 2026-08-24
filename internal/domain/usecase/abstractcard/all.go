@@ -12,21 +12,19 @@ func (ac *AbstractCard) All(
 	chatID msginfo.ChatID,
 ) error {
 	if err := ac.transactor.Transaction(ctx, func(ctx context.Context) error {
-		profile, err := ac.playerProvider.GetPlayerByChatID(ctx, chatID)
+		abstractedGloinksAmount, wallet, err := ac.playerService.AbstractAllDuplicates(
+			ctx,
+			chatID,
+		)
+
 		if err != nil {
-			return fmt.Errorf("get player by chat id: %w", err)
-		}
-
-		abstractedGloinksAmount := profile.Profile.AbstractDuplicatesAll(ac.abstractionCosts)
-
-		if err := ac.playerProvider.UpdatePlayer(ctx, profile); err != nil {
-			return fmt.Errorf("update player: %w", err)
+			return fmt.Errorf("abstract all duplicates: %w", err)
 		}
 
 		if err := ac.notifier.ShowGloinksWalletAfterAbstraction(
 			ctx,
 			chatID,
-			profile.Profile.Wallet,
+			wallet,
 			abstractedGloinksAmount,
 		); err != nil {
 			return fmt.Errorf("show gloinks wallet after abstraction: %w", err)

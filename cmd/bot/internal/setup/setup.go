@@ -22,6 +22,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/boxsvc"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/likesvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/messagesvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/notificationsvc"
 	outboximageprovider "github.com/Mikhalevich/tg-tadc-box/internal/domain/service/outbox/imageprovider"
@@ -83,18 +84,28 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			imageprovider.New(),
 		)
 		timeProvider  = timeprovider.New()
-		playerService = playersvc.New(pgDB, timeProvider)
-		boxService    = boxsvc.New(
+		playerService = playersvc.New(
+			abstractionCosts,
+			pgDB.Transactor(),
+			pgDB,
+			timeProvider,
+		)
+		boxService = boxsvc.New(
 			boxWaitPeriod,
 			pgDB.Transactor(),
 			pgDB,
 		)
+		rewardService = rewardsvc.New(
+			boxRewardPercent,
+			pgDB,
+		)
+		likeService    = likesvc.New(pgDB)
 		boxOpenUsecase = openbox.New(
 			bonusBoxAttempts,
 			pgDB.Transactor(),
 			boxService,
 			playerService,
-			rewardsvc.New(boxRewardPercent, pgDB),
+			rewardService,
 			outboxNotificationService,
 			timeProvider,
 		)
@@ -104,13 +115,11 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			timeProvider,
 		)
 		cardViewer = viewcards.New(
-			abstractionCosts,
 			playerService,
-			pgDB,
+			rewardService,
 			notificationService,
 		)
 		cardAbstracter = abstractcard.New(
-			abstractionCosts,
 			pgDB.Transactor(),
 			playerService,
 			cardViewer,
@@ -127,7 +136,9 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		)
 		likeReward = likereward.New(
 			pgDB.Transactor(),
-			pgDB,
+			likeService,
+			boxService,
+			rewardService,
 			outboxNotificationService,
 			timeProvider,
 		)

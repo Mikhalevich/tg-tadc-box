@@ -8,16 +8,21 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/playersvc"
 )
 
-type PlayerProvider interface {
+type PlayerService interface {
 	GetPlayerByChatID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
 	) (player.Player, error)
+	GetCardsInfo(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+	) (playersvc.CardsInfo, error)
 }
 
-type RewardProvider interface {
+type RewardService interface {
 	GetRewardByID(ctx context.Context, id reward.ID) (reward.Reward, error)
 	GetRewardCountByType(ctx context.Context) (map[reward.RewardType]int, error)
 }
@@ -46,22 +51,19 @@ type Notifier interface {
 }
 
 type ViewCards struct {
-	abstractionCosts map[reward.RewardType]gloink.Amount
-	playerProvider   PlayerProvider
-	rewardProvider   RewardProvider
-	notifier         Notifier
+	playerService PlayerService
+	rewardService RewardService
+	notifier      Notifier
 }
 
 func New(
-	abstractionCosts map[reward.RewardType]gloink.Amount,
-	playerProvider PlayerProvider,
-	rewardProvider RewardProvider,
+	playerService PlayerService,
+	rewardService RewardService,
 	notifier Notifier,
 ) *ViewCards {
 	return &ViewCards{
-		abstractionCosts: abstractionCosts,
-		playerProvider:   playerProvider,
-		rewardProvider:   rewardProvider,
-		notifier:         notifier,
+		playerService: playerService,
+		rewardService: rewardService,
+		notifier:      notifier,
 	}
 }

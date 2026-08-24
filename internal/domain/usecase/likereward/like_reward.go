@@ -14,17 +14,21 @@ type Transactor interface {
 	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
 }
 
-type Repository interface {
-	InsertLike(
+type LikeService interface {
+	AddLike(
 		ctx context.Context,
 		rwdLike like.Like,
 	) error
+}
 
+type BoxService interface {
 	GetBoxByID(
 		ctx context.Context,
 		boxID box.ID,
 	) (box.Box, error)
+}
 
+type RewardService interface {
 	GetRewardByID(
 		ctx context.Context,
 		rewardID reward.ID,
@@ -47,22 +51,28 @@ type TimeProvider interface {
 }
 
 type LikeReward struct {
-	transactor   Transactor
-	repo         Repository
-	notifier     Notifier
-	timeProvider TimeProvider
+	transactor    Transactor
+	likeService   LikeService
+	boxService    BoxService
+	rewardService RewardService
+	notifier      Notifier
+	timeProvider  TimeProvider
 }
 
 func New(
 	transactor Transactor,
-	repo Repository,
+	likeService LikeService,
+	boxService BoxService,
+	rewardService RewardService,
 	notifier Notifier,
 	timeProvider TimeProvider,
 ) *LikeReward {
 	return &LikeReward{
-		transactor:   transactor,
-		repo:         repo,
-		notifier:     notifier,
-		timeProvider: timeProvider,
+		transactor:    transactor,
+		likeService:   likeService,
+		boxService:    boxService,
+		rewardService: rewardService,
+		notifier:      notifier,
+		timeProvider:  timeProvider,
 	}
 }

@@ -13,12 +13,12 @@ func (v *ViewCards) Total(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) error {
-	profile, err := v.playerProvider.GetPlayerByChatID(ctx, chatID)
+	cardsInfo, err := v.playerService.GetCardsInfo(ctx, chatID)
 	if err != nil {
-		return fmt.Errorf("get player by chat id: %w", err)
+		return fmt.Errorf("get cards info: %w", err)
 	}
 
-	totalRewardCount, err := v.rewardProvider.GetRewardCountByType(ctx)
+	totalRewardCount, err := v.rewardService.GetRewardCountByType(ctx)
 	if err != nil {
 		return fmt.Errorf("get reward count by type: %w", err)
 	}
@@ -26,8 +26,8 @@ func (v *ViewCards) Total(
 	if err := v.notifier.ShowCardPageTotal(
 		ctx,
 		chatID,
-		makeCardPageTotal(profile.Profile.Cards.CardsCount(), totalRewardCount),
-		profile.Profile.Cards.ViewCostOfAbstractionDuplicatesAll(v.abstractionCosts),
+		makeCardPageTotal(cardsInfo.Cards, totalRewardCount),
+		cardsInfo.AbstractionDuplicatesAllCost,
 	); err != nil {
 		return fmt.Errorf("show collected total info: %w", err)
 	}
