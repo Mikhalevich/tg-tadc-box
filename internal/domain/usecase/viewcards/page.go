@@ -21,7 +21,7 @@ func (v *ViewCards) Page(
 		return perror.InvalidParam("invalid page")
 	}
 
-	profile, err := v.playerProvider.GetPlayerByChatID(ctx, chatID)
+	profile, err := v.playerService.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
 		return fmt.Errorf("get player by chat id: %w", err)
 	}
@@ -45,7 +45,7 @@ func (v *ViewCards) Page(
 		return fmt.Errorf("get card by pos: %w", err)
 	}
 
-	collectedReward, err := v.rewardProvider.GetRewardByID(ctx, cardByPos.RewardID)
+	collectedReward, err := v.rewardService.GetRewardByID(ctx, cardByPos.RewardID)
 	if err != nil {
 		return fmt.Errorf("get reward by id: %w", err)
 	}

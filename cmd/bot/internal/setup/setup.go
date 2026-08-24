@@ -89,12 +89,16 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			pgDB.Transactor(),
 			pgDB,
 		)
+		rewardService = rewardsvc.New(
+			boxRewardPercent,
+			pgDB,
+		)
 		boxOpenUsecase = openbox.New(
 			bonusBoxAttempts,
 			pgDB.Transactor(),
 			boxService,
 			playerService,
-			rewardsvc.New(boxRewardPercent, pgDB),
+			rewardService,
 			outboxNotificationService,
 			timeProvider,
 		)
@@ -106,7 +110,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		cardViewer = viewcards.New(
 			abstractionCosts,
 			playerService,
-			pgDB,
+			rewardService,
 			notificationService,
 		)
 		cardAbstracter = abstractcard.New(

@@ -14,10 +14,15 @@ type RewardPercent struct {
 }
 
 type Repository interface {
+	GetRewardByID(
+		ctx context.Context,
+		id reward.ID,
+	) (reward.Reward, error)
 	GetRewardsByType(
 		ctx context.Context,
 		rewardType reward.RewardType,
 	) ([]reward.Reward, error)
+	GetRewardCountByType(ctx context.Context) (map[reward.RewardType]int, error)
 }
 
 type Service struct {

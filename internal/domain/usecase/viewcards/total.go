@@ -13,12 +13,12 @@ func (v *ViewCards) Total(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) error {
-	profile, err := v.playerProvider.GetPlayerByChatID(ctx, chatID)
+	profile, err := v.playerService.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
 		return fmt.Errorf("get player by chat id: %w", err)
 	}
 
-	totalRewardCount, err := v.rewardProvider.GetRewardCountByType(ctx)
+	totalRewardCount, err := v.rewardService.GetRewardCountByType(ctx)
 	if err != nil {
 		return fmt.Errorf("get reward count by type: %w", err)
 	}
