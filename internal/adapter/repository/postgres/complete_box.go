@@ -33,6 +33,7 @@ func (p *Postgres) CompleteBox(
 		p.transactor.ExtContext(ctx),
 		query,
 		map[string]any{
+			"id":           boxID.Int(),
 			"status":       status.String(),
 			"completed_at": completedAt,
 		},
