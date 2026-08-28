@@ -130,7 +130,6 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			pgDB.Transactor(),
 			playerService,
 			boxService,
-			pgDB,
 			outboxNotificationService,
 			timeProvider,
 		)
