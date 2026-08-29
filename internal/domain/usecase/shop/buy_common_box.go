@@ -13,7 +13,7 @@ func (s *Shop) BuyCommonBox(
 	chatID msginfo.ChatID,
 ) error {
 	if err := s.transactor.Transaction(ctx, func(ctx context.Context) error {
-		plr, err := s.playerProvider.GetPlayerByChatID(ctx, chatID)
+		plr, err := s.playerService.GetPlayerByChatID(ctx, chatID)
 		if err != nil {
 			return fmt.Errorf("get player by chat_id: %w", err)
 		}

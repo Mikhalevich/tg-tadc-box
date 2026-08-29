@@ -38,7 +38,7 @@ func (s *Shop) processBuyBox(
 	chatID msginfo.ChatID,
 	boxType box.Type,
 ) error {
-	plr, err := s.playerProvider.GetPlayerByChatID(ctx, chatID)
+	plr, err := s.playerService.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
 		return fmt.Errorf("get player by chat_id: %w", err)
 	}
@@ -68,7 +68,7 @@ func (s *Shop) processBuyBox(
 	}
 
 	if scheduledBox.IsValid() && !amount.IsFree() {
-		if err := s.playerProvider.UpdatePlayer(ctx, plr); err != nil {
+		if err := s.playerService.UpdatePlayer(ctx, plr); err != nil {
 			return fmt.Errorf("update player: %w", err)
 		}
 	}

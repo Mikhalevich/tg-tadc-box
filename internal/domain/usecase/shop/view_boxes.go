@@ -13,7 +13,7 @@ func (s *Shop) ViewBoxes(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) error {
-	plr, err := s.playerProvider.GetPlayerByChatID(ctx, chatID)
+	plr, err := s.playerService.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
 		return fmt.Errorf("get player by chat_id: %w", err)
 	}
@@ -32,7 +32,7 @@ func (s *Shop) showPlayerBoxes(
 	ctx context.Context,
 	plr player.Player,
 ) error {
-	inProgressBoxes, err := s.boxProvider.GetBoxesByStatus(
+	inProgressBoxes, err := s.boxService.GetBoxesByStatus(
 		ctx,
 		plr.ChatID,
 		box.StatusInProgress,

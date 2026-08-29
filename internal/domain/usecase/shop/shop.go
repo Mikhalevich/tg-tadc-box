@@ -14,7 +14,7 @@ type Transactor interface {
 	Transaction(ctx context.Context, trxFn func(ctx context.Context) error) error
 }
 
-type PlayerProvider interface {
+type PlayerService interface {
 	GetPlayerByChatID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
@@ -30,9 +30,6 @@ type BoxService interface {
 		createdAt time.Time,
 		isImmediate bool,
 	) (box.Box, error)
-}
-
-type BoxProvider interface {
 	GetBoxesByStatus(
 		ctx context.Context,
 		chatID msginfo.ChatID,
@@ -56,31 +53,28 @@ type TimeProvider interface {
 }
 
 type Shop struct {
-	boxCosts       []gloink.BoxCost
-	transactor     Transactor
-	playerProvider PlayerProvider
-	boxService     BoxService
-	boxProvider    BoxProvider
-	notifier       Notifier
-	timeProvider   TimeProvider
+	boxCosts      []gloink.BoxCost
+	transactor    Transactor
+	playerService PlayerService
+	boxService    BoxService
+	notifier      Notifier
+	timeProvider  TimeProvider
 }
 
 func New(
 	boxCosts []gloink.BoxCost,
 	transactor Transactor,
-	playerProvider PlayerProvider,
+	playerService PlayerService,
 	boxService BoxService,
-	boxProvider BoxProvider,
 	notifier Notifier,
 	timeProvider TimeProvider,
 ) *Shop {
 	return &Shop{
-		boxCosts:       boxCosts,
-		transactor:     transactor,
-		playerProvider: playerProvider,
-		boxService:     boxService,
-		boxProvider:    boxProvider,
-		notifier:       notifier,
-		timeProvider:   timeProvider,
+		boxCosts:      boxCosts,
+		transactor:    transactor,
+		playerService: playerService,
+		boxService:    boxService,
+		notifier:      notifier,
+		timeProvider:  timeProvider,
 	}
 }
