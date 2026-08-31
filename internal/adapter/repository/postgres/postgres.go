@@ -10,6 +10,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/messagesvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/outbox/outboxsvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/playersvc"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/referralsvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/rewardsvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/readybox"
 )
@@ -21,6 +22,7 @@ var (
 	_ messagesvc.ButtonRepository = (*Postgres)(nil)
 	_ outboxsvc.Repository        = (*Postgres)(nil)
 	_ likesvc.Repository          = (*Postgres)(nil)
+	_ referralsvc.Repository      = (*Postgres)(nil)
 
 	_ readybox.Repository = (*Postgres)(nil)
 )
