@@ -21,6 +21,18 @@ func (s *Service) GetPlayerByChatID(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) (player.Player, error) {
+	plr, err := s.getOrCreatePlayer(ctx, chatID)
+	if err != nil {
+		return player.Player{}, fmt.Errorf("get or create player: %w", err)
+	}
+
+	return plr, nil
+}
+
+func (s *Service) getOrCreatePlayer(
+	ctx context.Context,
+	chatID msginfo.ChatID,
+) (player.Player, error) {
 	plr, err := s.repo.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
 		if !perror.IsType(err, perror.TypeNotFound) {

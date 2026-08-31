@@ -18,9 +18,9 @@ func (s *Service) GetCardsInfo(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) (CardsInfo, error) {
-	profile, err := s.repo.GetPlayerByChatID(ctx, chatID)
+	profile, err := s.getOrCreatePlayer(ctx, chatID)
 	if err != nil {
-		return CardsInfo{}, fmt.Errorf("get player by chat id: %w", err)
+		return CardsInfo{}, fmt.Errorf("get or create player: %w", err)
 	}
 
 	return CardsInfo{
