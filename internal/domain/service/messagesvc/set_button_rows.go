@@ -25,11 +25,7 @@ func (s *Service) SetButtonRows(
 		buttonRow := make([]button.InlineKeyboardButton, 0, len(row))
 
 		for _, btn := range row {
-			buttonRow = append(buttonRow, button.InlineKeyboardButton{
-				ID:      btn.ID,
-				Caption: btn.Caption,
-				Style:   btn.Style,
-			})
+			buttonRow = append(buttonRow, button.ToInlineKeyboardButton(btn))
 		}
 
 		if len(buttonRow) > 0 {

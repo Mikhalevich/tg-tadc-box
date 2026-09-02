@@ -4,8 +4,13 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"net/url"
 
 	"github.com/google/uuid"
+)
+
+const (
+	shareURLTemplate = "https://t.me/share/url?url=%s"
 )
 
 type ID string
@@ -24,6 +29,7 @@ type Button struct {
 	Operation            Operation
 	IsDeleteAfterProcess bool
 	Style                Style
+	URL                  string
 	Payload              []byte
 }
 
@@ -61,41 +67,62 @@ func gobDecodePayload[Payload any](b []byte) (Payload, error) {
 	return payload, nil
 }
 
-func CreateButton[P any](
+func CreateButton(
 	caption string,
 	operation Operation,
-	isDelete bool,
-	style Style,
-	payload P,
+	opts ...Option,
 ) (Button, error) {
-	payloadBytes, err := gobEncodePayload(payload)
-	if err != nil {
-		return Button{}, fmt.Errorf("encode payload: %w", err)
+	btn := Button{
+		ID:        IDFromString(generateID()),
+		Caption:   caption,
+		Operation: operation,
+		Style:     StyleDefault,
 	}
 
-	return Button{
-		ID:                   IDFromString(generateID()),
-		Caption:              caption,
-		Operation:            operation,
-		IsDeleteAfterProcess: isDelete,
-		Style:                style,
-		Payload:              payloadBytes,
-	}, nil
+	for _, opt := range opts {
+		if err := opt(&btn); err != nil {
+			return Button{}, fmt.Errorf("button option: %w", err)
+		}
+	}
+
+	return btn, nil
 }
 
-func CreateButtonWithoutPayload(
+func MustCreateButton(
 	caption string,
 	operation Operation,
-	isDelete bool,
-	style Style,
+	opts ...Option,
 ) Button {
-	return Button{
-		ID:                   IDFromString(generateID()),
-		Caption:              caption,
-		Operation:            operation,
-		IsDeleteAfterProcess: isDelete,
-		Style:                style,
+	btn := Button{
+		ID:        IDFromString(generateID()),
+		Caption:   caption,
+		Operation: operation,
+		Style:     StyleDefault,
 	}
+
+	for _, opt := range opts {
+		if err := opt(&btn); err != nil {
+			panic(fmt.Errorf("button option: %w", err))
+		}
+	}
+
+	return btn
+}
+
+func MustShareButton(
+	caption string,
+	targetURL string,
+) Button {
+	return MustCreateButton(
+		caption,
+		OperationOpenURL,
+		WithURL(
+			fmt.Sprintf(
+				shareURLTemplate,
+				url.PathEscape(targetURL),
+			),
+		),
+	)
 }
 
 func generateID() string {

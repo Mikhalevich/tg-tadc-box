@@ -14,11 +14,11 @@ func OpenBoxButton(boxID ID) (button.Button, error) {
 	btn, err := button.CreateButton(
 		"Open",
 		button.OperationOpenBox,
-		false,
-		button.StyleDefault,
-		OpenBoxButtonPayload{
-			ID: boxID,
-		},
+		button.WithPayload(
+			OpenBoxButtonPayload{
+				ID: boxID,
+			},
+		),
 	)
 
 	if err != nil {
@@ -29,38 +29,34 @@ func OpenBoxButton(boxID ID) (button.Button, error) {
 }
 
 func GetCommonBoxButton(caption string) button.Button {
-	return button.CreateButtonWithoutPayload(
+	return button.MustCreateButton(
 		caption,
 		button.OperationGetCommonBox,
-		true,
-		button.StyleDefault,
+		button.WithDeleteAfterProcess(),
 	)
 }
 
 func ShopButton(caption string) button.Button {
-	return button.CreateButtonWithoutPayload(
+	return button.MustCreateButton(
 		caption,
 		button.OperationShop,
-		false,
-		button.StyleDefault,
 	)
 }
 
 func CostButton(caption string) button.Button {
-	return button.CreateButtonWithoutPayload(
+	return button.MustCreateButton(
 		caption,
 		button.OperationShop,
-		true,
-		button.StyleDefault,
+		button.WithDeleteAfterProcess(),
 	)
 }
 
 func InProgressButton(caption string) button.Button {
-	return button.CreateButtonWithoutPayload(
+	return button.MustCreateButton(
 		caption,
 		button.OperationShop,
-		true,
-		button.StyleDanger,
+		button.WithDeleteAfterProcess(),
+		button.WithStyle(button.StyleDanger),
 	)
 }
 
@@ -72,11 +68,13 @@ func ReadyToOpenButton(caption string, boxID ID) (button.Button, error) {
 	btn, err := button.CreateButton(
 		caption,
 		button.OperationBoxReadyToOpen,
-		true,
-		button.StyleSuccess,
-		ReadyToOpenButtonPayload{
-			ID: boxID,
-		},
+		button.WithDeleteAfterProcess(),
+		button.WithStyle(button.StyleSuccess),
+		button.WithPayload(
+			ReadyToOpenButtonPayload{
+				ID: boxID,
+			},
+		),
 	)
 
 	if err != nil {

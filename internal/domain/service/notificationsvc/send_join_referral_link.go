@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/referral"
 )
@@ -18,7 +19,15 @@ func (s *Service) SendJoinReferralLink(
 		msginfo.Message{
 			ChatID: chatID,
 			Type:   msginfo.MessageTypePlain,
-			Text:   makeJoinReferralLink(s.botName, code.String()),
+			Text:   "Share this link with your friends and receive reward for each activation.",
+			Buttons: []button.ButtonRow{
+				button.Row(
+					button.MustShareButton(
+						"Share",
+						makeJoinReferralLink(s.botName, code.String()),
+					),
+				),
+			},
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)

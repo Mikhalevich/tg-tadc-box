@@ -16,12 +16,12 @@ func PageButton(caption string, rewardType reward.RewardType, page int) (button.
 	btn, err := button.CreateButton(
 		caption,
 		button.OperationCardPage,
-		false,
-		button.StyleDefault,
-		PageButtonPayload{
-			Type: rewardType,
-			Page: page,
-		},
+		button.WithPayload(
+			PageButtonPayload{
+				Type: rewardType,
+				Page: page,
+			},
+		),
 	)
 	if err != nil {
 		return button.Button{}, fmt.Errorf("create button: %w", err)
@@ -31,20 +31,17 @@ func PageButton(caption string, rewardType reward.RewardType, page int) (button.
 }
 
 func TotalButton(caption string) button.Button {
-	return button.CreateButtonWithoutPayload(
+	return button.MustCreateButton(
 		caption,
 		button.OperationCardTotal,
-		true,
-		button.StyleDefault,
+		button.WithDeleteAfterProcess(),
 	)
 }
 
 func AbstractDuplicatesAllButton(caption string) button.Button {
-	return button.CreateButtonWithoutPayload(
+	return button.MustCreateButton(
 		caption,
 		button.OperationAbstractDuplicatesAll,
-		false,
-		button.StyleDefault,
 	)
 }
 
@@ -63,13 +60,13 @@ func AbstractCardButton(
 	btn, err := button.CreateButton(
 		caption,
 		button.OperationAbstractCard,
-		false,
-		button.StyleDefault,
-		AbstractCardPayload{
-			Type:  rewardType,
-			Pos:   pos,
-			Count: count,
-		},
+		button.WithPayload(
+			AbstractCardPayload{
+				Type:  rewardType,
+				Pos:   pos,
+				Count: count,
+			},
+		),
 	)
 
 	if err != nil {
