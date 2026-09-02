@@ -12,6 +12,10 @@ type Repository interface {
 		ctx context.Context,
 		chatID msginfo.ChatID,
 	) (referral.Referral, error)
+	GetReferralByCode(
+		ctx context.Context,
+		code referral.Code,
+	) (referral.Referral, error)
 	InsertReferral(
 		ctx context.Context,
 		ref referral.Referral,

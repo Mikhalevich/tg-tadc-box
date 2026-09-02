@@ -16,6 +16,7 @@ outboxpoller:
   enabled: true
   bot:
     token: "telegram bot api token"
+    name: "telegram bot name"
   postgres:
     connStr: "pg connection string"
 

@@ -22,17 +22,20 @@ type ImageProvider interface {
 }
 
 type Service struct {
+	botName       string
 	sender        Sender
 	escaper       MarkdownEscaper
 	imageProvider ImageProvider
 }
 
 func New(
+	botName string,
 	sender Sender,
 	escaper MarkdownEscaper,
 	imageProvider ImageProvider,
 ) *Service {
 	return &Service{
+		botName:       botName,
 		sender:        sender,
 		escaper:       escaper,
 		imageProvider: imageProvider,

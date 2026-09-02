@@ -9,14 +9,13 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/adapter/repository/postgres/model"
-	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/referral"
 )
 
-func (p *Postgres) GetReferralByChatID(
+func (p *Postgres) GetReferralByCode(
 	ctx context.Context,
-	chatID msginfo.ChatID,
+	code referral.Code,
 ) (referral.Referral, error) {
 	var (
 		query = `
@@ -28,7 +27,7 @@ func (p *Postgres) GetReferralByChatID(
 			FROM
 				referral
 			WHERE
-				chat_id = $1
+				code = $1
 		`
 
 		dbRef model.Referral
@@ -39,7 +38,7 @@ func (p *Postgres) GetReferralByChatID(
 		p.transactor.ExtContext(ctx),
 		&dbRef,
 		query,
-		chatID,
+		code,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return referral.Referral{}, perror.NotFound("referral found")

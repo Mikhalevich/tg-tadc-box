@@ -18,7 +18,7 @@ type PlayerService interface {
 	GetPlayerByChatID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-	) (player.Player, error)
+	) (player.Player, bool, error)
 	UpdatePlayer(ctx context.Context, plr player.Player) error
 }
 

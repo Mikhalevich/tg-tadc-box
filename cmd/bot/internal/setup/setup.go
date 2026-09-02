@@ -31,6 +31,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/service/rewardsvc"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/abstractcard"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/invitelink"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/joinbylink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/likereward"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/openbox"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/usecase/shop"
@@ -76,11 +77,13 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		messageService            = messagesvc.New(msgSender, msgSender, pgDB)
 		markdownEscaper           = markdownescaper.New()
 		outboxNotificationService = notificationsvc.New(
+			cfg.Bot.Name,
 			pgDB,
 			markdownEscaper,
 			outboximageprovider.New(),
 		)
 		notificationService = notificationsvc.New(
+			cfg.Bot.Name,
 			messageService,
 			markdownEscaper,
 			imageprovider.New(),
@@ -148,6 +151,13 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 			referralService,
 			outboxNotificationService,
 		)
+		joinByLink = joinbylink.New(
+			pgDB.Transactor(),
+			playerService,
+			referralService,
+			outboxNotificationService,
+			timeProvider,
+		)
 	)
 
 	if err := app.Start(
@@ -161,6 +171,7 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		shopBox,
 		likeReward,
 		inviteLink,
+		joinByLink,
 		outboxNotificationService,
 		outboxNotificationService,
 	); err != nil {

@@ -15,7 +15,7 @@ type PlayerService interface {
 	GetPlayerByChatID(
 		ctx context.Context,
 		chatID msginfo.ChatID,
-	) (player.Player, error)
+	) (player.Player, bool, error)
 	GetCardsInfo(
 		ctx context.Context,
 		chatID msginfo.ChatID,

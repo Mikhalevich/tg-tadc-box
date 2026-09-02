@@ -21,6 +21,7 @@ func Start(
 	shop tghandler.Shop,
 	likeProcessor tghandler.LikeProcessor,
 	inviteSender tghandler.SendInviteLink,
+	joinByLink tghandler.JoinByLink,
 	notifier tghandler.Notifier,
 	errorNotifier tghandler.ErrorNotifier,
 ) error {
@@ -34,6 +35,7 @@ func Start(
 			shop,
 			likeProcessor,
 			inviteSender,
+			joinByLink,
 			notifier,
 			errorNotifier,
 		)

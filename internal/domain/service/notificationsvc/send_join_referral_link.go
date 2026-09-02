@@ -18,7 +18,7 @@ func (s *Service) SendJoinReferralLink(
 		msginfo.Message{
 			ChatID: chatID,
 			Type:   msginfo.MessageTypePlain,
-			Text:   makeJoinReferralLink(code.String()),
+			Text:   makeJoinReferralLink(s.botName, code.String()),
 		},
 	); err != nil {
 		return fmt.Errorf("send message: %w", err)
@@ -27,6 +27,6 @@ func (s *Service) SendJoinReferralLink(
 	return nil
 }
 
-func makeJoinReferralLink(code string) string {
-	return fmt.Sprintf("https://t.me/tadcBoxBot?start=join_%s", code)
+func makeJoinReferralLink(botName, code string) string {
+	return fmt.Sprintf("https://t.me/%s?start=join_%s", botName, code)
 }

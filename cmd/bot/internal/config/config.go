@@ -35,6 +35,7 @@ type Tracing struct {
 
 type Bot struct {
 	Token        string `yaml:"token" required:"true"`
+	Name         string `yaml:"name" required:"true"`
 	WebHookToken string `yaml:"webhook_token"`
 }
 

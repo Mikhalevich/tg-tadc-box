@@ -21,7 +21,7 @@ func (v *ViewCards) Page(
 		return perror.InvalidParam("invalid page")
 	}
 
-	profile, err := v.playerService.GetPlayerByChatID(ctx, chatID)
+	profile, _, err := v.playerService.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
 		return fmt.Errorf("get player by chat id: %w", err)
 	}

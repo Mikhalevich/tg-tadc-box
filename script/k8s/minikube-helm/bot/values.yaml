@@ -37,6 +37,7 @@ resources:
 
 bot:
   token: "telegram bot api token"
+  name: "telegram bot name"
 
 postgres:
   connStr: "host=postgres-service port=5432 user=bot password=bot dbname=bot sslmode=disable"

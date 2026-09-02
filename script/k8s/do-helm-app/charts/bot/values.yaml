@@ -36,6 +36,7 @@ resources:
 
 bot:
   token: "telegram bot api token"
+  name: "telegram bot name"
   webhook_token: "webhook secret token"
 
 postgres:

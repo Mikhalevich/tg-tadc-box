@@ -18,7 +18,7 @@ func (o *OpenBox) OpenByID(
 	boxID box.ID,
 ) error {
 	if err := o.transactor.Transaction(ctx, func(ctx context.Context) error {
-		profile, err := o.playerService.GetPlayerByChatID(ctx, chatID)
+		profile, _, err := o.playerService.GetPlayerByChatID(ctx, chatID)
 		if err != nil {
 			return fmt.Errorf("get user by chat_id: %w", err)
 		}
