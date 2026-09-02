@@ -100,7 +100,7 @@ func (j *JoinByLink) processReferral(
 	refereeChatID msginfo.ChatID,
 	code referral.Code,
 ) error {
-	if code.IsValid() {
+	if !code.IsValid() {
 		return perror.InvalidParam("referral code is not valid")
 	}
 	_, isNew, err := j.playerService.GetPlayerByChatID(ctx, refereeChatID)
