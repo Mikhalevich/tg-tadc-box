@@ -7,13 +7,14 @@ import (
 
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/gloink"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/perror"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/player"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/referral"
 	"github.com/Mikhalevich/tg-tadc-box/internal/infra/logger"
 )
 
 const (
-	referalJoinGloinksReward = 100
+	referralJoinGloinksReward = 100
 )
 
 type Transactor interface {
@@ -99,6 +100,9 @@ func (j *JoinByLink) processReferral(
 	refereeChatID msginfo.ChatID,
 	code referral.Code,
 ) error {
+	if code.IsValid() {
+		return perror.InvalidParam("referral code is not valid")
+	}
 	_, isNew, err := j.playerService.GetPlayerByChatID(ctx, refereeChatID)
 	if err != nil {
 		return fmt.Errorf("get player by chat id: %w", err)
@@ -130,7 +134,7 @@ func (j *JoinByLink) processReferral(
 			return fmt.Errorf("insert referral: %w", err)
 		}
 
-		gloinkReward := gloink.AmountFromInt(referalJoinGloinksReward)
+		gloinkReward := gloink.AmountFromInt(referralJoinGloinksReward)
 
 		if err := j.playerService.AddGloinks(
 			ctx,

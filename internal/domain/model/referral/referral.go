@@ -14,6 +14,10 @@ func (c Code) String() string {
 	return string(c)
 }
 
+func (c Code) IsValid() bool {
+	return c != ""
+}
+
 func CodeFromString(code string) Code {
 	return Code(code)
 }

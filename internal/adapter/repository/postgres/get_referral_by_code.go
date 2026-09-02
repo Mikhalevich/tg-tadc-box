@@ -41,7 +41,7 @@ func (p *Postgres) GetReferralByCode(
 		code,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return referral.Referral{}, perror.NotFound("referral found")
+			return referral.Referral{}, perror.NotFound("referral not found")
 		}
 
 		return referral.Referral{}, fmt.Errorf("get context: %w", err)
