@@ -18,11 +18,12 @@ func BuyBoxButton(
 	btn, err := button.CreateButton(
 		caption,
 		button.OperationBuyBox,
-		true,
-		button.StyleDefault,
-		BuyBoxButtonPayload{
-			BoxType: boxType,
-		},
+		button.WithDeleteAfterProcess(),
+		button.WithPayload(
+			BuyBoxButtonPayload{
+				BoxType: boxType,
+			},
+		),
 	)
 	if err != nil {
 		return button.Button{}, fmt.Errorf("create button: %w", err)

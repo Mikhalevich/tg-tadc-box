@@ -8,6 +8,7 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/like"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/msginfo"
+	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/referral"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/reward"
 )
 
@@ -87,6 +88,21 @@ type LikeProcessor interface {
 	) error
 }
 
+type SendInviteLink interface {
+	SendInvite(
+		ctx context.Context,
+		chatID msginfo.ChatID,
+	) error
+}
+
+type JoinByLink interface {
+	Join(
+		ctx context.Context,
+		refereeChatID msginfo.ChatID,
+		code referral.Code,
+	) error
+}
+
 type Notifier interface {
 	Welcome(ctx context.Context, chatID msginfo.ChatID) error
 }
@@ -104,6 +120,8 @@ type TGHandler struct {
 	cardAbstracter CardAbstracter
 	shop           Shop
 	likeProcessor  LikeProcessor
+	inviteSender   SendInviteLink
+	joinByLink     JoinByLink
 	notifier       Notifier
 	errorNotifier  ErrorNotifier
 }
@@ -116,6 +134,8 @@ func New(
 	cardAbstracter CardAbstracter,
 	shop Shop,
 	likeProcessor LikeProcessor,
+	inviteSender SendInviteLink,
+	joinByLink JoinByLink,
 	notifier Notifier,
 	errorNotifier ErrorNotifier,
 ) *TGHandler {
@@ -127,6 +147,8 @@ func New(
 		cardAbstracter: cardAbstracter,
 		shop:           shop,
 		likeProcessor:  likeProcessor,
+		inviteSender:   inviteSender,
+		joinByLink:     joinByLink,
 		notifier:       notifier,
 		errorNotifier:  errorNotifier,
 	}

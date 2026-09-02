@@ -20,6 +20,8 @@ func Start(
 	cardAbstracter tghandler.CardAbstracter,
 	shop tghandler.Shop,
 	likeProcessor tghandler.LikeProcessor,
+	inviteSender tghandler.SendInviteLink,
+	joinByLink tghandler.JoinByLink,
 	notifier tghandler.Notifier,
 	errorNotifier tghandler.ErrorNotifier,
 ) error {
@@ -32,6 +34,8 @@ func Start(
 			cardAbstracter,
 			shop,
 			likeProcessor,
+			inviteSender,
+			joinByLink,
 			notifier,
 			errorNotifier,
 		)

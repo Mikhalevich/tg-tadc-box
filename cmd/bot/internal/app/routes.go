@@ -11,6 +11,7 @@ func makeRoutes(tbot *tgbot.TGBot, handler *tghandler.TGHandler) {
 	tbot.AddTextCommand("start", handler.Start)
 
 	tbot.AddMenuCommand("get_box", "🎁 view boxes for purchase", handler.Shop)
+	tbot.AddMenuCommand("share", "✉️ make invitation link", handler.Share)
 	tbot.AddMenuCommand("my_cards", "👀 view my cards", handler.MyCards)
 
 	tbot.AddDefaultHandler(handler.DefaultHandler)

@@ -29,6 +29,7 @@ func StartWorker(ctx context.Context, cfg config.Config) error {
 
 	var (
 		notificationService = notificationsvc.New(
+			"",
 			pgDB,
 			markdownescaper.New(),
 			outboximageprovider.New(),

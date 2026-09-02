@@ -86,6 +86,7 @@ func (s *PostgresSuit) cleanup() {
 		"player",
 		"button",
 		"outbox_messages",
+		"referral",
 	} {
 		sqlx.MustExecContext(
 			ctx,

@@ -16,38 +16,38 @@ const (
 )
 
 // GetPlayerByChatID get existing or create a new player
-// returns player and error.
+// returns player, created flag and error.
 func (s *Service) GetPlayerByChatID(
 	ctx context.Context,
 	chatID msginfo.ChatID,
-) (player.Player, error) {
-	plr, err := s.getOrCreatePlayer(ctx, chatID)
+) (player.Player, bool, error) {
+	plr, isCreated, err := s.getOrCreatePlayer(ctx, chatID)
 	if err != nil {
-		return player.Player{}, fmt.Errorf("get or create player: %w", err)
+		return player.Player{}, false, fmt.Errorf("get or create player: %w", err)
 	}
 
-	return plr, nil
+	return plr, isCreated, nil
 }
 
 func (s *Service) getOrCreatePlayer(
 	ctx context.Context,
 	chatID msginfo.ChatID,
-) (player.Player, error) {
+) (player.Player, bool, error) {
 	plr, err := s.repo.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
 		if !perror.IsType(err, perror.TypeNotFound) {
-			return player.Player{}, fmt.Errorf("get player by chat id: %w", err)
+			return player.Player{}, false, fmt.Errorf("get player by chat id: %w", err)
 		}
 
 		plr, err := s.createPlayer(ctx, chatID, s.timeProvider.Now())
 		if err != nil {
-			return player.Player{}, fmt.Errorf("create player: %w", err)
+			return player.Player{}, false, fmt.Errorf("create player: %w", err)
 		}
 
-		return plr, nil
+		return plr, true, nil
 	}
 
-	return plr, nil
+	return plr, false, nil
 }
 
 func (s *Service) createPlayer(

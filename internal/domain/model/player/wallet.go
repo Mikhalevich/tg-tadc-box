@@ -18,3 +18,7 @@ func (w *Wallet) DecreaseGloinks(amount gloink.Amount) error {
 
 	return nil
 }
+
+func (w *Wallet) IncreaseGloinks(amount gloink.Amount) {
+	w.GloinksAmount += amount
+}

@@ -18,7 +18,7 @@ func (s *Service) GetCardsInfo(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) (CardsInfo, error) {
-	profile, err := s.getOrCreatePlayer(ctx, chatID)
+	profile, _, err := s.getOrCreatePlayer(ctx, chatID)
 	if err != nil {
 		return CardsInfo{}, fmt.Errorf("get or create player: %w", err)
 	}

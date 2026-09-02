@@ -23,13 +23,13 @@ func LikeButton(
 	btn, err := button.CreateButton(
 		caption,
 		button.OperationLike,
-		false,
-		button.StyleDefault,
-		LikeButtonPayload{
-			BoxID:    boxID,
-			RewardID: rewardID,
-			Type:     likeType,
-		},
+		button.WithPayload(
+			LikeButtonPayload{
+				BoxID:    boxID,
+				RewardID: rewardID,
+				Type:     likeType,
+			},
+		),
 	)
 	if err != nil {
 		return button.Button{}, fmt.Errorf("create button: %w", err)

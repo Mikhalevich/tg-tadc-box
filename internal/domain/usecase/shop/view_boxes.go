@@ -13,7 +13,7 @@ func (s *Shop) ViewBoxes(
 	ctx context.Context,
 	chatID msginfo.ChatID,
 ) error {
-	plr, err := s.playerService.GetPlayerByChatID(ctx, chatID)
+	plr, _, err := s.playerService.GetPlayerByChatID(ctx, chatID)
 	if err != nil {
 		return fmt.Errorf("get player by chat_id: %w", err)
 	}

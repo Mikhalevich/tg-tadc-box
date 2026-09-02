@@ -3,6 +3,7 @@ package button
 type Operation string
 
 const (
+	OperationOpenURL               Operation = "OpenURL"
 	OperationOpenBox               Operation = "OpenBox"
 	OperationCardPage              Operation = "CardPage"
 	OperationCardTotal             Operation = "CardTotal"
