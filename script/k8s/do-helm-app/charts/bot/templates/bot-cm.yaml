@@ -10,6 +10,7 @@ data:
       service_name: "box-bot"
     bot:
       token: {{ .Values.bot.token }}
+      name: {{ .Values.bot.name }}
       webhook_token: {{ .Values.bot.webhook_token }}
     postgres:
       connection: {{ .Values.postgres.connStr }}
