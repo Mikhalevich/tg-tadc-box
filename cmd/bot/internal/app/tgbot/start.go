@@ -27,7 +27,12 @@ func (t *TGBot) Start(ctx context.Context) error {
 
 	go t.bot.StartWebhook(ctx)
 
-	if err := listenHTTP(ctx, t.bot.WebhookHandler()); err != nil {
+	mux := http.NewServeMux()
+	mux.Handle("POST /", t.bot.WebhookHandler())
+	mux.HandleFunc("GET /live", t.httpLivenessProbe())
+	mux.HandleFunc("GET /ready", t.httpReadinessProbe())
+
+	if err := listenHTTP(ctx, mux); err != nil {
 		return fmt.Errorf("listen http webhook: %w", err)
 	}
 

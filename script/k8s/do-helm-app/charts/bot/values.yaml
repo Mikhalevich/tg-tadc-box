@@ -34,6 +34,29 @@ resources:
     memory: "128Mi"
     cpu: "200m"
 
+probes:
+  readinessProbe:
+    initialDelaySeconds: 3
+    periodSeconds: 30
+    httpGet:
+      path: /ready
+      port: 80
+      scheme: HTTP
+    timeoutSeconds: 3
+    failureThreshold: 1
+    successThreshold: 1
+
+  livenessProbe:
+    initialDelaySeconds: 3
+    periodSeconds: 30
+    httpGet:
+      path: /live
+      port: 80
+      scheme: HTTP
+    timeoutSeconds: 3
+    failureThreshold: 5
+    successThreshold: 1
+
 bot:
   token: "telegram bot api token"
   name: "telegram bot name"
