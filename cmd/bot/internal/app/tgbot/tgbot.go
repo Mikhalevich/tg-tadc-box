@@ -20,7 +20,7 @@ type TGBot struct {
 	commands         []models.BotCommand
 	defaultHandlerFn Handler
 	livenessProbe    Probe
-	readynessProbe   Probe
+	readinessProbe   Probe
 }
 
 func New(

@@ -12,7 +12,7 @@ func (t *TGBot) httpLivenessProbe() http.HandlerFunc {
 }
 
 func (t *TGBot) httpReadinessProbe() http.HandlerFunc {
-	return doProbe(t.readynessProbe, "rediness probe")
+	return doProbe(t.readinessProbe, "rediness probe")
 }
 
 func (t *TGBot) SetLivenessProbe(probe Probe) {
@@ -20,7 +20,7 @@ func (t *TGBot) SetLivenessProbe(probe Probe) {
 }
 
 func (t *TGBot) SetReadinessProbe(probe Probe) {
-	t.readynessProbe = probe
+	t.readinessProbe = probe
 }
 
 func doProbe(probe Probe, logDescription string) http.HandlerFunc {
