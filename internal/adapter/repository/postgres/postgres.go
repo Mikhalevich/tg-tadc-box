@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 
@@ -53,4 +54,30 @@ func New(
 
 func (p *Postgres) Transactor() Transactor {
 	return p.transactor
+}
+
+func (p *Postgres) Ping(ctx context.Context) error {
+	var (
+		query = `
+			SELECT
+				id
+			FROM
+				player
+			LIMIT
+				1
+			
+		`
+
+		res []int
+	)
+	if err := sqlx.SelectContext(
+		ctx,
+		p.transactor.ExtContext(ctx),
+		&res,
+		query,
+	); err != nil {
+		return fmt.Errorf("select player table: %w", err)
+	}
+
+	return nil
 }

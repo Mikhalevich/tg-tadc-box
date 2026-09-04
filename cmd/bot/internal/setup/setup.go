@@ -174,6 +174,12 @@ func StartBot(ctx context.Context, cfg config.Config) error {
 		joinByLink,
 		outboxNotificationService,
 		outboxNotificationService,
+		func(ctx context.Context) error {
+			return pgDB.Ping(ctx)
+		},
+		func(ctx context.Context) error {
+			return nil
+		},
 	); err != nil {
 		return fmt.Errorf("app start: %w", err)
 	}

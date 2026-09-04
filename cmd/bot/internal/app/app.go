@@ -24,6 +24,8 @@ func Start(
 	joinByLink tghandler.JoinByLink,
 	notifier tghandler.Notifier,
 	errorNotifier tghandler.ErrorNotifier,
+	readynessProbe tgbot.Probe,
+	livenessProbe tgbot.Probe,
 ) error {
 	var (
 		botHandler = tghandler.New(
@@ -47,6 +49,9 @@ func Start(
 	}
 
 	makeRoutes(tbot, botHandler)
+
+	tbot.SetReadinessProbe(readynessProbe)
+	tbot.SetLivenessProbe(livenessProbe)
 
 	if err := tbot.Start(ctx); err != nil {
 		return fmt.Errorf("bot start: %w", err)

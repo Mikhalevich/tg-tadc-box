@@ -1,6 +1,7 @@
 package tgbot
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/go-telegram/bot"
@@ -9,6 +10,8 @@ import (
 	"github.com/Mikhalevich/tg-tadc-box/internal/infra/logger"
 )
 
+type Probe func(ctx context.Context) error
+
 type TGBot struct {
 	bot              *bot.Bot
 	isWebHook        bool
@@ -16,6 +19,8 @@ type TGBot struct {
 	middlewares      []Middleware
 	commands         []models.BotCommand
 	defaultHandlerFn Handler
+	livenessProbe    Probe
+	readynessProbe   Probe
 }
 
 func New(

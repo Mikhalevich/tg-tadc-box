@@ -30,6 +30,14 @@ spec:
         resources:
           {{- toYaml . | nindent 12 }}
         {{- end }}
+        {{- with .Values.probes.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with .Values.probes.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
       volumes:
       - name: config-volume
         configMap:
