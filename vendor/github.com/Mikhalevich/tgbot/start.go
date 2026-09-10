@@ -5,13 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"time"
-)
-
-const (
-	readTimeout      = time.Second * 10
-	writeTimeout     = time.Second * 10
-	shoutdownTimeout = time.Second * 30
 )
 
 func (t *TGBot) Start(ctx context.Context) error {
@@ -19,7 +12,7 @@ func (t *TGBot) Start(ctx context.Context) error {
 		return fmt.Errorf("set my commands: %w", err)
 	}
 
-	if !t.isWebHook {
+	if !t.isWebHook() {
 		t.bot.Start(ctx)
 
 		return nil
@@ -32,20 +25,20 @@ func (t *TGBot) Start(ctx context.Context) error {
 	mux.HandleFunc("GET /live", t.httpLivenessProbe())
 	mux.HandleFunc("GET /ready", t.httpReadinessProbe())
 
-	if err := listenHTTP(ctx, mux); err != nil {
+	if err := t.listenHTTP(ctx, mux); err != nil {
 		return fmt.Errorf("listen http webhook: %w", err)
 	}
 
 	return nil
 }
 
-func listenHTTP(ctx context.Context, hndlr http.Handler) error {
+func (t *TGBot) listenHTTP(ctx context.Context, hndlr http.Handler) error {
 	var (
 		srv = &http.Server{
 			Addr:         ":80",
 			Handler:      hndlr,
-			ReadTimeout:  readTimeout,
-			WriteTimeout: writeTimeout,
+			ReadTimeout:  t.opts.readTimeout,
+			WriteTimeout: t.opts.writeTimeout,
 		}
 
 		srvErrCh = make(chan error)
@@ -65,7 +58,7 @@ func listenHTTP(ctx context.Context, hndlr http.Handler) error {
 	case <-ctx.Done():
 	}
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), shoutdownTimeout)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), t.opts.shutdownTimeout)
 	defer cancel()
 
 	//nolint:contextcheck

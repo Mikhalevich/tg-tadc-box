@@ -2,10 +2,9 @@ package tgbot
 
 import (
 	"context"
+	"log"
 
 	"github.com/go-telegram/bot"
-
-	"github.com/Mikhalevich/tg-tadc-box/internal/infra/logger"
 )
 
 func (t *TGBot) SendMessage(ctx context.Context, chatID int64, msg string) {
@@ -13,9 +12,7 @@ func (t *TGBot) SendMessage(ctx context.Context, chatID int64, msg string) {
 		ChatID: chatID,
 		Text:   msg,
 	}); err != nil {
-		logger.FromContext(ctx).
-			WithError(err).
-			Error("send message")
+		log.Printf("send message: %v\n", err)
 	}
 }
 
@@ -28,8 +25,6 @@ func (t *TGBot) DeleteMessage(
 		ChatID:    chatID,
 		MessageID: messageID,
 	}); err != nil {
-		logger.FromContext(ctx).
-			WithError(err).
-			Error("delete message")
+		log.Printf("delete message: %v\n", err)
 	}
 }

@@ -2,16 +2,6 @@ package tgbot
 
 type Middleware func(next Handler) Handler
 
-func (t *TGBot) MiddlewareGroup(next func(tbot *TGBot)) {
-	group := &TGBot{
-		bot:         t.bot,
-		logger:      t.logger,
-		middlewares: t.middlewares[:len(t.middlewares):len(t.middlewares)],
-	}
-
-	next(group)
-}
-
 func (t *TGBot) AddMiddleware(m Middleware) {
 	t.middlewares = append(t.middlewares, m)
 }
