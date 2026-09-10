@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Mikhalevich/tg-tadc-box/cmd/bot/internal/app/tgbot"
+	"github.com/Mikhalevich/tgbot"
+
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/box"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/button"
 	"github.com/Mikhalevich/tg-tadc-box/internal/domain/model/card"

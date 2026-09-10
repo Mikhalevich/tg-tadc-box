@@ -3,13 +3,11 @@ package tgbot
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
-
-	"github.com/Mikhalevich/tg-tadc-box/internal/infra/logger"
-	"github.com/Mikhalevich/tg-tadc-box/internal/infra/tracing"
 )
 
 type Payment struct {
@@ -124,7 +122,7 @@ func (t *TGBot) AddDefaultTextHandler(h Handler) {
 	)
 }
 
-func (t *TGBot) AddDefaultCallbackQueryHander(h Handler) {
+func (t *TGBot) AddDefaultCallbackQueryHandler(h Handler) {
 	t.bot.RegisterHandler(
 		bot.HandlerTypeCallbackQueryData,
 		"",
@@ -137,19 +135,16 @@ func (t *TGBot) wrapHandler(pattern string, handler Handler) bot.HandlerFunc {
 	handler = t.applyMiddleware(handler)
 
 	return func(ctx context.Context, botAPI *bot.Bot, update *models.Update) {
-		ctx, span := tracing.StartSpanName(ctx, pattern)
-		defer span.End()
-
 		var (
-			msg = makeMsgFromUpdate(update)
-			log = t.logger.WithContext(ctx).
-				WithField("endpoint", pattern).
-				WithField("bot_message", msg)
-			ctxLog = logger.WithLogger(ctx, log)
+			msg           = makeMsgFromUpdate(update)
+			handlerTracer = t.opts.tracerFn()
 		)
 
-		if err := handler(ctxLog, msg, t); err != nil {
-			log.WithError(err).Error("error while processing message")
+		ctx = handlerTracer.Before(ctx, pattern, msg)
+		defer handlerTracer.After(ctx)
+
+		if err := handler(ctx, msg, t); err != nil {
+			handlerTracer.OnError(ctx, err)
 
 			if _, err := botAPI.SendMessage(ctx, &bot.SendMessageParams{
 				ChatID: msg.ChatID,
@@ -158,9 +153,13 @@ func (t *TGBot) wrapHandler(pattern string, handler Handler) bot.HandlerFunc {
 				},
 				Text: "internal error",
 			}); err != nil {
-				log.WithError(err).Error("send message error")
+				log.Printf("send message error for pattern %q: %v", pattern, err)
 			}
+
+			return
 		}
+
+		handlerTracer.OnSuccess(ctx)
 	}
 }
 

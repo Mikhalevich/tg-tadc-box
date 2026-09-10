@@ -28,7 +28,6 @@ go.work.sum
 /bin
 /tools
 
-/config/config-bot.yaml
-/config/config-poller.yaml
-/config/config-outboxpoller.yaml
-/config/dbconfig.yml
+/cmd/webhook/webhook
+/cmd/webhook/config/config.yaml
+/cmd/webhook/config/public.pem
