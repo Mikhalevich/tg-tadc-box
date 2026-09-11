@@ -48,7 +48,7 @@ func Start(
 	tbot, err := tgbot.New(
 		botCfg.Token,
 		tgbot.WithWebHookToken(botCfg.WebHookToken),
-		tgbot.WithRedinessProbe(readinessProbe),
+		tgbot.WithReadinessProbe(readinessProbe),
 		tgbot.WithLivenessProbe(livenessProbe),
 		tgbot.WithNewTracerFn(func() tgbot.Tracer {
 			return newTracer(logger.FromContext(ctx))
